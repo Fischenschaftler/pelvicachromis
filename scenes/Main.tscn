@@ -1,0 +1,39 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/orbit_camera.gd" id="1_orbit"]
+[ext_resource type="Script" path="res://scripts/fish_swim.gd" id="2_swim"]
+
+[sub_resource type="Environment" id="Environment_neutral"]
+background_mode = 1
+background_color = Color(0.13, 0.17, 0.2, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_fish"]
+albedo_color = Color(0.58, 0.64, 0.65, 1)
+roughness = 0.8
+
+[sub_resource type="SphereMesh" id="SphereMesh_fish"]
+material = SubResource("Material_fish")
+radial_segments = 32
+rings = 16
+
+[node name="Main" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_neutral")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+rotation = Vector3(-0.65, -0.55, -0.35)
+light_energy = 1.6
+
+[node name="OrbitCamera" type="Node3D" parent="."]
+script = ExtResource("1_orbit")
+
+[node name="Camera3D" type="Camera3D" parent="OrbitCamera"]
+current = true
+
+[node name="Fish" type="Node3D" parent="."]
+script = ExtResource("2_swim")
+
+[node name="Body" type="MeshInstance3D" parent="Fish"]
+mesh = SubResource("SphereMesh_fish")
+scale = Vector3(1.4, 0.45, 0.32)
