@@ -1,0 +1,31 @@
+{
+	"animations": [
+		"Swim_Test"
+	],
+	"automatic_playback_seconds": 4.1,
+	"autoplay": true,
+	"bones": 15,
+	"duration_seconds": 2.0,
+	"errors": [],
+	"godot_version": "4.7.2-stable (official)",
+	"loop": true,
+	"loop_seam_error_m": 0.0,
+	"max_blender_bounds_difference_m": 0.000000303765261833178,
+	"meshes": 11,
+	"playing_clip": "Swim_Test",
+	"position_after_two_loops": 0.104274424242411,
+	"screenshots": [],
+	"vertex_motion_m": {
+		"Anal_Fin": 0.00327265588566661,
+		"Caudal_Fin": 0.00758004281669855,
+		"Dorsal_Fin": 0.00446778256446123,
+		"Eye_Left": 0.0,
+		"Eye_Right": 0.0,
+		"Fish_Body": 0.00428456859663129,
+		"Mouth": 0.0,
+		"Pectoral_Fin_Left": 0.000618738238699734,
+		"Pectoral_Fin_Right": 0.000618735852185637,
+		"Pelvic_Fin_Left": 0.000645624997559935,
+		"Pelvic_Fin_Right": 0.000645624299068004
+	}
+}

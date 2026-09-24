@@ -1,0 +1,376 @@
+{
+  "objects": {
+    "Anal_Fin": {
+      "vertices": 315,
+      "faces": 273,
+      "connected_components": 1,
+      "quads": 271,
+      "boundary_edges": 84,
+      "wire_edges": 0,
+      "edges_more_than_two_faces": 0,
+      "inconsistent_winding_edges": 0,
+      "duplicate_vertex_pairs_1e_8m": 0,
+      "duplicate_faces": 0,
+      "zero_area_faces": 0,
+      "folded_quads": 0,
+      "self_crossing_triangle_pairs": 0,
+      "signed_volume_m3": null,
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "origin_world": [
+        -0.0073432838544249535,
+        0.0,
+        -0.004112374968826771
+      ]
+    },
+    "Caudal_Fin": {
+      "vertices": 258,
+      "faces": 214,
+      "connected_components": 1,
+      "quads": 206,
+      "boundary_edges": 94,
+      "wire_edges": 0,
+      "edges_more_than_two_faces": 0,
+      "inconsistent_winding_edges": 0,
+      "duplicate_vertex_pairs_1e_8m": 0,
+      "duplicate_faces": 0,
+      "zero_area_faces": 0,
+      "folded_quads": 0,
+      "self_crossing_triangle_pairs": 0,
+      "signed_volume_m3": null,
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "origin_world": [
+        -0.02077612280845642,
+        0.0,
+        -0.00035820898483507335
+      ]
+    },
+    "Dorsal_Fin": {
+      "vertices": 387,
+      "faces": 336,
+      "connected_components": 1,
+      "quads": 336,
+      "boundary_edges": 100,
+      "wire_edges": 0,
+      "edges_more_than_two_faces": 0,
+      "inconsistent_winding_edges": 0,
+      "duplicate_vertex_pairs_1e_8m": 0,
+      "duplicate_faces": 0,
+      "zero_area_faces": 0,
+      "folded_quads": 0,
+      "self_crossing_triangle_pairs": 0,
+      "signed_volume_m3": null,
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "origin_world": [
+        0.0026865671388804913,
+        0.0,
+        0.013658643700182438
+      ]
+    },
+    "Eye_Left": {
+      "vertices": 282,
+      "faces": 320,
+      "connected_components": 1,
+      "quads": 240,
+      "boundary_edges": 0,
+      "wire_edges": 0,
+      "edges_more_than_two_faces": 0,
+      "inconsistent_winding_edges": 0,
+      "duplicate_vertex_pairs_1e_8m": 0,
+      "duplicate_faces": 0,
+      "zero_area_faces": 0,
+      "folded_quads": 0,
+      "self_crossing_triangle_pairs": 0,
+      "signed_volume_m3": 9.954517031472562e-09,
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "origin_world": [
+        0.03211940452456474,
+        0.0022544213570654392,
+        0.014805969782173634
+      ]
+    },
+    "Eye_Right": {
+      "vertices": 282,
+      "faces": 320,
+      "connected_components": 1,
+      "quads": 240,
+      "boundary_edges": 0,
+      "wire_edges": 0,
+      "edges_more_than_two_faces": 0,
+      "inconsistent_winding_edges": 0,
+      "duplicate_vertex_pairs_1e_8m": 0,
+      "duplicate_faces": 0,
+      "zero_area_faces": 0,
+      "folded_quads": 0,
+      "self_crossing_triangle_pairs": 0,
+      "signed_volume_m3": 9.954517030006262e-09,
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "origin_world": [
+        0.03211940452456474,
+        -0.0022544213570654392,
+        0.014805969782173634
+      ]
+    },
+    "Fish_Body": {
+      "vertices": 2762,
+      "faces": 2800,
+      "connected_components": 1,
+      "quads": 2720,
+      "boundary_edges": 0,
+      "wire_edges": 0,
+      "edges_more_than_two_faces": 0,
+      "inconsistent_winding_edges": 0,
+      "duplicate_vertex_pairs_1e_8m": 0,
+      "duplicate_faces": 0,
+      "zero_area_faces": 0,
+      "folded_quads": 0,
+      "self_crossing_triangle_pairs": 0,
+      "signed_volume_m3": 3.977844193722693e-06,
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "origin_world": [
+        0.008895521983504295,
+        0.0,
+        0.007166820112615824
+      ]
+    },
+    "Mouth": {
+      "vertices": 266,
+      "faces": 288,
+      "connected_components": 1,
+      "quads": 240,
+      "boundary_edges": 0,
+      "wire_edges": 0,
+      "edges_more_than_two_faces": 0,
+      "inconsistent_winding_edges": 0,
+      "duplicate_vertex_pairs_1e_8m": 0,
+      "duplicate_faces": 0,
+      "zero_area_faces": 0,
+      "folded_quads": 0,
+      "self_crossing_triangle_pairs": 0,
+      "signed_volume_m3": 8.995916900263746e-10,
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "origin_world": [
+        0.03952238708734512,
+        0.0,
+        0.01217910461127758
+      ]
+    },
+    "Pectoral_Fin_Left": {
+      "vertices": 162,
+      "faces": 132,
+      "connected_components": 1,
+      "quads": 128,
+      "boundary_edges": 62,
+      "wire_edges": 0,
+      "edges_more_than_two_faces": 0,
+      "inconsistent_winding_edges": 0,
+      "duplicate_vertex_pairs_1e_8m": 0,
+      "duplicate_faces": 0,
+      "zero_area_faces": 0,
+      "folded_quads": 0,
+      "self_crossing_triangle_pairs": 0,
+      "signed_volume_m3": null,
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "origin_world": [
+        0.02161194011569023,
+        0.0031077603343874216,
+        0.00513432826846838
+      ]
+    },
+    "Pectoral_Fin_Right": {
+      "vertices": 162,
+      "faces": 132,
+      "connected_components": 1,
+      "quads": 128,
+      "boundary_edges": 62,
+      "wire_edges": 0,
+      "edges_more_than_two_faces": 0,
+      "inconsistent_winding_edges": 0,
+      "duplicate_vertex_pairs_1e_8m": 0,
+      "duplicate_faces": 0,
+      "zero_area_faces": 0,
+      "folded_quads": 0,
+      "self_crossing_triangle_pairs": 0,
+      "signed_volume_m3": null,
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "origin_world": [
+        0.02161194011569023,
+        -0.0031077603343874216,
+        0.00513432826846838
+      ]
+    },
+    "Pelvic_Fin_Left": {
+      "vertices": 175,
+      "faces": 136,
+      "connected_components": 1,
+      "quads": 136,
+      "boundary_edges": 76,
+      "wire_edges": 0,
+      "edges_more_than_two_faces": 0,
+      "inconsistent_winding_edges": 0,
+      "duplicate_vertex_pairs_1e_8m": 0,
+      "duplicate_faces": 0,
+      "zero_area_faces": 0,
+      "folded_quads": 0,
+      "self_crossing_triangle_pairs": 0,
+      "signed_volume_m3": null,
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "origin_world": [
+        0.019223880022764206,
+        0.0017774985171854496,
+        0.0003582089557312429
+      ]
+    },
+    "Pelvic_Fin_Right": {
+      "vertices": 175,
+      "faces": 137,
+      "connected_components": 1,
+      "quads": 135,
+      "boundary_edges": 76,
+      "wire_edges": 0,
+      "edges_more_than_two_faces": 0,
+      "inconsistent_winding_edges": 0,
+      "duplicate_vertex_pairs_1e_8m": 0,
+      "duplicate_faces": 0,
+      "zero_area_faces": 0,
+      "folded_quads": 0,
+      "self_crossing_triangle_pairs": 0,
+      "signed_volume_m3": null,
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "origin_world": [
+        0.019223880022764206,
+        -0.0017774985171854496,
+        0.0003582089557312429
+      ]
+    }
+  },
+  "cross_object_intersections": {
+    "Anal_Fin / Fish_Body": 8,
+    "Caudal_Fin / Fish_Body": 10,
+    "Dorsal_Fin / Fish_Body": 12
+  },
+  "body_loops": {
+    "count": 69,
+    "min_spacing_mm": 0.11940300464630127,
+    "max_spacing_mm": 1.2437812983989716,
+    "maximum_contour_resampling_error_pixels": 0.42235680783321833
+  },
+  "cross_sections": {
+    "max_width_mm": 7.374520413577557,
+    "max_height_mm": 20.110427867621183,
+    "tail_stalk_width_mm": 1.8016538815572858
+  },
+  "intersection_interpretation": "Body/median-fin crossings are intentional embedded roots. Eyes and mouth have hidden closure surfaces inside the body. Open fin rims are intentional. Numerical crossing test excludes coplanar contact; duplicate faces, folded quads and visual wire views are checked separately.",
+  "static_bend_probe": [
+    {
+      "tail_angle_degrees": -30,
+      "self_crossing_triangle_pairs": 0,
+      "minimum_face_area_ratio": 0.9768239120847957,
+      "positive_volume": true
+    },
+    {
+      "tail_angle_degrees": 30,
+      "self_crossing_triangle_pairs": 0,
+      "minimum_face_area_ratio": 0.9768237843705119,
+      "positive_volume": true
+    }
+  ]
+}

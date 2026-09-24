@@ -24,6 +24,10 @@ window/stretch/aspect="expand"
 
 3d/physics_engine="Jolt Physics"
 
+[filesystem]
+
+import/blender/enabled=false
+
 [rendering]
 
 rendering_device/driver.windows="d3d12"

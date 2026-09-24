@@ -1,0 +1,20 @@
+{
+  "geometry_sha256_before": "f7eb7f8a6bcae7291607cd5033ded8c9086d2d4bb799fbbb49dcc0a91306f5e6",
+  "geometry_sha256_after": "f7eb7f8a6bcae7291607cd5033ded8c9086d2d4bb799fbbb49dcc0a91306f5e6",
+  "reference_opacity": 0.4,
+  "visible_meshes": [
+    "Fish_Body",
+    "Dorsal_Fin",
+    "Caudal_Fin",
+    "Anal_Fin",
+    "Pectoral_Fin_Left",
+    "Pelvic_Fin_Left"
+  ],
+  "photo_crop_pixels": [
+    45,
+    200,
+    755,
+    590
+  ],
+  "projection": "Orthographic from negative Y, +X right, +Z up"
+}

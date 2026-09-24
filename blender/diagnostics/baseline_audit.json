@@ -1,0 +1,344 @@
+{
+  "objects": {
+    "Anal_Fin": {
+      "vertices": 315,
+      "faces": 272,
+      "quads": 272,
+      "boundary_edges": 84,
+      "wire_edges": 0,
+      "edges_more_than_two_faces": 0,
+      "inconsistent_winding_edges": 0,
+      "duplicate_vertex_pairs_1e_8m": 0,
+      "duplicate_faces": 0,
+      "zero_area_faces": 0,
+      "folded_quads": 1,
+      "self_crossing_triangle_pairs": 0,
+      "signed_volume_m3": null,
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "origin_world": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Caudal_Fin": {
+      "vertices": 258,
+      "faces": 210,
+      "quads": 210,
+      "boundary_edges": 94,
+      "wire_edges": 0,
+      "edges_more_than_two_faces": 0,
+      "inconsistent_winding_edges": 0,
+      "duplicate_vertex_pairs_1e_8m": 0,
+      "duplicate_faces": 0,
+      "zero_area_faces": 0,
+      "folded_quads": 4,
+      "self_crossing_triangle_pairs": 0,
+      "signed_volume_m3": null,
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "origin_world": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Dorsal_Fin": {
+      "vertices": 387,
+      "faces": 336,
+      "quads": 336,
+      "boundary_edges": 100,
+      "wire_edges": 0,
+      "edges_more_than_two_faces": 0,
+      "inconsistent_winding_edges": 0,
+      "duplicate_vertex_pairs_1e_8m": 0,
+      "duplicate_faces": 0,
+      "zero_area_faces": 0,
+      "folded_quads": 0,
+      "self_crossing_triangle_pairs": 0,
+      "signed_volume_m3": null,
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "origin_world": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Eye_Left": {
+      "vertices": 282,
+      "faces": 320,
+      "quads": 240,
+      "boundary_edges": 0,
+      "wire_edges": 0,
+      "edges_more_than_two_faces": 0,
+      "inconsistent_winding_edges": 0,
+      "duplicate_vertex_pairs_1e_8m": 0,
+      "duplicate_faces": 0,
+      "zero_area_faces": 0,
+      "folded_quads": 0,
+      "self_crossing_triangle_pairs": 0,
+      "signed_volume_m3": 9.954517031472562e-09,
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "origin_world": [
+        0.03211940452456474,
+        0.0022544213570654392,
+        0.014805969782173634
+      ]
+    },
+    "Eye_Right": {
+      "vertices": 282,
+      "faces": 320,
+      "quads": 240,
+      "boundary_edges": 0,
+      "wire_edges": 0,
+      "edges_more_than_two_faces": 0,
+      "inconsistent_winding_edges": 0,
+      "duplicate_vertex_pairs_1e_8m": 0,
+      "duplicate_faces": 0,
+      "zero_area_faces": 0,
+      "folded_quads": 0,
+      "self_crossing_triangle_pairs": 0,
+      "signed_volume_m3": 9.954517030006262e-09,
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "origin_world": [
+        0.03211940452456474,
+        -0.0022544213570654392,
+        0.014805969782173634
+      ]
+    },
+    "Fish_Body": {
+      "vertices": 4242,
+      "faces": 4280,
+      "quads": 4200,
+      "boundary_edges": 0,
+      "wire_edges": 0,
+      "edges_more_than_two_faces": 0,
+      "inconsistent_winding_edges": 0,
+      "duplicate_vertex_pairs_1e_8m": 0,
+      "duplicate_faces": 0,
+      "zero_area_faces": 0,
+      "folded_quads": 0,
+      "self_crossing_triangle_pairs": 0,
+      "signed_volume_m3": 3.978664680979075e-06,
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "origin_world": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Mouth": {
+      "vertices": 266,
+      "faces": 288,
+      "quads": 240,
+      "boundary_edges": 0,
+      "wire_edges": 0,
+      "edges_more_than_two_faces": 0,
+      "inconsistent_winding_edges": 0,
+      "duplicate_vertex_pairs_1e_8m": 0,
+      "duplicate_faces": 0,
+      "zero_area_faces": 0,
+      "folded_quads": 0,
+      "self_crossing_triangle_pairs": 0,
+      "signed_volume_m3": 8.995916900263745e-10,
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "origin_world": [
+        0.03952238708734512,
+        0.0,
+        0.01217910461127758
+      ]
+    },
+    "Pectoral_Fin_Left": {
+      "vertices": 162,
+      "faces": 130,
+      "quads": 130,
+      "boundary_edges": 62,
+      "wire_edges": 0,
+      "edges_more_than_two_faces": 0,
+      "inconsistent_winding_edges": 0,
+      "duplicate_vertex_pairs_1e_8m": 0,
+      "duplicate_faces": 0,
+      "zero_area_faces": 0,
+      "folded_quads": 0,
+      "self_crossing_triangle_pairs": 0,
+      "signed_volume_m3": null,
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "origin_world": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Pectoral_Fin_Right": {
+      "vertices": 162,
+      "faces": 130,
+      "quads": 130,
+      "boundary_edges": 62,
+      "wire_edges": 0,
+      "edges_more_than_two_faces": 0,
+      "inconsistent_winding_edges": 0,
+      "duplicate_vertex_pairs_1e_8m": 0,
+      "duplicate_faces": 0,
+      "zero_area_faces": 0,
+      "folded_quads": 0,
+      "self_crossing_triangle_pairs": 0,
+      "signed_volume_m3": null,
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "origin_world": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Pelvic_Fin_Left": {
+      "vertices": 175,
+      "faces": 136,
+      "quads": 136,
+      "boundary_edges": 76,
+      "wire_edges": 0,
+      "edges_more_than_two_faces": 0,
+      "inconsistent_winding_edges": 0,
+      "duplicate_vertex_pairs_1e_8m": 0,
+      "duplicate_faces": 0,
+      "zero_area_faces": 0,
+      "folded_quads": 0,
+      "self_crossing_triangle_pairs": 0,
+      "signed_volume_m3": null,
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "origin_world": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Pelvic_Fin_Right": {
+      "vertices": 175,
+      "faces": 136,
+      "quads": 136,
+      "boundary_edges": 76,
+      "wire_edges": 0,
+      "edges_more_than_two_faces": 0,
+      "inconsistent_winding_edges": 0,
+      "duplicate_vertex_pairs_1e_8m": 0,
+      "duplicate_faces": 0,
+      "zero_area_faces": 0,
+      "folded_quads": 1,
+      "self_crossing_triangle_pairs": 0,
+      "signed_volume_m3": null,
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "origin_world": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "cross_object_intersections": {
+    "Anal_Fin / Fish_Body": 12,
+    "Caudal_Fin / Fish_Body": 10,
+    "Dorsal_Fin / Fish_Body": 40
+  },
+  "body_loops": {
+    "count": 108,
+    "min_spacing_mm": 4.999999997368221e-06,
+    "max_spacing_mm": 1.432837000000001
+  }
+}
