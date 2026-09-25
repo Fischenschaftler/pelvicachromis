@@ -1,39 +1,76 @@
-[gd_scene load_steps=6 format=3]
-
-[ext_resource type="Script" path="res://scripts/orbit_camera.gd" id="1_orbit"]
-[ext_resource type="Script" path="res://scripts/fish_swim.gd" id="2_swim"]
-
-[sub_resource type="Environment" id="Environment_neutral"]
+[gd_scene load_steps=5 format=3]
+[ext_resource type="Script" path="res://scripts/orbit_camera.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/fish_viewer.gd" id="2"]
+[ext_resource type="PackedScene" path="res://models/pelvicachromis_taeniatus_male.glb" id="3"]
+[sub_resource type="Environment" id="Environment"]
 background_mode = 1
-background_color = Color(0.13, 0.17, 0.2, 1)
-
-[sub_resource type="StandardMaterial3D" id="Material_fish"]
-albedo_color = Color(0.58, 0.64, 0.65, 1)
-roughness = 0.8
-
-[sub_resource type="SphereMesh" id="SphereMesh_fish"]
-material = SubResource("Material_fish")
-radial_segments = 32
-rings = 16
-
+background_color = Color(0.055, 0.07, 0.085, 1)
+ambient_light_source = 3
+ambient_light_color = Color(0.9, 0.94, 1, 1)
+ambient_light_energy = 0.65
+tonemap_mode = 0
 [node name="Main" type="Node3D"]
-
+script = ExtResource("2")
+[node name="Fish" parent="." instance=ExtResource("3")]
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_neutral")
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-rotation = Vector3(-0.65, -0.55, -0.35)
-light_energy = 1.6
-
+environment = SubResource("Environment")
+[node name="KeyLight" type="DirectionalLight3D" parent="."]
+rotation = Vector3(-0.55, -0.45, -0.2)
+light_color = Color(1, 0.97, 0.92, 1)
+light_energy = 1.15
+[node name="FillLight" type="DirectionalLight3D" parent="."]
+rotation = Vector3(-0.3, 2.5, 0.0)
+light_color = Color(0.86, 0.92, 1, 1)
+light_energy = 0.45
 [node name="OrbitCamera" type="Node3D" parent="."]
-script = ExtResource("1_orbit")
-
+script = ExtResource("1")
 [node name="Camera3D" type="Camera3D" parent="OrbitCamera"]
 current = true
-
-[node name="Fish" type="Node3D" parent="."]
-script = ExtResource("2_swim")
-
-[node name="Body" type="MeshInstance3D" parent="Fish"]
-mesh = SubResource("SphereMesh_fish")
-scale = Vector3(1.4, 0.45, 0.32)
+projection = 0
+fov = 32.0
+near = 0.001
+far = 10.0
+[node name="UI" type="CanvasLayer" parent="."]
+[node name="Layout" type="MarginContainer" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 16
+[node name="Header" type="VBoxContainer" parent="UI/Layout"]
+layout_mode = 2
+size_flags_vertical = 0
+mouse_filter = 2
+[node name="Title" type="Label" parent="UI/Layout/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Pelvicachromis Studio"
+mouse_filter = 2
+[node name="Hint" type="Label" parent="UI/Layout/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.71, 0.77, 1)
+text = "Linke Maustaste: drehen · Mausrad: zoomen"
+mouse_filter = 2
+[node name="Bottom" type="CenterContainer" parent="UI/Layout"]
+layout_mode = 2
+size_flags_vertical = 8
+mouse_filter = 2
+[node name="Buttons" type="HBoxContainer" parent="UI/Layout/Bottom"]
+layout_mode = 2
+theme_override_constants/separation = 12
+mouse_filter = 2
+[node name="Animation" type="Button" parent="UI/Layout/Bottom/Buttons"]
+custom_minimum_size = Vector2(180, 42)
+layout_mode = 2
+text = "Animation stoppen"
+mouse_default_cursor_shape = 2
+[node name="Reset" type="Button" parent="UI/Layout/Bottom/Buttons"]
+custom_minimum_size = Vector2(180, 42)
+layout_mode = 2
+text = "Ansicht zurücksetzen"
+mouse_default_cursor_shape = 2

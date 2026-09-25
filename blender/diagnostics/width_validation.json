@@ -1,0 +1,297 @@
+{
+  "geometry_sha256_before": "540dd5e41a36b3fb410400f91b852e171ef2aa89c9fe41856c77499169c8340f",
+  "geometry_sha256_after": "537e43dff8a215a60394faed120497e6e39654e40df283cb1333a37dc187cded",
+  "protected_data_before": "ac55e07df067fe796d68cdeb64acb42a70a94bfb095405ecc318bfd1c92aabc4",
+  "protected_data_after": "ac55e07df067fe796d68cdeb64acb42a70a94bfb095405ecc318bfd1c92aabc4",
+  "body_width_before_m": 0.007374520413577557,
+  "body_width_after_m": 0.011061780154705048,
+  "width_factor": 1.4999999368553802,
+  "x_z_unchanged": true,
+  "adjustments": {
+    "Fish_Body": {
+      "lateral_translation_m": 0.0,
+      "y_scale": 1.5
+    },
+    "Dorsal_Fin": {
+      "lateral_translation_m": 0.0,
+      "y_scale": 1.0
+    },
+    "Caudal_Fin": {
+      "lateral_translation_m": 0.0,
+      "y_scale": 1.0
+    },
+    "Anal_Fin": {
+      "lateral_translation_m": 0.0,
+      "y_scale": 1.0
+    },
+    "Pectoral_Fin_Left": {
+      "lateral_translation_m": 0.0015538802059988182,
+      "y_scale": 1.0
+    },
+    "Pectoral_Fin_Right": {
+      "lateral_translation_m": -0.0015538802059988182,
+      "y_scale": 1.0
+    },
+    "Pelvic_Fin_Left": {
+      "lateral_translation_m": 0.0008887492353096604,
+      "y_scale": 1.0
+    },
+    "Pelvic_Fin_Right": {
+      "lateral_translation_m": -0.0008887492353096604,
+      "y_scale": 1.0
+    },
+    "Eye_Left": {
+      "lateral_translation_m": 0.0011272106785327196,
+      "y_scale": 1.0
+    },
+    "Eye_Right": {
+      "lateral_translation_m": -0.0011272106785327196,
+      "y_scale": 1.0
+    },
+    "Mouth": {
+      "lateral_translation_m": 0.0,
+      "y_scale": 1.5
+    }
+  },
+  "texture_sha256": {
+    "textures\\pelvicachromis_taeniatus_male_albedo.png": "e634da704e7d01398a1d723d4006c6b881aad559c4f6525d2953ae41e6165ce1",
+    "textures\\reference_fish_mask.png": "c58db100b060d67f4f94054b4d781b3f658e5ed45fa53fa3511226a9fd477a90",
+    "textures\\uv_checker.png": "1e69eda4c80dddd6503b0cbb0994184f036ff0c5fc725d324a2c7b27ce2bb8d1"
+  },
+  "axis": "Blender local Y (Godot Z after export)",
+  "backup": "blender\\backups\\width_before",
+  "animation_validation": {
+    "frames_checked": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61
+    ],
+    "maximum_rest_displacement_m": 4.16500117164066e-09,
+    "area_ratio_by_mesh": {
+      "Fish_Body": [
+        0.9608675082058629,
+        1.0372431050986388
+      ],
+      "Dorsal_Fin": [
+        0.9907068508350533,
+        1.0278336975840765
+      ],
+      "Caudal_Fin": [
+        0.9540223938518063,
+        1.0543120261911454
+      ],
+      "Anal_Fin": [
+        0.9824029981154498,
+        1.019553548759308
+      ],
+      "Pectoral_Fin_Left": [
+        0.9006728404146565,
+        1.1559778940550103
+      ],
+      "Pectoral_Fin_Right": [
+        0.8604738390257398,
+        1.1981509104224983
+      ],
+      "Pelvic_Fin_Left": [
+        0.9468544775966042,
+        1.0548036945191712
+      ],
+      "Pelvic_Fin_Right": [
+        0.956259868386308,
+        1.044319171403764
+      ],
+      "Eye_Left": [
+        0.9999991334025649,
+        1.000000575953791
+      ],
+      "Eye_Right": [
+        0.999999127409767,
+        1.0000006074794572
+      ],
+      "Mouth": [
+        0.9999990484262993,
+        1.0000008034756214
+      ]
+    },
+    "minimum_face_area_ratio": 0.8604738390257398,
+    "maximum_face_area_ratio": 1.1981509104224983,
+    "all_mesh_loop_seam_error_m": 0.0,
+    "mesh_self_intersections": {
+      "1": {
+        "Fish_Body": 0,
+        "Dorsal_Fin": 0,
+        "Caudal_Fin": 0,
+        "Anal_Fin": 0,
+        "Pectoral_Fin_Left": 0,
+        "Pectoral_Fin_Right": 0,
+        "Pelvic_Fin_Left": 0,
+        "Pelvic_Fin_Right": 0,
+        "Eye_Left": 0,
+        "Eye_Right": 0,
+        "Mouth": 0
+      },
+      "8": {
+        "Fish_Body": 0,
+        "Dorsal_Fin": 0,
+        "Caudal_Fin": 0,
+        "Anal_Fin": 0,
+        "Pectoral_Fin_Left": 0,
+        "Pectoral_Fin_Right": 0,
+        "Pelvic_Fin_Left": 0,
+        "Pelvic_Fin_Right": 0,
+        "Eye_Left": 0,
+        "Eye_Right": 0,
+        "Mouth": 0
+      },
+      "16": {
+        "Fish_Body": 0,
+        "Dorsal_Fin": 0,
+        "Caudal_Fin": 0,
+        "Anal_Fin": 0,
+        "Pectoral_Fin_Left": 0,
+        "Pectoral_Fin_Right": 0,
+        "Pelvic_Fin_Left": 0,
+        "Pelvic_Fin_Right": 0,
+        "Eye_Left": 0,
+        "Eye_Right": 0,
+        "Mouth": 0
+      },
+      "23": {
+        "Fish_Body": 0,
+        "Dorsal_Fin": 0,
+        "Caudal_Fin": 0,
+        "Anal_Fin": 0,
+        "Pectoral_Fin_Left": 0,
+        "Pectoral_Fin_Right": 0,
+        "Pelvic_Fin_Left": 0,
+        "Pelvic_Fin_Right": 0,
+        "Eye_Left": 0,
+        "Eye_Right": 0,
+        "Mouth": 0
+      },
+      "31": {
+        "Fish_Body": 0,
+        "Dorsal_Fin": 0,
+        "Caudal_Fin": 0,
+        "Anal_Fin": 0,
+        "Pectoral_Fin_Left": 0,
+        "Pectoral_Fin_Right": 0,
+        "Pelvic_Fin_Left": 0,
+        "Pelvic_Fin_Right": 0,
+        "Eye_Left": 0,
+        "Eye_Right": 0,
+        "Mouth": 0
+      },
+      "38": {
+        "Fish_Body": 0,
+        "Dorsal_Fin": 0,
+        "Caudal_Fin": 0,
+        "Anal_Fin": 0,
+        "Pectoral_Fin_Left": 0,
+        "Pectoral_Fin_Right": 0,
+        "Pelvic_Fin_Left": 0,
+        "Pelvic_Fin_Right": 0,
+        "Eye_Left": 0,
+        "Eye_Right": 0,
+        "Mouth": 0
+      },
+      "46": {
+        "Fish_Body": 0,
+        "Dorsal_Fin": 0,
+        "Caudal_Fin": 0,
+        "Anal_Fin": 0,
+        "Pectoral_Fin_Left": 0,
+        "Pectoral_Fin_Right": 0,
+        "Pelvic_Fin_Left": 0,
+        "Pelvic_Fin_Right": 0,
+        "Eye_Left": 0,
+        "Eye_Right": 0,
+        "Mouth": 0
+      },
+      "53": {
+        "Fish_Body": 0,
+        "Dorsal_Fin": 0,
+        "Caudal_Fin": 0,
+        "Anal_Fin": 0,
+        "Pectoral_Fin_Left": 0,
+        "Pectoral_Fin_Right": 0,
+        "Pelvic_Fin_Left": 0,
+        "Pelvic_Fin_Right": 0,
+        "Eye_Left": 0,
+        "Eye_Right": 0,
+        "Mouth": 0
+      },
+      "61": {
+        "Fish_Body": 0,
+        "Dorsal_Fin": 0,
+        "Caudal_Fin": 0,
+        "Anal_Fin": 0,
+        "Pectoral_Fin_Left": 0,
+        "Pectoral_Fin_Right": 0,
+        "Pelvic_Fin_Left": 0,
+        "Pelvic_Fin_Right": 0,
+        "Eye_Left": 0,
+        "Eye_Right": 0,
+        "Mouth": 0
+      }
+    }
+  }
+}

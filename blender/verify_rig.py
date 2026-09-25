@@ -9,7 +9,15 @@ helpers=runpy.run_path(str(ROOT/'blender/rig_pelvicachromis.py'),run_name='rig_h
 report=json.loads((ROOT/'blender/diagnostics/rig_validation.json').read_text(encoding='utf-8'))
 rig=bpy.data.objects['Pelvicachromis_Rig']
 assert rig.type=='ARMATURE' and len(rig.data.bones)==15
-assert helpers['digest']()==report['geometry_sha256_before']
+# The user-approved width revision has its own audited geometry baseline.
+if bpy.data.objects['Fish_Body'].get('width_revision_1_5',False):
+    width_report=json.loads((ROOT/'blender/diagnostics/width_validation.json').read_text())
+    assert width_report['protected_data_before']==width_report['protected_data_after']
+    assert width_report['x_z_unchanged'] and abs(width_report['width_factor']-1.5)<1e-6
+    expected_geometry=width_report['geometry_sha256_after']
+else:
+    expected_geometry=report['geometry_sha256_before']
+assert helpers['digest']()==expected_geometry
 assert bpy.context.scene.frame_current==0
 assert bpy.context.scene.render.fps==30
 assert rig.animation_data.action.name=='Swim_Test_Loop'
@@ -23,7 +31,9 @@ meshes=helpers['MODEL']
 assert len(meshes)==11
 largest_sum_error=0
 for obj in meshes:
-    assert obj.parent==rig and len(obj.data.uv_layers)==0
+    assert obj.parent==rig and len(obj.data.uv_layers)==1
+    assert obj.data.uv_layers.active.name=='PhotoUV'
+    assert all(0<=c<=1 for loop in obj.data.uv_layers.active.data for c in loop.uv)
     assert obj.data.shape_keys is None
     modifiers=[m for m in obj.modifiers if m.type=='ARMATURE']
     assert len(modifiers)==1 and modifiers[0].object==rig
@@ -40,4 +50,4 @@ for obj in meshes:
     ev.to_mesh_clear()
 print(json.dumps({'saved_rig_verified':True,'bones':15,'meshes':11,
                   'neutral_frame':0,'maximum_stored_weight_sum_error':largest_sum_error,
-                  'geometry_unchanged':True,'uv_maps':0,'export_performed':False}))
+                  'geometry_matches_approved_baseline':True,'uv_maps_per_mesh':1,'export_performed':False}))

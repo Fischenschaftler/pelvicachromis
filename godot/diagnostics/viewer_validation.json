@@ -1,0 +1,11 @@
+{
+	"animation": "Swim_Test",
+	"errors": [],
+	"mouse_orbit_zoom_limits_ui_reset_resize_tested": true,
+	"screenshots": [
+		"res://godot/diagnostics/viewer_orbit.png",
+		"res://godot/diagnostics/viewer_1280x800.png",
+		"res://godot/diagnostics/viewer_600x900.png",
+		"res://godot/diagnostics/viewer_480x360.png"
+	]
+}

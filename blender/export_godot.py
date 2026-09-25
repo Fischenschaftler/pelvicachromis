@@ -43,7 +43,7 @@ settings=dict(filepath=str(OUT),export_format='GLB',use_selection=True,
     export_frame_range=True,export_frame_step=1,export_force_sampling=True,export_anim_slide_to_zero=True,
     export_optimize_animation_size=False,export_reset_pose_bones=True,
     export_cameras=False,export_lights=False,export_extras=False,
-    export_texcoords=False,export_morph=False,export_materials='EXPORT')
+    export_texcoords=True,export_morph=False,export_materials='EXPORT')
 bpy.ops.export_scene.gltf(**settings)
 raw=OUT.read_bytes()
 length,kind=struct.unpack_from('<II',raw,12)
@@ -56,9 +56,15 @@ time_ranges=[(accessors[s['input']]['min'][0],accessors[s['input']]['max'][0]) f
 assert all(abs(a)<1e-6 and abs(b-2)<1e-6 for a,b in time_ranges),time_ranges
 assert len(gltf['meshes'])==11 and len(gltf['skins'])==1
 assert len(gltf['skins'][0]['joints'])==15
-assert not gltf.get('cameras') and not gltf.get('images') and not gltf.get('textures')
+assert not gltf.get('cameras')
+assert gltf.get('images') and gltf.get('textures'), 'Photo atlas missing'
+assert all('bufferView' in image for image in gltf['images']), 'Textures must be embedded'
+photo_materials=[m for m in gltf['materials'] if m.get('name','').startswith('Pelvicachromis_Photo')]
+assert len(photo_materials)==4
+assert all('baseColorTexture' in m['pbrMetallicRoughness'] for m in photo_materials)
 assert all('JOINTS_0' in p['attributes'] and 'WEIGHTS_0' in p['attributes']
            for m in gltf['meshes'] for p in m['primitives'])
+assert all('TEXCOORD_0' in p['attributes'] for m in gltf['meshes'] for p in m['primitives'])
 # Independent evaluated Blender bounds to compare against imported Godot skinning.
 expected={}
 for frame in (1,16,31,46,61):
@@ -77,7 +83,8 @@ for frame in (1,16,31,46,61):
 scene.frame_set(0)
 assert hashlib.sha256(SOURCE.read_bytes()).hexdigest()==source_hash
 report={'source_sha256':source_hash,'backup':str(BACKUP.relative_to(ROOT)),
-        'glb':str(OUT.relative_to(ROOT)),'mesh_count':11,'joints':15,
+        'glb':str(OUT.relative_to(ROOT)),'mesh_count':11,'joints':15,'embedded_images':len(gltf['images']),
+        'photo_materials':[m['name'] for m in photo_materials],
         'animations':[a['name'] for a in animations],'duration_seconds':2,
         'coordinate_conversion':'Blender (x,y,z) -> glTF/Godot (x,z,-y)',
         'blender_skin_bounds':expected}

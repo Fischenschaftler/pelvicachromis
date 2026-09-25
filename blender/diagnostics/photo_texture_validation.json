@@ -1,0 +1,15 @@
+{
+  "protected_data_sha256": "05a38e19d6a5ee32d4d6839d09602d7978a8281be3ad6e67079d5077765a1d30",
+  "geometry_uv_rig_weights_animation_unchanged": true,
+  "atlas_size": [
+    4096,
+    4096
+  ],
+  "photographed_side": "Right (-Y)",
+  "fallback_side": "Left (+Y), copied registered projection",
+  "revision": 2,
+  "curvature_sampling": "cross-section arc blend; UV unchanged",
+  "eyes": "registered photo on existing eye UVs",
+  "padding_pixels": 20,
+  "backup": "blender\\backups\\photo_v1\\Pelvicachromis_Male_Blockout.blend"
+}

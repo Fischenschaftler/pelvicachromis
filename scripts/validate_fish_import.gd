@@ -32,6 +32,11 @@ func skin_bounds(instance: MeshInstance3D, skeleton: Skeleton3D) -> AABB:
 	for surface in range(instance.mesh.get_surface_count()):
 		var arrays: Array = instance.mesh.surface_get_arrays(surface)
 		var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+		var uvs: PackedVector2Array = arrays[Mesh.ARRAY_TEX_UV]
+		check(uvs.size() == vertices.size(), "%s: missing UV coordinates" % instance.name)
+		for uv in uvs:
+			check(uv.x >= 0.0 and uv.x <= 1.0 and uv.y >= 0.0 and uv.y <= 1.0,
+				"%s: UV outside atlas" % instance.name)
 		var bones: PackedInt32Array = arrays[Mesh.ARRAY_BONES]
 		var weights: PackedFloat32Array = arrays[Mesh.ARRAY_WEIGHTS]
 		check(bones.size() == vertices.size() * 4, "%s: expected four skin slots" % instance.name)
@@ -91,6 +96,19 @@ func run_test() -> void:
 	check(animation.loop_mode == Animation.LOOP_LINEAR, "Swim clip is not looping")
 	for name in player.get_animation_list():
 		check(not String(name).contains("Rig_Test_Pose"), "Test pose was accidentally exported")
+	var textured_meshes := 0
+	for node in meshes:
+		var mesh := node as MeshInstance3D
+		var found := false
+		for surface in range(mesh.mesh.get_surface_count()):
+			var material := mesh.get_active_material(surface) as StandardMaterial3D
+			if material != null and material.albedo_texture != null:
+				check(material.albedo_texture.get_width() == 4096, "Expected 4096 photo atlas")
+				found = true
+		check(found, "%s: photo material missing" % mesh.name)
+		if found:
+			textured_meshes += 1
+	check(textured_meshes == 11, "Expected eleven photo textured meshes")
 	player.pause()
 	var source: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(
 		"res://blender/diagnostics/glb_export_validation.json"))
@@ -119,6 +137,8 @@ func run_test() -> void:
 			var filename: String = "res://blender/diagnostics/godot_swim_%02d.png" % sample_index
 			check(image.save_png(filename) == OK, "Could not save screenshot")
 			captured.append(filename)
+			if sample_index == 1:
+				check(image.save_png("res://godot/diagnostics/photo_texture_test.png") == OK, "Photo screenshot failed")
 		sample_index += 1
 	check(float(vertex_motion.get("Fish_Body", 0.0)) > 0.0001, "Body does not move")
 	check(float(vertex_motion.get("Caudal_Fin", 0.0)) > 0.0001, "Caudal fin does not move")
@@ -141,6 +161,7 @@ func run_test() -> void:
 		"meshes": meshes.size(), "bones": skeleton.get_bone_count(),
 		"animations": Array(player.get_animation_list()), "playing_clip": String(clip),
 		"duration_seconds": animation.length, "autoplay": true, "loop": true,
+		"uv_coordinates_on_all_surfaces": true, "photo_textured_meshes": textured_meshes,
 		"max_blender_bounds_difference_m": max_difference, "vertex_motion_m": vertex_motion,
 		"loop_seam_error_m": seam_error, "automatic_playback_seconds": 4.1,
 		"position_after_two_loops": playback_position,

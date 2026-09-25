@@ -1,0 +1,20 @@
+{
+  "models/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+  "models/Pelvicachromis_Male_Blockout.blend": "ebe62c423d1f06df953a11db31352e9be63901523bdf7c46c38c2bc29ce6de4a",
+  "models/Pelvicachromis_Male_Blockout.blend1": "665529ba27db62edeffb83981c296b8b8c49293b47acd82bf965997f2828101d",
+  "models/pelvicachromis_taeniatus_male.glb": "31d6ccd36e36ee5eeaaa7f51579442ca97d1187aef99b7f0db01f1ddb7ede6a6",
+  "models/pelvicachromis_taeniatus_male_pelvicachromis_taeniatus_male_albedo.png": "e634da704e7d01398a1d723d4006c6b881aad559c4f6525d2953ae41e6165ce1",
+  "textures/pelvicachromis_taeniatus_male_albedo.png": "e634da704e7d01398a1d723d4006c6b881aad559c4f6525d2953ae41e6165ce1",
+  "textures/reference_fish_mask.png": "c58db100b060d67f4f94054b4d781b3f658e5ed45fa53fa3511226a9fd477a90",
+  "textures/uv_checker.png": "1e69eda4c80dddd6503b0cbb0994184f036ff0c5fc725d324a2c7b27ce2bb8d1",
+  "blender/bake_reference_texture.py": "09ea239ee9b54ae0a7a6e3e06f6e9c5c5fd2c072e4bfabd38ca53d5b2d91f31b",
+  "blender/create_pelvicachromis_male_from_reference.py": "009472ce5c76c504d01c58a44512a8c201b08fac7d9febfc22deeb9aad2cb088",
+  "blender/diagnose_model.py": "6ad4566b1810c88a7f3e47c8f6667fa18db55f578ca668100e2aa72e018ffe2e",
+  "blender/export_godot.py": "c01ae46d9f7450a9aaa2b7762f01ac1021bc5e58c3b64c5cc3dfd0e828bd058a",
+  "blender/photo_raster.py": "ed3643469ac1316af947887c795dd8f676e202778cdaf7fb22bb98f053573d0c",
+  "blender/prepare_uv.py": "cec8db8dcae3ce8062f8cc449c3485964b5169b15a6217581a56887b442be418",
+  "blender/render_reference_comparison.py": "73b1d1f99c4051858a7ebbe6c64b554f1ed76ed7b29ac6bfe21d4cdbdcf63dc2",
+  "blender/rig_pelvicachromis.py": "63b99d6c4446c3eeb8b3e361ee75d34194e3148c577d29f288bbc8af6fe930a0",
+  "blender/setup_reference_view.py": "b396cf799fe2d20e4ea7a665d23c433ce2d95412e1f0291941dcf02e51743810",
+  "blender/verify_rig.py": "3cc6fe7ca5c182c3b12cf90a1d9f620a4e554a221b1979b8f54a45bf9ab3d8a2"
+}

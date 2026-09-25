@@ -12,8 +12,9 @@
 	"loop_seam_error_m": 0.0,
 	"max_blender_bounds_difference_m": 0.000000303765261833178,
 	"meshes": 11,
+	"photo_textured_meshes": 11,
 	"playing_clip": "Swim_Test",
-	"position_after_two_loops": 0.111119333333331,
+	"position_after_two_loops": 0.109288666666663,
 	"screenshots": [
 		"res://blender/diagnostics/godot_swim_00.png",
 		"res://blender/diagnostics/godot_swim_01.png",
@@ -21,6 +22,7 @@
 		"res://blender/diagnostics/godot_swim_03.png",
 		"res://blender/diagnostics/godot_swim_04.png"
 	],
+	"uv_coordinates_on_all_surfaces": true,
 	"vertex_motion_m": {
 		"Anal_Fin": 0.00327265588566661,
 		"Caudal_Fin": 0.00758004281669855,

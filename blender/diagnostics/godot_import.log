@@ -9,25 +9,37 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
 [  83% ] first_scan_filesystem | Dateiscan starten …
 [ DONE ] first_scan_filesystem
 
-[   0% ] reimport | Started Assets (erneut) importieren (1 steps)
+[   0% ] _update_scan_actions | Started Aktionen scannen … (2 steps)
+[   0% ] _update_scan_actions | pelvicachromis_taeniatus_male.glb
+[  33% ] _update_scan_actions | pelvicachromis_taeniatus_male_albedo.png
+[ DONE ] _update_scan_actions
+
+[   0% ] reimport | Started Assets (erneut) importieren (3 steps)
 [   0% ] reimport | Dateien zum Neuimport vorbereiten …
+[  25% ] reimport | Dateien zum Neuimport vorbereiten …
+[  50% ] reimport | Dateien zum Neuimport vorbereiten …
 [   0% ] reimport | Vor-Neuimport-Operationen ausführen …
 [   0% ] preload_reimporting_scene | Started Szenen zum Neuladen vorbereiten (1 steps)
 [   0% ] preload_reimporting_scene | Szene [leer] wird analysiert
 [  50% ] preload_reimporting_scene | Vorbereitung abgeschlossen.
 [ DONE ] preload_reimporting_scene
 
-[   0% ] reimport | pelvicachromis_taeniatus_male.glb
+[   0% ] reimport | pelvicachromis_taeniatus_male_pelvicachromis_taeniatus_male_albedo.png
+[   0% ] reimport | pelvicachromis_taeniatus_male_pelvicachromis_taeniatus_male_albedo.png
+[   0% ] reimport | pelvicachromis_taeniatus_male_pelvicachromis_taeniatus_male_albedo.png
+[   0% ] reimport | pelvicachromis_taeniatus_male_pelvicachromis_taeniatus_male_albedo.png
+[  25% ] reimport | pelvicachromis_taeniatus_male_albedo.png
+[  50% ] reimport | pelvicachromis_taeniatus_male.glb
 [   0% ] import | Started Szene importieren (104 steps)
 [   0% ] import | Importiere Szene…
 [   1% ] import | Eigenes Skript wird ausgeführt …
 [  99% ] import | Speichern …
 [ DONE ] import
 
-[  50% ] reimport | Asset-Import fertigstellen …
+[  75% ] reimport | Asset-Import fertigstellen …
 [ DONE ] reimport
 
-[   0% ] reimport | Started Assets (erneut) importieren (1 steps)
+[   0% ] reimport | Started Assets (erneut) importieren (3 steps)
 [   0% ] reimport | Nach-Neuimport-Operationen ausführen …
 [ DONE ] reimport
 

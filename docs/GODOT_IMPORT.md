@@ -1,5 +1,10 @@
 # Blender → GLB → Godot 4: erster vollständiger Test
 
+**UV-Erweiterung:** Alle elf Meshes besitzen inzwischen PhotoUV. Der Export
+enthält TEXCOORD_0; der Godot-Test prüft UV-Arrays auf allen Surfaces zusätzlich
+zum unveränderten Rig-/Animationstest. Atlasaufbau, Sicherung und Checker-Diagnosen:
+[UV_MAPPING.md](UV_MAPPING.md).
+
 Getestet mit Blender 5.2.1 und Godot 4.7.2 unter Windows.
 Grafiktest: Direct3D 12, Forward+, NVIDIA GeForce RTX 3070.
 
@@ -27,7 +32,8 @@ die Armature und elf Mesh-Objekte: Fish_Body, sieben Flossen, beide Augen und Mo
 Es verwendet GLB, Skinning mit höchstens vier Gewichten, alle 15 Bones, unveränderte
 Rest-Geometrie, einfache vorhandene Materialien und die aktive Action.
 Kameras, Lichter, Referenzbilder und Diagnoseobjekte sind nicht enthalten.
-Die GLB enthält keine Bilder, Texturen oder UV-Koordinaten.
+Die GLB enthält keine Bilder oder Texturen. Seit der UV-Erweiterung werden
+UV-Koordinaten als TEXCOORD_0 mit exportiert.
 
 Nur **Swim_Test_Loop** wird exportiert. Sampling: Frames 1–61 bei 30 FPS,
 auf Zeit 0–2 Sekunden verschoben. Frame 0 und Rig_Test_Pose bleiben außerhalb
@@ -125,3 +131,5 @@ von den normalen Godot-Benutzereinstellungen getrennt bleiben.
 Offizielle Grundlagen:
 [Godot: glTF/GLB und Blender-Import](https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_3d_scenes/available_formats.html),
 [Blender: glTF-Export und Animationsmodi](https://docs.blender.org/manual/en/5.0/addons/import_export/scene_gltf2.html).
+
+Die erste Foto-Texturierung mit eingebettetem Atlas ist in [PHOTO_TEXTURE_PIPELINE.md](PHOTO_TEXTURE_PIPELINE.md) dokumentiert.
