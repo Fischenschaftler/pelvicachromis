@@ -1,0 +1,67 @@
+extends "res://scripts/validate_fish_viewer.gd"
+## Covers real dialog selection, supported decoders, replacements and layouts.
+func shot(label: String) -> void:
+	if DisplayServer.get_name() != "headless":
+		await RenderingServer.frame_post_draw
+		root.get_texture().get_image().save_png("res://godot/diagnostics/photo_import_%s.png" % label)
+func run() -> void:
+	viewer = load("res://scenes/Main.tscn").instantiate()
+	root.add_child(viewer)
+	await settle()
+	var photo: Control = viewer.get_node("UI/ReferencePhoto")
+	var folder := ProjectSettings.globalize_path("res://.godot/photo_import_fixtures/")
+	await click(photo.select_button)
+	check(photo.dialog.visible, "Select button did not open FileDialog")
+	photo.dialog.current_path = folder + "Großes Fischfoto.jpg"
+	await settle()
+	photo.dialog.get_ok_button().pressed.emit()
+	await settle()
+	check(photo.current_photo_path == folder + "Großes Fischfoto.jpg", "Dialog selection did not load absolute path")
+	check(photo.original_size == Vector2i(4000,3000), "Original JPG dimensions lost")
+	check(photo.picture.texture.get_size() == Vector2(2048,1536), "Large JPG preview not scaled correctly")
+	await shot("jpg")
+	var last_path: String = photo.current_photo_path
+	check(not photo.load_photo(folder + "Defekt.png"), "Corrupt image accepted")
+	check(photo.error_dialog.visible and not photo.last_error.is_empty(), "Error message missing")
+	check(photo.current_photo_path == last_path, "Failed replacement discarded valid photo")
+	await shot("error")
+	photo.error_dialog.hide()
+	check(not photo.load_photo(folder + "missing.jpg"), "Missing image accepted")
+	photo.error_dialog.hide()
+	for entry in [["Hochformat.png",600,1000],["Klein.jpeg",80,60],["Test.webp",900,500]]:
+		check(photo.load_photo(folder + entry[0]), "Image load failed: " + entry[0])
+		check(photo.original_size == Vector2i(entry[1],entry[2]), "Wrong image metadata")
+		check(photo.picture.stretch_mode == TextureRect.STRETCH_KEEP_ASPECT_CENTERED, "Aspect ratio not preserved")
+		await settle()
+	check(photo.load_photo(folder + "Hochformat.png"), "PNG replacement failed")
+	for dimensions in [Vector2i(1280,800),Vector2i(600,900),Vector2i(480,360)]:
+		root.size = dimensions
+		await settle()
+		await click(viewer.reset_button)
+		var bounds := root.get_visible_rect()
+		check(bounds.encloses(photo.panel.get_global_rect()), "Photo panel outside window")
+		check(bounds.encloses(photo.select_button.get_global_rect()), "Select button outside window")
+		check(not photo.panel.get_global_rect().intersects(viewer.get_node("ViewerViewport").get_global_rect()), "Photo overlaps 3D viewport")
+		check(not photo.panel.get_global_rect().intersects(viewer.reset_button.get_global_rect()), "Photo overlaps controls")
+		var point: Vector2 = viewer.get_node("ViewerViewport").get_global_rect().get_center()
+		mouse(MOUSE_BUTTON_LEFT,true,point)
+		move(point+Vector2(20,10),Vector2(20,10))
+		mouse(MOUSE_BUTTON_LEFT,false,point)
+		check(absf(viewer.orbit.yaw)>0.01, "Orbit with photo failed")
+		var distance: float = viewer.orbit.distance
+		mouse(MOUSE_BUTTON_WHEEL_UP,true,point)
+		check(viewer.orbit.distance<distance, "Zoom with photo failed")
+		await click(viewer.reset_button)
+		check(viewer.orbit.yaw==0.0, "Reset with photo failed")
+		await click(viewer.animation_button)
+		check(not viewer.animation_player.is_playing(), "Pause with photo failed")
+		await click(viewer.animation_button)
+		check(viewer.animation_player.is_playing(), "Resume with photo failed")
+		await shot("%dx%d" % [dimensions.x,dimensions.y])
+	await click(photo.remove_button)
+	check(photo.current_photo_path.is_empty() and photo.picture.texture==null and not photo.panel.visible, "Remove photo failed")
+	check(viewer.get_node("ViewerViewport").size == root.get_visible_rect().size,"Full viewer not restored")
+	await shot("removed")
+	FileAccess.open("res://godot/diagnostics/photo_import_validation.json",FileAccess.WRITE).store_string(JSON.stringify({"errors":errors,"formats":["JPG","JPEG","PNG","WEBP"],"sizes":[[4000,3000],[600,1000],[80,60],[900,500]],"dialog_selection":true,"controls_with_photo":true},"\t"))
+	print("Photo import validation: ",errors)
+	quit(0 if errors.is_empty() else 1)

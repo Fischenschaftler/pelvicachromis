@@ -87,7 +87,7 @@ func run() -> void:
 		var rect := root.get_visible_rect()
 		for button in [viewer.reset_button, viewer.animation_button]:
 			check(rect.encloses(button.get_global_rect()), "UI outside window at %s" % size)
-		for node in viewer.get_node("Fish").find_children("*", "MeshInstance3D", true, false):
+		for node in viewer.fish.find_children("*", "MeshInstance3D", true, false):
 			var mesh := node as MeshInstance3D
 			for corner in range(8):
 				var world: Vector3 = mesh.global_transform * mesh.get_aabb().get_endpoint(corner)

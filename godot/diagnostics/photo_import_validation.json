@@ -1,0 +1,29 @@
+{
+	"controls_with_photo": true,
+	"dialog_selection": true,
+	"errors": [],
+	"formats": [
+		"JPG",
+		"JPEG",
+		"PNG",
+		"WEBP"
+	],
+	"sizes": [
+		[
+			4000,
+			3000
+		],
+		[
+			600,
+			1000
+		],
+		[
+			80,
+			60
+		],
+		[
+			900,
+			500
+		]
+	]
+}

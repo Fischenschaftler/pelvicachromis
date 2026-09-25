@@ -9,6 +9,7 @@ var distance := 0.16
 var radius := 0.045
 var zoom_ratio := 1.0
 var fit_distance := 0.16
+var reserved_height := 180.0
 var half_extent := Vector3(0.04, 0.022, 0.006)
 const PITCH_LIMIT := 1.25
 
@@ -32,7 +33,7 @@ func _resize() -> void:
 	var size := get_viewport().get_visible_rect().size
 	var aspect := size.x / maxf(size.y, 1.0)
 	var tangent := tan(deg_to_rad(camera.fov) * 0.5)
-	var usable_height := maxf(0.40, (size.y - 180.0) / size.y)
+	var usable_height := maxf(0.40, (size.y - reserved_height) / size.y)
 	fit_distance = maxf(half_extent.x / (tangent * aspect * 0.82),
 		half_extent.y / (tangent * usable_height * 0.90)) + half_extent.z
 	fit_distance = maxf(fit_distance, radius * 1.65)
