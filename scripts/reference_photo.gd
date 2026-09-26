@@ -15,6 +15,8 @@ const MaskBuilder = preload("res://scripts/polygon_mask.gd")
 var original_image: Image
 var current_mask_path := ""
 var landmarks: VBoxContainer
+var texture_transfer: VBoxContainer
+const TextureTransfer = preload("res://scripts/body_texture_transfer.gd")
 const LandmarkPanel = preload("res://scripts/reference_landmarks.gd")
 var mask_image: Image
 var cutout_preview: TextureRect
@@ -94,6 +96,10 @@ func _ready() -> void:
 	cutout_preview.hide()
 	landmarks = LandmarkPanel.new()
 	column.add_child(landmarks)
+	texture_transfer = TextureTransfer.new()
+	texture_transfer.viewer = viewer
+	texture_transfer.landmarks = landmarks
+	column.add_child(texture_transfer)
 	picture.connect("close_requested", close_contour)
 	picture.connect("contour_changed", _contour_changed)
 	remove_button = Button.new()
@@ -175,6 +181,8 @@ func load_photo(path: String) -> bool:
 	return true
 
 func remove_photo() -> void:
+	if texture_transfer != null and texture_transfer.showing_generated:
+		texture_transfer.show_original()
 	reset_marking()
 	original_image = null
 	picture.set("original_size", Vector2i.ZERO)

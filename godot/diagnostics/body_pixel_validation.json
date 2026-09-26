@@ -1,0 +1,19 @@
+{
+  "texture_size": [
+    4096,
+    4096
+  ],
+  "changed_texels": 2733463,
+  "changed_outside_coverage": 0,
+  "fin_slot_changes": {
+    "Dorsal_Fin": 0,
+    "Caudal_Fin": 0,
+    "Anal_Fin": 0,
+    "Pectoral_Fin_Left": 0,
+    "Pectoral_Fin_Right": 0,
+    "Pelvic_Fin_Left": 0,
+    "Pelvic_Fin_Right": 0
+  },
+  "protected_files_checked": 15,
+  "protected_files_changed": []
+}

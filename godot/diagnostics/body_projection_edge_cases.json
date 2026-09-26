@@ -1,0 +1,23 @@
+{
+	"cases": [
+		{
+			"case": "left",
+			"magenta_leaks": 0,
+			"outside_changes": 0,
+			"written": 41408
+		},
+		{
+			"case": "down",
+			"magenta_leaks": 0,
+			"outside_changes": 0,
+			"written": 41233
+		},
+		{
+			"case": "small",
+			"magenta_leaks": 0,
+			"outside_changes": 0,
+			"written": 37047
+		}
+	],
+	"errors": []
+}

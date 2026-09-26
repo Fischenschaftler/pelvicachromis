@@ -1,0 +1,17 @@
+{
+	"base_texture": "res://textures/pelvicachromis_taeniatus_male_albedo.png",
+	"body_mask_path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/generated_textures/body_1790445059_13592917_body_mask.png",
+	"coverage_path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/generated_textures/body_1790445059_13592917_uv_coverage.png",
+	"errors": [],
+	"fallback_samples": 1220724,
+	"fins": "baseline only",
+	"landmarks_path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/normalized/fish_1790445054_8171892.json",
+	"max_anchor_error_px": 0.00013647876039613,
+	"metadata_path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/generated_textures/body_1790445059_13592917.json",
+	"method": "six-landmark thin-plate spline + actual rest-mesh UV triangles",
+	"normalized_path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/normalized/fish_1790445054_8171892.png",
+	"sides": "same photographed side used for both body islands",
+	"stale_result_discarded": true,
+	"texture_path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/generated_textures/body_1790445059_13592917.png",
+	"written_samples": 2733945
+}
