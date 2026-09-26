@@ -27,6 +27,12 @@ func move(point: Vector2, delta: Vector2) -> void:
 	event.button_mask = MOUSE_BUTTON_MASK_LEFT
 	root.push_input(event, true)
 func click(button: Button) -> void:
+	var ancestor: Node = button.get_parent()
+	while ancestor != null:
+		if ancestor is ScrollContainer:
+			ancestor.ensure_control_visible(button)
+		ancestor = ancestor.get_parent()
+	await settle()
 	var point := button.get_global_rect().get_center()
 	move(point, Vector2.ZERO)
 	mouse(MOUSE_BUTTON_LEFT, true, point)

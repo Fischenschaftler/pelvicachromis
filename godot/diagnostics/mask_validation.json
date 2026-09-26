@@ -1,0 +1,23 @@
+{
+	"double_click": true,
+	"errors": [],
+	"masks": [
+		{
+			"inside_pixels": 4320000,
+			"path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/masks/fish_mask_1790421948_1805081.png",
+			"size": [
+				4000,
+				3000
+			]
+		},
+		{
+			"path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/masks/fish_mask_1790421948_2477893.png",
+			"size": [
+				600,
+				1000
+			]
+		}
+	],
+	"resize_mapping": true,
+	"stale_result_discarded": true
+}
