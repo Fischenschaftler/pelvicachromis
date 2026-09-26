@@ -1,0 +1,43 @@
+{
+	"cases": [
+		{
+			"angle": -11.8945669725812,
+			"case": "large_right",
+			"direction": "head_right",
+			"height": 589.570251464844,
+			"length": 1873.9873046875
+		},
+		{
+			"angle": -168.105435475054,
+			"case": "left",
+			"direction": "head_left",
+			"height": 117.914093017578,
+			"length": 374.797454833984
+		},
+		{
+			"angle": -23.8945647451907,
+			"case": "up",
+			"direction": "head_right",
+			"height": 117.914215087891,
+			"length": 374.797515869141
+		},
+		{
+			"angle": 12.105432841506,
+			"case": "down",
+			"direction": "head_right",
+			"height": 117.914215087891,
+			"length": 374.797485351563
+		},
+		{
+			"angle": -11.8945652650339,
+			"case": "small",
+			"direction": "head_right",
+			"height": 23.5828399658203,
+			"length": 74.9594955444336
+		}
+	],
+	"errors": [],
+	"resize_mapping": true,
+	"stale_result_discarded": true,
+	"viewer_controls": true
+}

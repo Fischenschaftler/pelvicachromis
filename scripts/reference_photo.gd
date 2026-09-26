@@ -1,5 +1,5 @@
 extends Control
-## Reference image display only; no analysis and no changes to fish assets.
+## Photo, mask and landmark workflow; no changes to fish assets.
 signal photo_changed
 var current_photo_path := ""
 var original_size := Vector2i.ZERO
@@ -14,6 +14,8 @@ const PolygonCanvas = preload("res://scripts/photo_polygon.gd")
 const MaskBuilder = preload("res://scripts/polygon_mask.gd")
 var original_image: Image
 var current_mask_path := ""
+var landmarks: VBoxContainer
+const LandmarkPanel = preload("res://scripts/reference_landmarks.gd")
 var mask_image: Image
 var cutout_preview: TextureRect
 var preview_title: Label
@@ -90,6 +92,8 @@ func _ready() -> void:
 	column.add_child(cutout_preview)
 	preview_title.hide()
 	cutout_preview.hide()
+	landmarks = LandmarkPanel.new()
+	column.add_child(landmarks)
 	picture.connect("close_requested", close_contour)
 	picture.connect("contour_changed", _contour_changed)
 	remove_button = Button.new()
@@ -211,10 +215,14 @@ func _layout() -> void:
 			viewport_container.size = Vector2(available.x, height)
 			panel.position = Vector2(16, top + height + 12)
 			panel.size = Vector2(available.x, height)
+	if landmarks != null and landmarks.canvas != null:
+		landmarks.canvas.custom_minimum_size.y = clampf(panel.size.y - 75, 100, 320)
 	viewer.orbit.call_deferred("_resize")
 
 
 func reset_marking() -> void:
+	if landmarks != null:
+		landmarks.clear()
 	mask_revision += 1 # Invalidates results still being calculated for an older photo.
 	current_mask_path = ""
 	mask_image = null
@@ -287,6 +295,7 @@ func _process(_delta: float) -> void:
 	cutout_preview.texture = ImageTexture.create_from_image(result["preview"])
 	preview_title.show()
 	cutout_preview.show()
+	landmarks.setup(original_image, mask_image, current_photo_path, current_mask_path)
 	marking_status.text = "Maske gespeichert · %d × %d Pixel" % [original_size.x, original_size.y]
 
 func _exit_tree() -> void:

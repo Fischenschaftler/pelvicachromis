@@ -1,0 +1,88 @@
+{
+	"axis_angle_degrees": 12.105432841506,
+	"basis_u": [
+		0.97776335477829,
+		0.209711268544197
+	],
+	"basis_v": [
+		-0.209711268544197,
+		0.97776335477829
+	],
+	"body_height_px": 117.914215087891,
+	"body_length_px": 374.797485351563,
+	"direction": "head_right",
+	"landmarks_normalized_px": {
+		"body_lower": [
+			272.119232177734,
+			237.520172119141
+		],
+		"body_upper": [
+			407.325744628906,
+			119.605964660645
+		],
+		"eye": [
+			486.931701660156,
+			160.133880615234
+		],
+		"snout": [
+			528.298645019531,
+			185.70915222168
+		],
+		"tail_lower": [
+			152.687713623047,
+			207.765045166016
+		],
+		"tail_upper": [
+			154.314605712891,
+			163.653259277344
+		]
+	},
+	"landmarks_original_px": {
+		"body_lower": [
+			396.174743652344,
+			327.031097412109
+		],
+		"body_upper": [
+			553.102661132813,
+			240.093231201172
+		],
+		"eye": [
+			622.439270019531,
+			296.414215087891
+		],
+		"snout": [
+			657.52294921875,
+			330.095886230469
+		],
+		"tail_lower": [
+			285.638977050781,
+			272.891479492188
+		],
+		"tail_upper": [
+			296.480438232422,
+			230.101776123047
+		]
+	},
+	"mask_path": "D:\\Code\\pelvicachromis\\pelvicachromis\\.godot\\landmark_fixtures\\down_mask.png",
+	"mirrored": false,
+	"normalized_path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/normalized/fish_1790443932_19837305.png",
+	"normalized_size": [
+		550.0,
+		357.0
+	],
+	"offset_px": [
+		153.50114440918,
+		185.70915222168
+	],
+	"original_photo_path": "D:\\Code\\pelvicachromis\\pelvicachromis\\.godot\\landmark_fixtures\\down.png",
+	"original_size": [
+		800.0,
+		600.0
+	],
+	"scale": 1.0,
+	"schema_version": 1.0,
+	"tail_midpoint_px": [
+		291.059692382813,
+		251.496627807617
+	]
+}
