@@ -1,0 +1,12 @@
+{
+  "changed_by_fin": {
+    "Caudal_Fin": 693423,
+    "Dorsal_Fin": 399138,
+    "Anal_Fin": 253038
+  },
+  "changes_outside_three_fin_slots": 0,
+  "changes_outside_coverage": 0,
+  "body_unchanged": true,
+  "protected_files_checked": 15,
+  "protected_files_changed": []
+}

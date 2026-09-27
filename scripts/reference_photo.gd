@@ -16,6 +16,8 @@ var original_image: Image
 var current_mask_path := ""
 var landmarks: VBoxContainer
 var texture_transfer: VBoxContainer
+var fin_transfer: VBoxContainer
+const FinTransfer = preload("res://scripts/fin_texture_transfer.gd")
 const TextureTransfer = preload("res://scripts/body_texture_transfer.gd")
 const LandmarkPanel = preload("res://scripts/reference_landmarks.gd")
 var mask_image: Image
@@ -100,6 +102,10 @@ func _ready() -> void:
 	texture_transfer.viewer = viewer
 	texture_transfer.landmarks = landmarks
 	column.add_child(texture_transfer)
+	fin_transfer = FinTransfer.new()
+	fin_transfer.transfer = texture_transfer
+	fin_transfer.landmarks = landmarks
+	column.add_child(fin_transfer)
 	picture.connect("close_requested", close_contour)
 	picture.connect("contour_changed", _contour_changed)
 	remove_button = Button.new()
@@ -225,6 +231,8 @@ func _layout() -> void:
 			panel.size = Vector2(available.x, height)
 	if landmarks != null and landmarks.canvas != null:
 		landmarks.canvas.custom_minimum_size.y = clampf(panel.size.y - 75, 100, 320)
+	if fin_transfer != null and fin_transfer.canvas != null:
+		fin_transfer.canvas.custom_minimum_size.y = clampf(panel.size.y - 75, 100, 360)
 	viewer.orbit.call_deferred("_resize")
 
 

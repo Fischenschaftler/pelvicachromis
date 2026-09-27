@@ -19,6 +19,11 @@ var pending_path := ""
 var pending_data: Dictionary = {}
 var base_image: Image
 var showing_generated := false
+var body_texture_path := ""
+var body_landmark_path := ""
+var fin_busy := false
+var combined_fins := false
+var fin_originals: Dictionary = {}
 
 func _ready() -> void:
 	var row := HFlowContainer.new()
@@ -50,6 +55,12 @@ func prepare() -> void:
 		return
 	for surface in range(body.mesh.get_surface_count()):
 		original_materials.append({"override":body.get_surface_override_material(surface),"active":body.get_active_material(surface)})
+	for node in viewer.fish.find_children("*", "MeshInstance3D", true, false):
+		if node.name in ["Caudal_Fin", "Dorsal_Fin", "Anal_Fin"]:
+			var entries: Array = []
+			for i in range(node.mesh.get_surface_count()):
+				entries.append({"override": node.get_surface_override_material(i), "active": node.get_active_material(i)})
+			fin_originals[node] = entries
 	# Decode the existing atlas without changing its file or imported material.
 	var path := "res://textures/pelvicachromis_taeniatus_male_albedo.png"
 	base_image = Image.new()
@@ -63,7 +74,7 @@ func prepare() -> void:
 			base_image.decompress()
 
 func generate() -> void:
-	if worker != null or body == null or base_image == null or landmarks.current_landmark_path.is_empty():
+	if worker != null or fin_busy or body == null or base_image == null or landmarks.current_landmark_path.is_empty():
 		return
 	var model: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://data/body_projection.json"))
 	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(landmarks.current_landmark_path))
@@ -92,6 +103,7 @@ func show_original() -> void:
 		return
 	for i in range(original_materials.size()):
 		body.set_surface_override_material(i, original_materials[i].override)
+	apply_fins(false)
 	showing_generated = false
 	status.text = "Originalfärbung aktiv."
 
@@ -102,12 +114,13 @@ func show_generated() -> void:
 		var material: BaseMaterial3D = original_materials[i].active.duplicate()
 		material.albedo_texture = generated_texture
 		body.set_surface_override_material(i, material)
+	apply_fins(combined_fins)
 	showing_generated = true
-	status.text = "Generierte Körperfärbung aktiv · Flossen, Augen und Mund behalten ihre Originalmaterialien."
+	status.text = "Generierte Körper- und Flossenfärbung aktiv." if combined_fins else "Generierte Körperfärbung aktiv · Flossen, Augen und Mund behalten ihre Originalmaterialien."
 
 func _process(_delta: float) -> void:
 	visible = not landmarks.current_landmark_path.is_empty() or generated_texture != null or worker != null
-	transfer_button.disabled = worker != null or landmarks.current_landmark_path.is_empty() or base_image == null
+	transfer_button.disabled = worker != null or fin_busy or landmarks.current_landmark_path.is_empty() or base_image == null
 	generated_button.disabled = generated_texture == null or showing_generated
 	original_button.disabled = not showing_generated
 	if worker == null or worker.is_alive():
@@ -144,6 +157,9 @@ func _process(_delta: float) -> void:
 	if not success:
 		status.text = "Fehler beim Speichern der Projektionsdaten."
 		return
+	body_texture_path = metadata.texture_path
+	body_landmark_path = pending_path
+	combined_fins = false
 	current_generated_path = metadata.texture_path
 	current_body_mask_path = ProjectSettings.globalize_path(path + "_body_mask.png")
 	current_coverage_path = ProjectSettings.globalize_path(path + "_uv_coverage.png")
@@ -156,3 +172,22 @@ func _process(_delta: float) -> void:
 func _exit_tree() -> void:
 	if worker != null and worker.is_started():
 		worker.wait_to_finish()
+
+func apply_fins(generated: bool) -> void:
+	for node in fin_originals:
+		var entries: Array = fin_originals[node]
+		for i in range(entries.size()):
+			if generated:
+				var material: BaseMaterial3D = entries[i].active.duplicate()
+				material.albedo_texture = generated_texture
+				node.set_surface_override_material(i, material)
+			else:
+				node.set_surface_override_material(i, entries[i].override)
+
+func install_combined(image: Image, path: String, metadata_path: String) -> void:
+	image.generate_mipmaps()
+	generated_texture = ImageTexture.create_from_image(image)
+	current_generated_path = path
+	current_metadata_path = metadata_path
+	combined_fins = true
+	show_generated()
