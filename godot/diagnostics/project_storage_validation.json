@@ -1,0 +1,9 @@
+{
+	"draft_roundtrip": true,
+	"errors": [],
+	"generated_roundtrip": true,
+	"mask_roundtrip": true,
+	"original_photo_dependency": false,
+	"swim_test": true,
+	"test_root": "user://project_storage_tests/f2895c439060ec13"
+}

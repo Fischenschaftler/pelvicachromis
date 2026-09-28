@@ -2,6 +2,15 @@ extends Control
 const Editor=preload("res://scripts/photo_import/landmark_editor.gd")
 const Projector=preload("res://scripts/photo_import/texture_projection.gd")
 const Mask=preload("res://scripts/polygon_mask.gd")
+const ProjectManager=preload("res://scripts/project/project_manager.gd")
+const ProjectData=preload("res://scripts/project/project_data.gd")
+const ProjectBrowser=preload("res://scripts/project/project_browser.gd")
+var project_manager=ProjectManager.new()
+var project_id:=""
+var project_name:=""
+var transform_data: Dictionary={}
+var generation_data: Dictionary={}
+var project_browser: VBoxContainer
 var viewer: Node3D
 var panel: PanelContainer
 var scroll: ScrollContainer
@@ -30,6 +39,7 @@ func _ready() -> void:
 	scroll=ScrollContainer.new();scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;panel.add_child(scroll)
 	var column:=VBoxContainer.new();column.size_flags_horizontal=Control.SIZE_EXPAND_FILL;scroll.add_child(column)
 	var title:=Label.new();title.text="Foto importieren";title.add_theme_font_size_override("font_size",20);column.add_child(title)
+	project_browser=ProjectBrowser.new();project_browser.controller=self;project_browser.manager=project_manager;column.add_child(project_browser)
 	var row:=HFlowContainer.new();column.add_child(row)
 	button(row,"Foto auswählen",choose)
 	button(row,"Ausrichten",align_photo)
@@ -95,11 +105,13 @@ func load_photo(path: String) -> bool:
 	var image:=Image.new()
 	var error:=image.load_png_from_buffer(bytes) if png else image.load_jpg_from_buffer(bytes)
 	if error!=OK or image.is_empty():return fail("Die Bilddatei konnte nicht gelesen werden.")
-	reset();source=image;source_path=path.simplify_path()
+	reset();set_photo_image(image,path);align_photo();return true
+func set_photo_image(image: Image,path: String) -> void:
+	source=image;source_path=path.simplify_path()
 	var preview: Image=image.duplicate()
 	var factor:=minf(1,1600.0/maxi(image.get_width(),image.get_height()))
 	preview.resize(maxi(1,roundi(image.get_width()*factor)),maxi(1,roundi(image.get_height()*factor)))
-	canvas.texture=ImageTexture.create_from_image(preview);canvas.original_size=image.get_size();align_photo();return true
+	canvas.texture=ImageTexture.create_from_image(preview);canvas.original_size=image.get_size()
 func changed() -> void:
 	revision+=1;canvas.queue_redraw()
 	if source==null:return
@@ -139,7 +151,7 @@ func _process(_delta: float) -> void:
 	if pending_revision!=revision:return
 	if result.has("error"):fail(result.error);return
 	result.image.generate_mipmaps();generated=ImageTexture.create_from_image(result.image)
-	texture_path=result.path;metadata_path=result.metadata_path
+	texture_path=result.path;metadata_path=result.metadata_path;generation_data=result.metadata.duplicate(true)
 	show_generated();status.text="Textur aktiv. Gegenseite vorläufig gespiegelt; verdeckte paarige Flossen verwenden die sichtbare Seite."
 func show_original() -> void:
 	for node in originals:
@@ -153,8 +165,51 @@ func show_generated() -> void:
 			material.albedo_texture=generated;node.set_surface_override_material(i,material)
 	showing_generated=true
 func reset() -> void:
+	project_id="";project_name="";transform_data={};generation_data={}
+	side.select(0);resolution.select(0);canvas.mode="landmarks"
 	revision+=1;show_original();source=null;source_path="";texture_path="";metadata_path="";generated=null;last_error=""
 	canvas.texture=null;canvas.landmarks.clear();canvas.clear_contour();canvas.drag_index=-1;canvas.locked=false
 	status.text="Ein seitliches Foto auswählen."
 func _exit_tree() -> void:
 	if worker!=null and worker.is_started():worker.wait_to_finish()
+
+func save_project(name: String,as_new: bool=false) -> bool:
+	if worker!=null:return fail("Bitte das Ende der Texturberechnung abwarten.")
+	if source==null:return fail("Bitte zuerst ein Foto auswählen.")
+	var config: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/photo_import_projection.json"))
+	var aligned:=Projector.alignment(canvas.landmarks,config)
+	transform_data={} if aligned.has("error") else ProjectData.plain(aligned)
+	var state: Dictionary={"id":"" if as_new else project_id,"name":name,"photographed_side":"left" if side.selected==0 else "right","resolution":2048 if resolution.selected==0 else 4096,"landmark_points":ProjectData.points_to_json(canvas.landmarks),"mask_points":ProjectData.points_to_json(canvas.points),"mask_closed":canvas.closed,"transform_data":transform_data,"generation_data":generation_data.duplicate(true),"original_photo_path":source_path,"ui_state":{"mode":canvas.mode,"showing_generated":showing_generated}}
+	var image: Image=null
+	if generated!=null:
+		image=generated.get_image()
+		if image.is_compressed():image.decompress()
+		image.clear_mipmaps()
+	var result: Dictionary=project_manager.save_project(state,source,image)
+	if result.has("error"):return fail(result.error)
+	project_id=result.data.id;project_name=result.data.name
+	status.text="Projekt „%s“ gespeichert." % project_name;last_error="";return true
+func open_project(id: String) -> bool:
+	# Fully load and validate before replacing the current editor state.
+	var result: Dictionary=project_manager.load_project(id)
+	if result.has("error"):return fail(result.error)
+	var data: Dictionary=result.data
+	reset();set_photo_image(result.photo,result.photo_path)
+	project_id=id;project_name=data.name
+	side.select(0 if data.photographed_side=="left" else 1)
+	resolution.select(0 if data.resolution==2048 else 1)
+	canvas.landmarks=ProjectData.points_from_json(data.landmark_points)
+	canvas.points=ProjectData.points_from_json(data.mask_points)
+	canvas.closed=data.mask_closed;canvas.mode=data.ui_state.mode
+	canvas.marking=canvas.mode=="mask" and not canvas.closed;canvas.queue_redraw()
+	transform_data=data.transform_data.duplicate(true)
+	generation_data=data.get("generation_data",{}).duplicate(true)
+	metadata_path=project_manager.folder(id)+"/project.json"
+	if result.texture!=null:
+		result.texture.generate_mipmaps();generated=ImageTexture.create_from_image(result.texture)
+		texture_path=project_manager.folder(id)+"/"+data.generated_texture_path
+		if data.ui_state.showing_generated:show_generated()
+	status.text="Projekt „%s“ geladen." % project_name
+	if canvas.mode=="landmarks" and canvas.landmarks.size()<12:status.text+="\nNächster Punkt: "+Editor.LABELS[canvas.landmarks.size()]
+	if not result.warnings.is_empty():status.text+="\n"+"\n".join(result.warnings)
+	last_error="";return true
