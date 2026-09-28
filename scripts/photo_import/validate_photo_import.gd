@@ -13,7 +13,7 @@ func run_import() -> void:
 			arrays[String(node.name)+str(i)]=hash(node.mesh.surface_get_arrays(i))
 	check(not importer.load_photo("res://project.godot"),"Invalid format accepted")
 	var path:=ProjectSettings.globalize_path("res://blender/reference/pelvicachromis_taeniatus_male.jpg")
-	check(importer.load_photo(path),"Photo load failed")
+	check(importer.load_photo(path),"Photo load failed");importer.manual_analysis();importer.align_photo()
 	var config: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/photo_import_projection.json"))
 	var points:=PackedVector2Array()
 	for p in config.anchors:points.append(Vector2(p[0],p[1])*670+Vector2(400,400))
@@ -67,7 +67,7 @@ func run_import() -> void:
 	# Opposite photo orientation and chosen anatomical side are independent.
 	var image: Image=importer.source.duplicate();image.flip_x()
 	var flipped_path:="res://.godot/photo_import_right.png";image.save_png(flipped_path)
-	check(importer.load_photo(ProjectSettings.globalize_path(flipped_path)),"PNG load failed")
+	check(importer.load_photo(ProjectSettings.globalize_path(flipped_path)),"PNG load failed");importer.manual_analysis();importer.align_photo()
 	for i in range(points.size()):points[i].x=800-points[i].x
 	for i in range(hull.size()):hull[i].x=800-hull[i].x
 	importer.canvas.landmarks=points.duplicate();importer.canvas.points=hull.duplicate();importer.canvas.closed=true;importer.side.select(1);importer.changed()

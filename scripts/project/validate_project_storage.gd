@@ -9,7 +9,7 @@ func run_storage() -> void:
 	controller=viewer.get_node("UI/ReferencePhoto")
 	var manager=Manager.new("user://project_storage_tests/"+Crypto.new().generate_random_bytes(8).hex_encode())
 	controller.project_manager=manager;controller.project_browser.manager=manager
-	check(controller.load_photo(ProjectSettings.globalize_path("res://blender/reference/pelvicachromis_taeniatus_male.jpg")),"Photo load failed")
+	check(controller.load_photo(ProjectSettings.globalize_path("res://blender/reference/pelvicachromis_taeniatus_male.jpg")),"Photo load failed");controller.manual_analysis();controller.align_photo()
 	var photo_hash:=hash(controller.source.get_data())
 	controller.canvas.landmarks=PackedVector2Array([Vector2(700,300),Vector2(660,280)])
 	controller.canvas.points=PackedVector2Array([Vector2(60,250),Vector2(730,250)])

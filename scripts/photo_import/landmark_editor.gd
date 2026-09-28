@@ -31,6 +31,7 @@ func _draw() -> void:
 		var p:=to_display(landmarks[i])
 		draw_circle(p,5,Color.CYAN)
 		var text:=str(i+1) if drag_index!=i else "%d %s" % [i+1,LABELS[i]]
-		var pos: Vector2=Vector2(clampf(p.x+7,0,maxf(0,size.x-180)),clampf(p.y-6,14,size.y-2))
+		var text_width:=ThemeDB.fallback_font.get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,12).x
+		var pos: Vector2=Vector2(clampf(p.x+7,0,maxf(0,size.x-text_width-3)),clampf(p.y-6,14,size.y-2))
 		draw_string_outline(ThemeDB.fallback_font,pos,text,HORIZONTAL_ALIGNMENT_LEFT,-1,12,3,Color.BLACK)
 		draw_string(ThemeDB.fallback_font,pos,text,HORIZONTAL_ALIGNMENT_LEFT,-1,12,Color.WHITE)
