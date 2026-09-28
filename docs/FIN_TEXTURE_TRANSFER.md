@@ -29,15 +29,21 @@ Die Auswahl benennt die aktuelle Flosse. Gespeicherte Konturen bleiben farbig si
 
 Die gezeichneten Konturen werden in **Pixelkoordinaten der normalisierten PNG** gespeichert. Anzeige-Leerräume und Skalierung werden genauso berücksichtigt wie bei der vorhandenen Polygonfreistellung. Die Masken besitzen die volle Auflösung dieser Arbeitskopie und werden mit deren vorhandener Alpha-Maske geschnitten. Sie enthalten damit keine Hintergrundpixel außerhalb der Freistellung.
 
-Die sechs anatomischen Landmarken liefern zunächst eine ungefähre Registrierung des Modell-Flossenrandes zum Foto. Entlang der beiden Umrisse werden passende Randpunkte gesucht: Laufrichtung wird angeglichen, der zyklische Startpunkt wird durch einen Positionsvergleich bestimmt. Der Benutzer muss somit nicht an einem bestimmten Punkt oder in einer festen Richtung beginnen.
+Die Körperlängsachse aus Schnauze und Schwanzstiel definiert eine längen- und winkeltreue Startabbildung. Die frühere TPS-Extrapolation außerhalb des Körpers sowie die Kreisparametrisierung der Schwanzflosse entfallen. Basis und Außenkontur erhalten lokale, geordnet bleibende Entsprechungen auf der Fotokontur. Dadurch müssen einzelne Merkmale nicht mehr einer einzigen Umfangsskalierung folgen.
 
-Bevorzugt wird nur die Differenz zwischen registriertem Modellrand und markiertem Fotorand in die Innenfläche übertragen. Die harmonischen Gewichte verteilen diese Verschiebung weich. Das bewahrt lokale Strahlen- und Fleckenzeichnung besser als eine vollständige Neuparametrisierung. Kleine Faltungen in den **Foto-Abtastkoordinaten** werden lokal geprüft und begrenzt korrigiert; die tatsächliche Modellgeometrie bleibt unverändert.
+Eine lokale/globale **ARAP-Optimierung** verteilt die Formanpassung auf die vorhandenen Dreiecke. Sie bevorzugt lokale Rotationen bei gleicher Ausgangsskalierung und begrenzt dadurch Scherung und ungleichmäßige Flächenverteilung. Die endgültige Abbildung ist pro Dreieck affin/baryzentrisch. Eine separate Prüfung verhindert Faltungen; bei schwierigen Konturen wird begrenzt zur harmonischen Anfangslösung zurückgeblendet. Sämtliche Berechnungen betreffen ausschließlich Foto-Abtastkoordinaten, niemals Mesh, UVs oder Rig.
 
-Für Konturen, bei denen diese Abbildung nicht ohne Faltungen möglich ist, wird ein robuster Ersatz verwendet: Modell und Fotokontur werden über eine gemeinsame Scheibenkoordinate abgebildet. Das Modell nutzt positive harmonische Gewichte, die Fotokontur eine Dreieckszerlegung ohne Überlappungen. Eine radiale Randkorrektur gleicht die unterschiedlichen Randteilungen aus. Die Abbildung ist dann innerhalb der Dreiecke stückweise und berücksichtigt auch eingezogene Polygonkonturen. Es wird kein rechteckiger Ausschnitt aufgestreckt.
+Bilineares Sampling berücksichtigt nur gültige Pixel innerhalb der jeweiligen Maske und gewichtet RGB mit Alpha. Fehlt eine gültige Probe, wird eine gültige Quellkoordinate aus einem Distanzfeld verwendet. Anders als zuvor bleiben dadurch keine alten Atlaspixel in der Flossenfläche stehen. 16 Texel Randzugabe innerhalb des reservierten Slots verhindern das Einfiltern alter Atlasfarben auf den üblichen Mipmap-Stufen.
 
-Jeder Atlastexel wird über sein vorhandenes UV-Dreieck in diese Abbildung eingesetzt. Abgetastet werden ausschließlich gültige Pixel der jeweiligen Flossenmaske. Direkt am Rand kann der nächstliegende gültige Pixel innerhalb von vier Quellpixeln verwendet werden; außerhalb der Maske liegende Farben werden niemals übernommen. Die interpolierte Quelltransparenz wird mit der bisherigen Flossen-Alpha kombiniert. Die optische Durchsichtigkeit eines Flossenfotos wird dadurch nicht vollständig rekonstruiert; die vorhandenen Materialeinstellungen bleiben erhalten.
+Am freien unteren Afterflossenrand erfolgt zusätzlich eine begrenzte Hintergrundprüfung: Nur wenn die Farbe direkt innerhalb der Kontur zum tatsächlich sichtbaren Außenbereich passt und wenige Pixel weiter innen ein anhaltender Farbwechsel liegt, wird dieser schmale Streifen aus der internen Samplingmaske ausgeschlossen. Ist der Außenbereich in der normalisierten Arbeitskopie bereits transparent, wird seine Farbe über die gespeicherte inverse Normalisierung aus dem Originalfoto gelesen. Diese Außenfarbe dient ausschließlich der Entscheidung; sie wird niemals in die Textur übernommen. Fehlt das Originalfoto, entfällt dieser zusätzliche Kontext. Die Prüfung nutzt Farbunterschiede, keinen pauschalen Helligkeitsfilter. Sie verändert weder das Foto noch die gespeicherte Benutzermaske. Mehrdeutige bzw. zu breite Streifen bleiben bewusst erhalten. Echte helle oder halbtransparente Pixel werden ansonsten übernommen.
 
-Vier Texel Randzugabe im jeweils reservierten Flossen-Slot vermindern helle Filter-/Mipmap-Nähte. Sie kopieren bereits gültige Randfarben und berühren keine andere UV-Insel. Die Kopf-/Körpertextur wird vollständig aus der letzten Körperübertragung übernommen und nicht erneut berechnet.
+## Ursachen und Ergebnis der Projektionskorrektur
+
+- Die alte Kreisabbildung verteilte Flächen in der Schwanzflosse ungleichmäßig; die globale Umfangszuordnung konnte Basis und Außenrand gegeneinander verschieben. Schwarze Flecken wurden dadurch lokal vergrößert.
+- Die Extrapolation der Körper-TPS lieferte außerhalb der Körperlandmarken keine kontrollierte lokale Skalierung. Rücken- und Afterflossenzeichnung wurde sichtbar gestreckt.
+- Sampling außerhalb der Polygonmaske war bereits ausgeschlossen. Der Saum hatte weitere Quellen: Hintergrundpixel **innerhalb** der groben Markierung, nicht beschriebene Randtexel und zu knappe Atlas-Randzugabe. Die normalisierte Referenz zeigt diesen eingeschlossenen Hintergrundstreifen bereits vor der Projektion.
+
+Der Ausgangsstand ist Commit `bcb52a8`. Vorher-/Nachherbilder verwenden dieselbe Kamera, Pose und Ausschnittgröße. Die Flächenverteilungsstreuung der Schwanzflosse sank im Dreiecksvergleich von 0,646 auf 0,505. Das ist keine Garantie für identische Fleckenformen: Die globale Formanisotropie der Schwanzflosse verbessert sich nicht durchgehend (0,458 → 0,479 im flächengewichteten logarithmischen Maß). An groben Konturecken bleiben lokale Verzerrungen. Rücken- und Afterflosse sind deutlich gleichmäßiger. Diese Werte vergleichen Abtastdreiecke; die frühere nichtlineare Kreisabbildung wird dabei an deren Eckpunkten angenähert.
 
 ## Speicherorte und Zustand
 
@@ -73,3 +79,14 @@ python scripts/compose_fin_diagnostic.py
 Ausgangsstand lokal gesichert mit `dda22ed`. Keine Änderungen gepusht.
 
 Abschließender Test: keine Godot-Testfehler; keine gefalteten Projektionsdreiecke. Pixelvergleich: keine Änderungen außerhalb der drei Flossen-Slots, Körpertextur pixelgleich. Alle 15 geschützten Dateien unverändert. Geprüfte Fenstergrößen schließen 600×900 und 480×360 ein. Sichtbar bleiben vergrößerte Schwanzflecken, lokale Streckungen und ein heller Rand an der Afterflosse.
+
+## Zusätzliche Regression und Diagnose
+
+- `scripts/validate_fin_sampling.gd`: 1024 absichtlich mit falscher Außenfarbe umgebene Proben; echte helle/transparente Kanten bleiben erhalten; eingeschlossener Hintergrundstreifen wird erkannt.
+- `scripts/validate_fin_projection.gd`: liest den alten Baker aus Commit `bcb52a8` und vergleicht seine Abtastkoordinaten mit der aktuellen Version.
+- `scripts/compose_fin_refinement.py`: erzeugt `godot/diagnostics/fin_projection_diagnostic.png`, `fin_before_after.png` und `fin_distortion_metrics.json`.
+- Der vollständige Godot-Test prüft weiterhin Swim_Test, 15 Bones, identische Mesh-Arrays, geschützte Materialien, Kamera, Zoom, Reset, Texturumschaltung und schmale Fenster.
+
+Keine Änderungen gepusht. Die Projektionskorrekturen sind noch nicht committet.
+
+Die aktuelle Referenzprüfung weist 3336 kontaminierte Randpixel der Afterflosse aus der internen Samplingmaske zurück. `fin_anal_sampling_mask.png` zeigt die effektiv verwendete Maske. Das Körperatlas bleibt pixelgleich; sämtliche 15 geschützten Modell-/Blender-/Originaltexturdateien bleiben unverändert. Am Schwanz bleiben Unterschiede in Fleckenform und -position sowie lokale Streckungen nahe den polygonalen Außenkanten. Ein sicherer allgemeiner Nachweis, dass jede helle Kante Hintergrund ist, ist aus einem einzelnen Foto nicht möglich; unklare helle Bereiche bleiben erhalten.

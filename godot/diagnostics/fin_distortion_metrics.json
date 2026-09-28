@@ -1,0 +1,32 @@
+{
+  "Caudal_Fin": {
+    "before": {
+      "area_variation_coefficient": 0.6462383416726001,
+      "area_weighted_log_anisotropy": 0.4581303448731152
+    },
+    "after": {
+      "area_variation_coefficient": 0.5051480771243501,
+      "area_weighted_log_anisotropy": 0.4791252048520078
+    }
+  },
+  "Dorsal_Fin": {
+    "before": {
+      "area_variation_coefficient": 0.3831735968120108,
+      "area_weighted_log_anisotropy": 0.353164879383031
+    },
+    "after": {
+      "area_variation_coefficient": 0.012617855863691898,
+      "area_weighted_log_anisotropy": 0.013679499099309763
+    }
+  },
+  "Anal_Fin": {
+    "before": {
+      "area_variation_coefficient": 0.2541218764921781,
+      "area_weighted_log_anisotropy": 0.5622327864225525
+    },
+    "after": {
+      "area_variation_coefficient": 0.010566833013433804,
+      "area_weighted_log_anisotropy": 0.015937492058330865
+    }
+  }
+}

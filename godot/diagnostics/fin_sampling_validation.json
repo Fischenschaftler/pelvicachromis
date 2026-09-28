@@ -1,0 +1,7 @@
+{
+	"background_strip_rejected": 28,
+	"failures": [],
+	"natural_alpha_preserved": true,
+	"natural_light_edge_preserved": true,
+	"outside_mask_poison_samples": 1024
+}

@@ -1,10 +1,10 @@
 {
-	"body_texture_path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/generated_textures/body_1790576846_14319333.png",
-	"coverage_path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/generated_textures/combined_1790576886_54140112_fin_coverage.png",
+	"body_texture_path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/generated_textures/body_1790523107_14686816.png",
+	"coverage_path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/generated_textures/combined_1790523129_37208327_fin_coverage.png",
 	"errors": [],
 	"fins": {
 		"Anal_Fin": {
-			"mask_path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/fin_masks/Anal_Fin_25193677.png",
+			"mask_path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/fin_masks/Anal_Fin_25560695.png",
 			"points_normalized_px": [
 				[
 					599.286682128906,
@@ -37,7 +37,7 @@
 			]
 		},
 		"Caudal_Fin": {
-			"mask_path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/fin_masks/Caudal_Fin_21993496.png",
+			"mask_path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/fin_masks/Caudal_Fin_22361223.png",
 			"points_normalized_px": [
 				[
 					569.011291503906,
@@ -70,7 +70,7 @@
 			]
 		},
 		"Dorsal_Fin": {
-			"mask_path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/fin_masks/Dorsal_Fin_23765888.png",
+			"mask_path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/fin_masks/Dorsal_Fin_24128918.png",
 			"points_normalized_px": [
 				[
 					1527.5888671875,
@@ -115,40 +115,37 @@
 			]
 		}
 	},
-	"landmarks_path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/normalized/fish_1790576842_10173308.json",
-	"normalized_path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/normalized/fish_1790576842_10173308.png",
+	"landmarks_path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/normalized/fish_1790523103_10389873.json",
+	"normalized_path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/normalized/fish_1790523103_10389873.png",
 	"stale_result_discarded": true,
 	"stats": {
 		"Anal_Fin": {
-			"edge_pixels_rejected": 3336.0,
 			"fallback": 0.0,
 			"folded_triangles": 0.0,
-			"guide_rms_px": 0.0,
-			"mapping": "boundary constrained local similarity (ARAP)",
-			"phase": 0.0,
-			"repair_shift_px": 0.0,
+			"guide_rms_px": 193.405526268372,
+			"mapping": "harmonic displacement",
+			"phase": 0.716796875,
+			"repair_shift_px": 3.10914087295532,
 			"written": 244081.0
 		},
 		"Caudal_Fin": {
-			"edge_pixels_rejected": 0.0,
 			"fallback": 0.0,
 			"folded_triangles": 0.0,
-			"guide_rms_px": 0.0,
-			"mapping": "boundary constrained local similarity (ARAP)",
-			"phase": 0.0,
-			"repair_shift_px": 6.60786056518555,
+			"guide_rms_px": 71.4222952210573,
+			"mapping": "triangulated disk",
+			"phase": 0.87890625,
+			"repair_shift_px": 0.0,
 			"written": 682397.0
 		},
 		"Dorsal_Fin": {
-			"edge_pixels_rejected": 0.0,
 			"fallback": 0.0,
 			"folded_triangles": 0.0,
-			"guide_rms_px": 0.0,
-			"mapping": "boundary constrained local similarity (ARAP)",
-			"phase": 0.0,
+			"guide_rms_px": 50.926972844558,
+			"mapping": "harmonic displacement",
+			"phase": 0.91796875,
 			"repair_shift_px": 0.0,
 			"written": 384299.0
 		}
 	},
-	"texture_path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/generated_textures/combined_1790576886_54140112.png"
+	"texture_path": "D:/Code/pelvicachromis/pelvicachromis/.godot/test_runtime/Godot/app_userdata/Pelvicachromis Studio/generated_textures/combined_1790523129_37208327.png"
 }
