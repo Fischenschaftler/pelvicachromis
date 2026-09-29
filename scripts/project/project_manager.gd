@@ -3,7 +3,8 @@ extends RefCounted
 const Data=preload("res://scripts/project/project_data.gd")
 const Mask=preload("res://scripts/polygon_mask.gd")
 var root: String
-func _init(directory: String="user://projects") -> void:root=directory.trim_suffix("/")
+const Paths=preload("res://scripts/storage/portable_paths.gd")
+func _init(directory: String="") -> void:root=(Paths.projects_dir() if directory.is_empty() else directory).trim_suffix("/")
 func folder(id: String) -> String:return root+"/"+id
 func read_manifest(id: String) -> Dictionary:
 	if not Data.safe_id(id):return {"error":"Ungültige Projektkennung."}
@@ -72,8 +73,8 @@ func save_project(state: Dictionary, photo: Image, texture: Image=null) -> Dicti
 	if previous.has("error"):return {"error":"Das bestehende Projekt ist beschädigt. Bitte Speichern unter verwenden."}
 	var now:=Time.get_datetime_string_from_system(true)+"Z"
 	var stamp:=Crypto.new().generate_random_bytes(8).hex_encode()
-	var data: Dictionary=state.duplicate(true)
-	data.merge({"project_format_version":Data.VERSION,"id":id,"name":name,"created_at":previous.get("data",{}).get("created_at",now),"updated_at":now,"photo_path":"photo_"+stamp+".png","mask_path":"","generated_texture_path":""},true)
+	var data: Dictionary=Data.portable_metadata(state)
+	data.merge({"project_format_version":Data.VERSION,"id":id,"name":name,"created_at":previous.get("data",{}).get("created_at",state.get("created_at",now)),"updated_at":now,"photo_path":"photo_"+stamp+".png","mask_path":"","generated_texture_path":""},true)
 	if data.mask_closed:data.mask_path="mask_"+stamp+".png"
 	if texture!=null:data.generated_texture_path="generated_albedo_"+stamp+".png"
 	var error:=Data.validation_error(data)

@@ -1,0 +1,122 @@
+# Portable Windows-Version
+
+Pelvicachromis Studio speichert reguläre Arbeitsdaten ausschließlich lokal im
+Programmordner. Keine Installation, Registry-Einträge oder Dienste. Keine
+Umleitung nach AppData bei fehlenden Schreibrechten.
+
+## Ordnerstruktur
+
+```text
+PelvicachromisStudio/
+  PelvicachromisStudio.exe   # eingebettetes PCK
+  projects/                # Projektordner mit project.json und PNG-Kopien
+  data/                    # Arbeitsmasken, Normalisierung, erzeugte Atlanten
+  config/                  # reserviert für spätere Einstellungen
+  logs/studio.log          # Startprotokoll, Rotation bei 1 MiB
+```
+
+Die zentrale Komponente `scripts/storage/portable_paths.gd` unterscheidet mit
+`OS.has_feature("editor")` die Editor-Binary (auch CLI-Testläufe) vom Export.
+Editor: `<Repository>/dev_portable_data/`. Export: Elternordner von
+`OS.get_executable_path()`. Das aktuelle Arbeitsverzeichnis ist unerheblich.
+Der Autoload `PortableStorage` erstellt und prüft alle vier Verzeichnisse durch
+Schreiben, Flush und Löschen einer eindeutigen Testdatei. Bei einem Fehler wird
+die Bedienung gesperrt und ein verständlicher Umzugshinweis angezeigt.
+Godots standardmäßiges Dateilogging nach user:// ist deaktiviert. Das eigene
+Startprotokoll liegt unter logs/. Engine-interne Cache-/Treiberdateien sind
+keine Projekt- oder Arbeitsdaten und werden damit nicht kontrolliert.
+
+## Projekte, Umzug und Backup
+
+Projektformat 1 bleibt erhalten. Fotokopie, Maske und generierte Textur werden
+über relative Dateinamen im jeweiligen Projektordner referenziert. Absolute
+Quellfoto- und alte Arbeitsdateipfade werden beim Speichern aus den Metadaten
+entfernt. Bereits gespeicherte Projekte bleiben lesbar. Originalfotos werden
+nicht verändert und müssen zum Wiederöffnen nicht vorhanden sein.
+
+Anwendung schließen und den **gesamten Programmordner** kopieren, einschließlich
+projects/, data/, config/ und logs/. So funktionieren Umzug und Backup auf
+USB-Stick oder einen anderen Rechner. Der neue Ordner muss beschreibbar sein;
+Program Files ist ohne passende Rechte ungeeignet. Projekte löschen verschiebt
+wie bisher nach projects/.trash; dieser Papierkorb gehört zum Backup.
+
+## Alte Entwicklungsprojekte importieren
+
+Explizit, nur mit der Editor-Binary:
+
+```powershell
+& $Godot --headless --path . --script res://scripts/storage/migrate_legacy_projects.gd
+```
+
+Liest `user://projects/` des aktuellen Benutzerkontos und schreibt vollständige
+Projekte nach dev_portable_data/projects/. Vorhandene IDs werden übersprungen;
+unvollständige Projekte werden gemeldet. Originaldaten bleiben unangetastet.
+Es findet keine automatische Migration beim Start statt.
+
+## Windows-Ordnerexport vorbereiten
+
+```powershell
+./scripts/storage/export_windows.ps1 -Godot 'Pfad/zur/Godot_console.exe' -PrepareOnly
+./scripts/storage/export_windows.ps1 -Godot 'Pfad/zur/Godot_console.exe'
+```
+
+Preset: `Windows Portable`, Windows x86_64, eingebettetes PCK. Ziel:
+`dist/PelvicachromisStudio/`. Das Skript erstellt Ordner und README ohne Daten
+zu löschen. Für den eigentlichen EXE-Export werden zur Godot-Version passende
+Exportvorlagen benötigt. Es wird kein Installer erstellt.
+
+Das kleine Editor-Exportplugin nimmt zusätzlich die unveränderte GLB-Rohdatei
+für die bestehende Hashprüfung und die originale Albedo-PNG für CPU-Texturierung
+ins PCK auf. Die importierten Ressourcen bleiben ebenfalls erhalten. JSON-
+Projektionsdaten werden ausdrücklich eingeschlossen; Entwicklungsfotos,
+Blender-Dateien, Diagnosen und Benutzerdaten werden nicht ausgeliefert.
+
+Grundlagen: [Godot Windows-Export](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_windows.html)
+und [EditorExportPlugin](https://docs.godotengine.org/en/stable/classes/class_editorexportplugin.html).
+
+## Reproduzierbare Tests
+
+Mit grafischer Godot-Binary im Repository starten:
+
+```powershell
+& $Godot --path . --script res://scripts/storage/validate_portable_storage.gd
+& $Godot --path . --script res://scripts/project/validate_project_storage.gd
+& $Godot --path . --script res://scripts/photo_import/validate_photo_import.gd
+& $Godot --path . --script res://scripts/photo_import/validate_atlas_replacement.gd
+```
+
+Der Portabilitätstest umfasst den automatischen Analyse-/Korrektur-/Generierungs-
+Workflow, speichert ein vollständiges Projekt, kopiert den gesamten lokalen
+portablen Ordner unter .godot/portable_relocation/ und lädt das Projekt dort.
+Er vergleicht Foto-, Masken-, Texturpixel und Landmarken, prüft relative Metadaten,
+kein erneutes Analysieren, Materialumschaltung, Swim_Test, Kamera, Zoom, Speichern
+und Löschen am neuen Ort. Zusätzlich werden Editor-/EXE-Pfadlogik und ein nicht
+beschreibbarer Zielpfad geprüft. Berichte stehen in godot/diagnostics/.
+
+Der Atlas-Test verwendet absichtlich ein historisches user://-Testprojekt als
+Legacy-Fixture. Dies ist kein regulärer Speicherpfad der Anwendung.
+
+Die Datenportabilität auf demselben Windows-Rechner ersetzt keinen Test einer
+fertigen EXE auf einem zweiten Rechner. Der bestehende Forward+-Renderer
+benötigt weiterhin passende Grafiktreiber und kompatible Hardware.
+
+## Ergebnis dieser Umstellung
+
+Bestanden: Portabilität inklusive vollständigem Fotoanalyse-/Texturworkflow,
+Fotoimport, Projektverwaltung, Atlas-Regression und Start des exportierten PCK
+mit GLB-Hashprüfung, Albedo-Laden, Skeleton und laufender Animation.
+Die Entwicklungsmigration wurde mit einer isolierten vollständigen Projektkopie
+geprüft: gleiche Foto-/Masken-/Texturdateien und Erstellungszeit; erneuter Import
+überspringt das bereits vorhandene Projekt.
+
+Für den Pakettest (ohne Exportvorlagen):
+
+```powershell
+& $Godot --headless --path . --export-pack 'Windows Portable' dist/PelvicachromisStudio/validation.pck
+& $Godot --headless --main-pack "$PWD/dist/PelvicachromisStudio/validation.pck" --script "$PWD/scripts/storage/validate_export_pack.gd"
+```
+
+Die passende Windows-Exportvorlage ist auf dem Entwicklungsrechner derzeit nicht
+installiert. Deshalb wurde noch keine eigenständige EXE erstellt oder auf einem
+zweiten Windows-PC getestet. `validation.pck` ist ausschließlich ein Testartefakt
+und gehört nicht zur endgültigen Auslieferung mit eingebettetem PCK.

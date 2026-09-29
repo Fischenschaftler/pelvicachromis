@@ -79,7 +79,7 @@ static func generate(source: Image, points: PackedVector2Array, contour: PackedV
 		masks[name]=fm
 	var result:=Fin.bake(body.image,norm.image,data,model,fins,polygons,masks)
 	if result.has("error"):return result
-	var root:="user://photo_import/%d_%d" % [Time.get_unix_time_from_system(),Time.get_ticks_usec()]
+	var root:=preload("res://scripts/storage/portable_paths.gd").data_dir()+"/photo_import/%d_%d" % [Time.get_unix_time_from_system(),Time.get_ticks_usec()]
 	if DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(root))!=OK:return {"error":"Benutzerordner nicht beschreibbar."}
 	var photo_path:=root+"/normalized.png";var texture_path:=root+"/albedo.png"
 	if norm.image.save_png(photo_path)!=OK or mask.save_png(root+"/mask.png")!=OK or result.image.save_png(texture_path)!=OK:return {"error":"Bilder konnten nicht gespeichert werden."}
@@ -87,6 +87,8 @@ static func generate(source: Image, points: PackedVector2Array, contour: PackedV
 	for i in range(12):metadata.landmarks_original_px[KEYS[i]]=[points[i].x,points[i].y]
 	metadata["contour_original_px"]=[]
 	for p in contour:metadata.contour_original_px.append([p.x,p.y])
+	metadata=preload("res://scripts/project/project_data.gd").portable_metadata(metadata)
+	metadata["photo_path"]="normalized.png";metadata["texture_path"]="albedo.png"
 	var file:=FileAccess.open(root+"/project.json",FileAccess.WRITE)
 	if file==null:return {"error":"Projektinformationen nicht schreibbar."}
 	file.store_string(JSON.stringify(metadata,"\t"));file.close()

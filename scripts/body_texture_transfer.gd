@@ -133,7 +133,7 @@ func _process(_delta: float) -> void:
 	if result.has("error"):
 		status.text = result.error
 		return
-	var folder := "user://generated_textures"
+	var folder := preload("res://scripts/storage/portable_paths.gd").data_dir()+"/generated_textures"
 	if DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(folder)) != OK:
 		status.text = "Der Ordner für generierte Texturen konnte nicht angelegt werden."
 		return

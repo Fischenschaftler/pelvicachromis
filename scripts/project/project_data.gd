@@ -19,6 +19,19 @@ static func plain(value: Variant) -> Variant:
 		for item in value:result.append(plain(item))
 		return result
 	return value
+# Legacy absolute source paths are provenance only, never asset dependencies.
+static func portable_metadata(value: Variant) -> Variant:
+	if value is Dictionary:
+		var result: Dictionary={}
+		for key in value:
+			if key in ["original_photo_path","photo_path","texture_path","metadata_path"]:continue
+			result[key]=portable_metadata(value[key])
+		return result
+	if value is Array:
+		var result: Array=[]
+		for item in value:result.append(portable_metadata(item))
+		return result
+	return value
 static func safe_id(value: Variant) -> bool:
 	if not value is String or value.length()!=32:return false
 	for c in value:

@@ -15,6 +15,7 @@ var entries: Array=[]
 var save_as:=false
 var delete_id:=""
 func _ready() -> void:
+	var storage:=Label.new();storage.text="Portable Projekte · Backup durch Kopieren des Programmordners";storage.tooltip_text=manager.root;storage.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;add_child(storage)
 	var row:=HFlowContainer.new();add_child(row)
 	save_button=make_button(row,"Projekt speichern",func(): request_save(false))
 	save_as_button=make_button(row,"Speichern unter",func(): request_save(true))

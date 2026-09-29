@@ -1,0 +1,48 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Started Projektinitialisierung (5 steps)[39m[0m
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Lese Dateistrucktur …[39m[0m
+[  16% ] [90m[1mfirst_scan_filesystem[22m | Globale Klassennamen laden …[39m[0m
+[  33% ] [90m[1mfirst_scan_filesystem[22m | Verifiziere GDExtensions…[39m[0m
+[  50% ] [90m[1mfirst_scan_filesystem[22m | Autoload-Skripte erzeugen …[39m[0m
+[  66% ] [90m[1mfirst_scan_filesystem[22m | Plugins initialisieren…[39m[0m
+[  83% ] [90m[1mfirst_scan_filesystem[22m | Dateiscan starten …[39m[0m
+[92m[ DONE ][39m [1mfirst_scan_filesystem[22m
+[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | Started Globale Klassen registrieren … (3 steps)[39m[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  25% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  50% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[92m[ DONE ][39m [1mupdate_scripts_classes[22m
+[0m
+[   0% ] [90m[1msavepack[22m | Started Packe (102 steps)[39m[0m
+[   1% ] [90m[1msavepack[22m | Speichere Datei: res://models/pelvicachromis_taeniatus_male.glb[39m[0m
+[   1% ] [90m[1msavepack[22m | Speichere Datei: res://textures/pelvicachromis_taeniatus_male_albedo.png[39m[0m
+[   1% ] [90m[1msavepack[22m | Speichere Datei: res://.godot/exported/133200997/export-ecd705a682037706430e8e03dd9bdb50-PhotoImport.scn[39m[0m
+[   8% ] [90m[1msavepack[22m | Speichere Datei: res://.godot/exported/133200997/export-4a24720ee5e787dbe30abc634fa3679d-Main.scn[39m[0m
+[  16% ] [90m[1msavepack[22m | Speichere Datei: res://scripts/orbit_camera.gdc[39m[0m
+[  24% ] [90m[1msavepack[22m | Speichere Datei: res://scripts/fish_viewer.gdc[39m[0m
+[  31% ] [90m[1msavepack[22m | Speichere Datei: res://.godot/imported/pelvicachromis_taeniatus_male.glb-4b577b1108bc8acabcaab5c0728dc744.scn[39m[0m
+[  31% ] [90m[1msavepack[22m | Speichere Datei: res://models/pelvicachromis_taeniatus_male.glb.import[39m[0m
+[  38% ] [90m[1msavepack[22m | Speichere Datei: res://.godot/imported/pelvicachromis_taeniatus_male_pelvicachromis_taeniatus_male_albedo.png-378aee7f7cf7ae9d4b8a9e3b3db89bfe.s3tc.ctex[39m[0m
+[  38% ] [90m[1msavepack[22m | Speichere Datei: res://models/pelvicachromis_taeniatus_male_pelvicachromis_taeniatus_male_albedo.png.import[39m[0m
+[  46% ] [90m[1msavepack[22m | Speichere Datei: res://scripts/reference_photo.gdc[39m[0m
+[  53% ] [90m[1msavepack[22m | Speichere Datei: res://scripts/photo_import/photo_import_controller.gdc[39m[0m
+[  61% ] [90m[1msavepack[22m | Speichere Datei: res://scripts/storage/portable_bootstrap.gdc[39m[0m
+[  68% ] [90m[1msavepack[22m | Speichere Datei: res://data/anatomical_landmarks_male.json[39m[0m
+[  75% ] [90m[1msavepack[22m | Speichere Datei: res://data/body_projection.json[39m[0m
+[  83% ] [90m[1msavepack[22m | Speichere Datei: res://data/fin_projection.json[39m[0m
+[  91% ] [90m[1msavepack[22m | Speichere Datei: res://data/photo_import_projection.json[39m[0m
+[  91% ] [90m[1msavepack[22m | Speichere Datei: res://scenes/PhotoImport.tscn.remap[39m[0m
+[  91% ] [90m[1msavepack[22m | Speichere Datei: res://scenes/Main.tscn.remap[39m[0m
+[  91% ] [90m[1msavepack[22m | Speichere Datei: res://scripts/orbit_camera.gd.remap[39m[0m
+[  91% ] [90m[1msavepack[22m | Speichere Datei: res://scripts/fish_viewer.gd.remap[39m[0m
+[  91% ] [90m[1msavepack[22m | Speichere Datei: res://scripts/reference_photo.gd.remap[39m[0m
+[  91% ] [90m[1msavepack[22m | Speichere Datei: res://scripts/photo_import/photo_import_controller.gd.remap[39m[0m
+[  91% ] [90m[1msavepack[22m | Speichere Datei: res://scripts/storage/portable_bootstrap.gd.remap[39m[0m
+[  91% ] [90m[1msavepack[22m | Speichere Datei: res://.godot/global_script_class_cache.cfg[39m[0m
+[  91% ] [90m[1msavepack[22m | Speichere Datei: res://icon.svg[39m[0m
+[  91% ] [90m[1msavepack[22m | Speichere Datei: res://.godot/uid_cache.bin[39m[0m
+[  91% ] [90m[1msavepack[22m | Speichere Datei: res://project.binary[39m[0m
+[92m[ DONE ][39m [1msavepack[22m
+[0m

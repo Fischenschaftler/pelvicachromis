@@ -20,7 +20,7 @@ func run_analysis() -> void:
 	viewer=load("res://scenes/PhotoImport.tscn").instantiate();root.add_child(viewer);root.size=Vector2i(1400,1050)
 	await create_timer(.5).timeout
 	importer=viewer.get_node("UI/ReferencePhoto")
-	importer.project_manager.root="user://auto_analysis_tests/"+str(Time.get_ticks_usec())
+	importer.project_manager.root=preload("res://scripts/storage/portable_paths.gd").projects_dir()+"/auto_analysis_tests/"+str(Time.get_ticks_usec())
 	var path:=ProjectSettings.globalize_path("res://blender/reference/pelvicachromis_taeniatus_male.jpg")
 	check(importer.load_photo(path),"Photo failed")
 	await wait_analysis()
@@ -101,7 +101,7 @@ func run_analysis() -> void:
 	var small: Image=source.duplicate();small.resize(200,200);var tiny:=Analyzer.analyze(small);record("small",tiny)
 	check(tiny.get("suggested_landmarks",[]).size()==12,"Small photo analysis")
 	var blank:=Image.create(320,240,false,Image.FORMAT_RGB8);blank.fill(Color(.3,.3,.3));check(Analyzer.analyze(blank).has("error"),"Blank detection did not fail")
-	var blank_path:="user://blank_analysis.png";blank.save_png(blank_path)
+	var blank_path:=preload("res://scripts/storage/portable_paths.gd").data_dir()+"/blank_analysis.png";blank.save_png(blank_path)
 	check(importer.load_photo(ProjectSettings.globalize_path(blank_path)),"Blank photo load")
 	await wait_analysis();check(importer.canvas.mode=="mask" and importer.canvas.landmarks.is_empty(),"Manual fallback")
 	check(importer.load_photo(path),"Reload");await wait_analysis();check(importer.canvas.landmarks.size()==12,"Reset/reload analysis")

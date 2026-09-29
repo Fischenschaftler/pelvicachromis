@@ -107,7 +107,7 @@ func close_contour() -> void:
 			if photo.get_pixel(x,y).a<=.001:mask.set_pixel(x,y,Color.BLACK)
 			elif mask.get_pixel(x,y).r>.5:count+=1
 	if count<16:status.text="Die Kontur enthält zu wenig freigestellte Flossenfläche.";return
-	var folder:="user://fin_masks"
+	var folder:=preload("res://scripts/storage/portable_paths.gd").data_dir()+"/fin_masks"
 	if DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(folder))!=OK:status.text="Maskenordner nicht beschreibbar.";return
 	var name: String=NAMES[selector.selected]
 	var path:="%s/%s_%d.png" % [folder,name,Time.get_ticks_usec()]
@@ -151,7 +151,7 @@ func _process(_delta: float) -> void:
 	var result: Dictionary=worker.wait_to_finish();worker=null;transfer.fin_busy=false
 	if pending_revision!=revision:return
 	if result.has("error"):status.text=result.error;return
-	var folder:="user://generated_textures"
+	var folder:=preload("res://scripts/storage/portable_paths.gd").data_dir()+"/generated_textures"
 	var path:="%s/combined_%d_%d" % [folder,Time.get_unix_time_from_system(),Time.get_ticks_usec()]
 	if result.image.save_png(path+".png")!=OK or result.coverage.save_png(path+"_fin_coverage.png")!=OK:status.text="Gesamttextur konnte nicht gespeichert werden.";return
 	var records: Dictionary={}

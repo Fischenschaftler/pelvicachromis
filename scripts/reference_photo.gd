@@ -297,7 +297,7 @@ func _process(_delta: float) -> void:
 	mark_button.disabled = false
 	if result["revision"] != mask_revision:
 		return
-	var directory := "user://masks"
+	var directory := preload("res://scripts/storage/portable_paths.gd").data_dir()+"/masks"
 	if DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(directory)) != OK:
 		marking_status.text = "Der Maskenordner konnte nicht angelegt werden."
 		return

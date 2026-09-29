@@ -7,7 +7,7 @@ func run_storage() -> void:
 	viewer=load("res://scenes/PhotoImport.tscn").instantiate();root.add_child(viewer);root.size=Vector2i(1400,1000)
 	await create_timer(.4).timeout
 	controller=viewer.get_node("UI/ReferencePhoto")
-	var manager=Manager.new("user://project_storage_tests/"+Crypto.new().generate_random_bytes(8).hex_encode())
+	var manager=Manager.new(preload("res://scripts/storage/portable_paths.gd").data_dir()+"/project_storage_tests/"+Crypto.new().generate_random_bytes(8).hex_encode())
 	controller.project_manager=manager;controller.project_browser.manager=manager
 	check(controller.load_photo(ProjectSettings.globalize_path("res://blender/reference/pelvicachromis_taeniatus_male.jpg")),"Photo load failed");controller.manual_analysis();controller.align_photo()
 	var photo_hash:=hash(controller.source.get_data())
