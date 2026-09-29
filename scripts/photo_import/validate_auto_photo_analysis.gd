@@ -13,6 +13,8 @@ func record(name: String,result: Dictionary) -> void:
 	var data:=result.duplicate(true)
 	if data.has("fish_contour"):data.fish_contour=Data.points_to_json(data.fish_contour)
 	if data.has("suggested_landmarks"):data.suggested_landmarks=Data.points_to_json(data.suggested_landmarks)
+	for key in ["template_landmarks","pectoral_region"]:
+		if data.has(key):data[key]=Data.points_to_json(data[key])
 	reports[name]=Data.plain(data)
 func run_analysis() -> void:
 	viewer=load("res://scenes/PhotoImport.tscn").instantiate();root.add_child(viewer);root.size=Vector2i(1400,1050)
@@ -43,9 +45,14 @@ func run_analysis() -> void:
 		move_event.position=click.position+Vector2(2,1);importer.canvas._gui_input(move_event);click.pressed=false;importer.canvas._gui_input(click)
 		var corrected: Vector2=importer.canvas.landmarks[i]
 		check(corrected!=original_points[i],"Drag failed for landmark "+str(i+1))
+		check(importer.canvas.landmark_confidence[i].level=="MANUAL","Confidence not cleared after drag")
 		importer.align_photo();check(importer.canvas.landmarks[i]==corrected,"Align discarded correction "+str(i+1))
 		# Restore boundary points after testing; retain the safe eye correction.
 		if i!=1:importer.canvas.landmarks[i]=original_points[i]
+	var last_point: Vector2=importer.canvas.landmarks[-1]
+	importer.undo();check(importer.canvas.landmark_confidence.size()==11,"Undo left stale confidence")
+	click.pressed=true;click.position=importer.canvas.to_display(last_point);importer.canvas._gui_input(click);click.pressed=false;importer.canvas._gui_input(click)
+	check(importer.canvas.landmarks.size()==12 and importer.canvas.landmark_confidence[-1].level=="MANUAL","Manual replacement confidence")
 	# Mask remains editable after recognition.
 	importer.mark();click.position=importer.canvas.to_display(importer.canvas.points[0]);click.pressed=true;importer.canvas._gui_input(click)
 	move_event.position=click.position+Vector2(.5,0);importer.canvas._gui_input(move_event);click.pressed=false;importer.canvas._gui_input(click)
@@ -55,6 +62,7 @@ func run_analysis() -> void:
 	var count: int=importer.analysis_count
 	importer.reset();check(importer.open_project(id),"Open failed")
 	check(importer.analysis_count==count and importer.analysis_worker==null,"Saved project reanalysed")
+	check(importer.canvas.landmark_confidence.is_empty(),"Old confidence leaked into saved project")
 	check(importer.canvas.landmarks==saved_points and importer.canvas.points==saved_mask,"Saved corrections lost")
 	# Reversed direction is explicitly editable without modifying photograph/contour.
 	importer.correct_direction(1);check(importer.analysis_result.head_direction=="left","Manual direction failed")

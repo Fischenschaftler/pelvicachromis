@@ -144,7 +144,9 @@ func close_mask() -> void:
 	if not error.is_empty():fail(error);return
 	canvas.closed=true;canvas.marking=false;changed();status.text="Maske geschlossen. Punkte bleiben verschiebbar. Textur kann erzeugt werden."
 func undo() -> void:
-	if canvas.mode=="landmarks" and not canvas.landmarks.is_empty():canvas.landmarks.remove_at(canvas.landmarks.size()-1)
+	if canvas.mode=="landmarks" and not canvas.landmarks.is_empty():
+		canvas.landmarks.remove_at(canvas.landmarks.size()-1)
+		if canvas.landmark_confidence.size()>canvas.landmarks.size():canvas.landmark_confidence.resize(canvas.landmarks.size())
 	elif canvas.mode=="mask" and not canvas.points.is_empty():canvas.points.remove_at(canvas.points.size()-1);canvas.closed=false;canvas.marking=true
 	changed()
 func generate() -> void:
@@ -189,7 +191,7 @@ func reset() -> void:
 	project_id="";project_name="";transform_data={};generation_data={}
 	side.select(0);resolution.select(0);canvas.mode="landmarks"
 	revision+=1;show_original();source=null;source_path="";texture_path="";metadata_path="";generated=null;last_error=""
-	canvas.texture=null;canvas.landmarks.clear();canvas.clear_contour();canvas.drag_index=-1;canvas.locked=false
+	canvas.texture=null;canvas.landmarks.clear();canvas.landmark_confidence.clear();canvas.clear_contour();canvas.drag_index=-1;canvas.locked=false
 	status.text="Ein seitliches Foto auswählen."
 func _exit_tree() -> void:
 	if analysis_worker!=null and analysis_worker.is_started():analysis_worker.wait_to_finish()
@@ -257,13 +259,13 @@ func poll_analysis() -> void:
 func apply_suggestion(result: Dictionary) -> void:
 	analysis_result=result
 	canvas.points=result.fish_contour.duplicate();canvas.closed=true;canvas.marking=false
-	canvas.landmarks=result.suggested_landmarks.duplicate();canvas.mode="landmarks"
+	canvas.landmarks=result.suggested_landmarks.duplicate();canvas.landmark_confidence=result.get("landmark_confidence",[]).duplicate(true);canvas.mode="landmarks"
 	orientation.select(0 if result.head_direction=="right" else 1)
 	changed()
-	analysis_status.text="Kontur automatisch vorgeschlagen. Alle Punkte und Flossenansätze bitte prüfen. Auge: "+result.confidence.eye+"."
+	analysis_status.text="Anatomischer Vorschlag. Punkte mit Ring besonders prüfen. Auge: "+result.confidence.eye+"."
 func manual_analysis() -> void:
 	# Cancels adoption of any pending result, without waiting for the worker.
-	analysis_revision=-1;analysis_result={};canvas.landmarks.clear();canvas.clear_contour();mark()
+	analysis_revision=-1;analysis_result={};canvas.landmarks.clear();canvas.landmark_confidence.clear();canvas.clear_contour();mark()
 	analysis_status.text="Manuelle Markierung aktiv. Danach mit Ausrichten die zwölf Punkte setzen."
 func correct_direction(index: int) -> void:
 	if source==null:return

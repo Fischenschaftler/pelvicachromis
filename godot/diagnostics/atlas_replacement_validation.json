@@ -89,9 +89,9 @@
 		"body": {
 			"atlas_fill": {
 				"left": {
-					"extended_pixels": 33749,
+					"extended_pixels": 34046,
 					"fallback": "nearest generated neighbour",
-					"seed_pixels": 21742
+					"seed_pixels": 21445
 				},
 				"mouth_cap": {
 					"extended_pixels": 1974,
@@ -99,9 +99,9 @@
 					"seed_pixels": 0
 				},
 				"right": {
-					"extended_pixels": 33756,
+					"extended_pixels": 34049,
 					"fallback": "nearest generated neighbour",
-					"seed_pixels": 21735
+					"seed_pixels": 21442
 				},
 				"tail_cap": {
 					"extended_pixels": 1974,
@@ -109,12 +109,12 @@
 					"seed_pixels": 0
 				}
 			},
-			"fallback_samples": 18340,
+			"fallback_samples": 18930,
 			"fins": "baseline only",
-			"max_anchor_error_px": 0.0001220703125,
+			"max_anchor_error_px": 0.000110032691736706,
 			"method": "landmark thin-plate spline + actual rest-mesh UV triangles",
 			"sides": "same photographed side used for both body islands",
-			"written_samples": 43477
+			"written_samples": 42887
 		},
 		"body_alpha_holes": 0,
 		"fins": {
@@ -228,11 +228,11 @@
 		"tested_pixels": 188995
 	},
 	"errors": [],
-	"generated_texture": "user://photo_import/1790689664_23808545/albedo.png",
+	"generated_texture": "user://photo_import/1790690583_20116635/albedo.png",
 	"legacy": {
 		"analysis_count_unchanged": true,
 		"regenerated": true,
-		"saved_copy": "user://auto_analysis_tests/3078267/43a3d0a90c39c3e89608c9b9cda32c51",
+		"saved_copy": "user://auto_analysis_tests/3078267/b7f5bfc79b55b0508aa2078ed622bdca",
 		"source": "user://auto_analysis_tests/3078267/01e76b0485ba574ca7afc5de48640785/project.json",
 		"texture_hash_preserved": true
 	},

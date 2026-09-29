@@ -1,141 +1,163 @@
-# Automatische Fotoanalyse
+# Automatische Fotoanalyse mit anatomischem Template
 
-## Bedienung
+## Bedienung und Schutz bestehender Daten
 
-Nach **Foto auswählen** wird das Foto lokal analysiert. Die Kontur und zwölf
-Punkte sind Vorschläge: Vor der Texturerzeugung insbesondere Flossenansätze und
-transparente Ränder prüfen. Punkte und Kontur bleiben mit denselben Werkzeugen
-verschiebbar. **Ausrichten** erhält die gesetzten bzw. korrigierten Punkte.
+Nach **Foto auswählen** läuft ausschließlich lokal die Analyse im bestehenden
+`photo_analyzer.gd`. Sie schlägt dieselbe Fischkontur und dieselben zwölf Landmarken
+wie bisher vor. Punkte mit einem kleinen orangefarbenen Ring sind besonders zu
+prüfen. Alle Punkte und Konturpunkte bleiben verschiebbar. Eine manuelle Korrektur
+entfernt den Prüfring; **Ausrichten** erhält sämtliche Korrekturen.
 
-**Kopf rechts / Kopf links** korrigiert die angenommene Blickrichtung und erzeugt
-die zwölf Punktvorschläge neu, mit der aktuell bearbeiteten Kontur. Dies ändert
-nicht die Auswahl „Linke/Rechte Fischseite“. **Manuell beginnen** verwirft die
-Vorschläge und aktiviert die manuelle Kontur. Anschließend setzt **Ausrichten**
-den Editor in den Landmark-Modus.
+**Kopf rechts / Kopf links** erzeugt ausdrücklich neue Punktvorschläge mit der
+gewählten Orientierung, erhält aber die bearbeitete Maske. Die Auswahl der
+fotografierten linken/rechten Körperseite ist davon unabhängig.
+**Manuell beginnen** verwirft die Automatik und aktiviert die manuelle Kontur.
 
-## Lokale Methode
+Projektformat bleibt Version 1. Gespeicherte Punkte und Masken haben Vorrang und
+werden beim Öffnen nicht neu analysiert. Konfidenzen sind vorläufige Hinweise im
+aktuellen Editor, keine neuen Pflichtfelder im Projektformat. Nach Projektöffnung
+werden keine alten Prüfringe eingeblendet. Neue Fotoauswahl startet neu. Der
+Revisionsschutz verwirft verspätete Worker-Ergebnisse nach Eingabe/Reset/Projektwechsel.
 
-`scripts/photo_import/photo_analyzer.gd` arbeitet ausschließlich mit Godot-
-Bilddaten, BitMap und Geometry2D. Keine Modelle, Bibliotheken oder Dienste werden
-nachgeladen. Der separate Analyse-Thread berührt keine SceneTree-Objekte.
+Mesh, PhotoUV/UV-Daten, Blender, GLB, Rig, Skeleton, 15 Bones, Gewichte und
+Swim_Test bleiben unverändert. Textur-/Atlas-Berechnung bleibt unverändert;
+sie erhält wie bisher Originalpixelkoordinaten und ein Polygon.
 
-1. Analysebild auf höchstens 360 Pixel Kantenlänge verkleinern.
-2. Pro Bildzeile Farben der linken/rechten Randstreifen mitteln. Vordergrund
-   anhand der RGB-Distanz zu beiden Randfarben und Helligkeit/Sättigung auswählen.
-   Dadurch sind ein dunkler Aquariumhintergrund und heller Bodengrund möglich.
-3. Kleine Lücken morphologisch schließen (2 Analysepixel). Zusammenhängende
-   Außenkonturen extrahieren. Fläche, horizontale Ausdehnung, Seitenverhältnis,
-   Abstand zum Bildrand und Bildmitte dienen zur Auswahl des wahrscheinlichsten
-   einzelnen Fisches. Zu kleine/große oder angeschnittene Bereiche verwerfen.
-4. Kontur zurück in Originalpixel transformieren, mit Douglas-Peucker reduzieren
-   und auf eine gültige, einfache Polygonfläche prüfen. Maximal 512 Punkte.
-5. Kopfseite zunächst aus der vertikalen Fülle nahe den beiden Enden bestimmen:
-   Das schmalere Ende ist der Kopf-Kandidat, das höhere der Schwanzfächer.
-6. Im entsprechenden äußeren Körperviertel nach einem dunklen Zentrum mit
-   hellerem, möglichst geschlossenem Ring suchen. Der stärkste Kandidat über
-   der Kontrastschwelle ist ein Augen-Vorschlag. Andernfalls Auge geometrisch
-   hinter/oberhalb der Schnauze schätzen.
-7. Vertikale Konturschnitte, Körperlänge, lokale Extrema und der schmale
-   Schwanzstiel-Kandidat ergeben die zwölf Landmarken. Bei getrennten Flossen
-   wählt die Schwanzstielsuche den Schnitt nahe der geschätzten Körperachse.
-8. Punkte geringfügig ins Polygon versetzen: Auch ihre gerasterten Pixelzentren
-   und Nachbarpixel sollen innerhalb der Maske liegen.
+## Normalisiertes anatomisches Template
 
-Die Schwellen und Längenanteile sind allgemeine Heuristiken. Es gibt keine
-Dateinamen-, Referenzbild- oder fest eincodierte Fotopixel-Sonderbehandlung.
-Die Analyse liefert Kontur, Kopfseite, Auge, zwölf Punkte, Achse und einfache
-Konfidenzhinweise. Diese sind keine kalibrierten Wahrscheinlichkeiten; die UI
-fordert immer zum Prüfen auf.
+`data/anatomical_landmarks_male.json` enthält die zwölf bekannten Punktdefinitionen,
+eine unterstützende Seitenkontur sowie schwach sichtbare Brust-/Schwanzflossen-
+Suchbereiche. Grundlage ist die vorhandene männliche Seitenreferenz; Landmarken
+wurden daran anatomisch annotiert. Die äußere Stützkontur stammt aus dem bisherigen
+Konturvorschlag. Kopf zeigt in positive X-Richtung; positive Y-Richtung bedeutet
+Bauchseite im 2D-Bild. Ursprung ist der Schwanzstiel, eine Einheit entspricht der
+Distanz Schwanzstiel–Schnauze. Es sind keine UV-Koordinaten und keine absoluten
+Fotopixel. Das Template wird auf neue Auflösungen, Größen, Spiegelungen und
+leichte Neigungen transformiert; zur Laufzeit werden keine Referenzfoto-Pixel benutzt.
 
-## Herkunft der zwölf Punkte
+## Kontur und gemeinsame Template-Anpassung
 
-| Nummer | Punkt | Grundlage / Grenze |
-|---|---|---|
-| 1 | Schnauzenspitze | Kopfseitiges Kontur-Ende, leicht nach innen versetzt |
-| 2 | Augenmitte | Dunkles Zentrum/heller Ring; sonst geometrische Schätzung |
-| 3, 4 | Schwanzstiel oben/unten | Lokales Minimum der Körperdicke im hinteren Bereich; anatomische Zuordnung geschätzt |
-| 5, 6 | Schwanzflosse oben/unten | Kontur-Extrema im hinteren Fächerbereich |
-| 7 | Rückenflosse vorne | Kontur bei einem relativen Längenanteil; Ansatz geschätzt |
-| 8 | Rückenflosse hinten | Hintere obere Konturspitze |
-| 9 | Afterflosse vorne | Unterer Körperquerschnitt bei einem Längenanteil; Ansatz geschätzt |
-| 10 | Afterflosse hinten | Hintere untere Konturspitze |
-| 11 | Bauchflossenansatz | Körperlänge und untere Kontur; Ansatz geschätzt |
-| 12 | Bauchflossenspitze | Unteres Kontur-Extrem im mittleren Bereich |
+1. Bild auf höchstens 360 Pixel Kantenlänge reduzieren. Farbdistanz zu den linken
+   und rechten Randfarben, Helligkeit und Sättigung ergeben Vordergrundkandidaten.
+   Kleine Lücken werden morphologisch geschlossen.
+2. Zusammenhängende Außenkonturen anhand Fläche, Ausdehnung, Bildrand und
+   Template-Übereinstimmung auswählen. Isolierte andere Komponenten werden nicht
+   in die Fischmaske übernommen. Große angeschnittene Bereiche werden verworfen.
+3. Falls das normale zeilenweise Hintergrundmodell keine Kontur liefert,
+   zusätzlich geneigte Hintergrundschichten bei ±12° und ±24° versuchen. So
+   verbindet ein schräger heller Bodengrund sich seltener mit der Fischmaske.
+4. Konturen nach Bogenlänge abtasten. Hauptachsen liefern eine erste Rotation.
+   Beide Kopfseiten werden geprüft. Eine begrenzte Winkelsuche und unabhängige
+   Längen-/Höhenskalierung passen das gesamte Template an. Robuste Ausdehnungen
+   und ein getrimmter beidseitiger Konturabstand vermindern den Einfluss einzelner
+   Artefakte und schwacher Flossenkanten.
+5. Die so gemeinsam platzierten zwölf Punkte bilden das anatomische Ausgangsschema.
+   Fischlänge, Körperachse und ungefähre Körperhöhe folgen aus dieser Anpassung.
+   Das Schwanzende wird aus mehreren stabilen hinteren Konturproben bestimmt.
 
-Auch direkt aus der Kontur gewonnene Punkte sind keine semantisch sicher
-erkannten Körperteile. Fehlende, gefaltete oder überdeckte Flossen können die
-Zuordnung verfälschen.
+## Lokale Verfeinerung
 
-## Koordinaten, Projektverwaltung und Nebenläufigkeit
+| Punkte | Verfahren |
+|---|---|
+| 1 Schnauze | Nahe Kopfkontur im begrenzten Fenster um den Template-Wert |
+| 2 Auge | Lokale Suche um erwartete Augenlage; mehrere Pupillenradien, dunkles Zentrum, Ringkontrast in zwölf Richtungen, Position als Prior |
+| 3/4 Schwanzstiel | Geglättete Querbreite senkrecht zur Körperachse; schmales anatomisches Suchfenster und breiterer Schwanzfächer dahinter |
+| 5/6 Schwanzflosse | Lokale Kontur nahe den gemeinsam transformierten oberen/unteren Template-Rändern |
+| 7 Rückenflosse vorne | Template-Ansatz mit geringer Konturkorrektur; springt nicht zur höchsten Flossenspitze |
+| 8 Rückenflosse hinten | Lokaler hinterer Konturpunkt nahe Template |
+| 9 Afterflosse vorne | Template/Bauchlage mit geringer Konturkorrektur, getrennt von der langen Spitze |
+| 10 Afterflosse hinten | Lokale hintere Kontur nahe Template |
+| 11 Bauchflossenansatz | Anatomischer Prior hinter/unter dem Brustflossenbereich; nur schwache Konturkorrektur |
+| 12 Bauchflossenspitze | Begrenzte Kontursuche; bei größerer Abweichung niedrige Konfidenz |
 
-Für jede Achse gilt `Originalpixel = Analysepixel * Originalgröße / Analysegröße`.
-Der bestehende Editor rechnet anschließend wie bisher zwischen Originalpixeln
-und dem seitenverhältnistreuen Anzeigerechteck um. Eine verkleinerte Anzeige
-verändert weder gespeicherte Landmarken noch die Originalfoto-Datei.
+Der Schwanzstiel verwendet mehrere benachbarte Querschnitte, nicht das globale
+Minimum am Schwanzende. Zu schmale, breite oder weit vom Prior entfernte Treffer
+werden verworfen bzw. durch Template-Werte ersetzt. Dadurch wandern die Punkte
+bei schwachem Flossenrand weniger leicht auf die Schwanzflosse.
 
-Automatik startet nur bei einer neuen Fotoauswahl. Projektöffnung verwendet
-unverändert gespeicherte Punkte/Masken und startet **keine** Analyse; Formatversion
-bleibt 1. Automatisch vorgeschlagene und manuell korrigierte Koordinaten werden
-identisch gespeichert. Die ursprüngliche Foto- und Texturpipeline bleibt erhalten.
+Suchradien liegen überwiegend bei 3,5–6,5 % der Körperlänge. Ansätze übernehmen
+nur 45 % einer gefundenen Konturverschiebung. Raster-Sicherheit versetzt einen
+Punkt bei Bedarf geringfügig ins Polygon; bei sehr dünnen kleinen Flossen genügt
+ein innenliegendes Pixelzentrum. Ein völlig unsichtbarer Teil kann weiterhin eine
+manuelle Maskenkorrektur benötigen.
 
-Jeder Analyseauftrag trägt die Editor-Revision. Manuelle Eingabe, Reset, ein
-anderes Foto oder Projektwechsel verhindern die Übernahme eines alten Resultats.
-Bei fehlgeschlagener/unsicherer Segmentierung wird ein Hinweis angezeigt und der
-manuelle Maskenmodus aktiviert. „Manuell beginnen“ funktioniert auch während der
-Analyse. Der 3D Viewer bleibt bedienbar. Eine neue Fotoauswahl wartet höchstens
-auf den noch laufenden, größenbegrenzten Analyseauftrag, bevor sie einen neuen
-startet. Texturerzeugung/Speichern warten auf die aktuelle Analyse, sofern diese
-nicht manuell verworfen wurde.
+## Transparente Flossen und Maskenprüfung
 
-## Tests und beobachtete Grenzen
+Die Brustflosse besitzt einen anatomischen Suchbereich, intern immer LOW.
+Schwache Farbabweichung vom lokalen Hintergrund und Verbindung mit bereits
+akzeptierten Maskenpixeln erlauben eine vorsichtige Erweiterung innerhalb dieses
+Bereichs. Die Schwanzflosse erhält ebenfalls eine begrenzte Erweiterung bei
+schwachem Kontrast. Keine alleinige Auswahl nach hoher Sättigung; diese würde
+transparente Ränder zu stark abschneiden. Die Erweiterung darf keine separaten
+fernen Flecken aufnehmen und muss wieder ein gültiges Polygon ergeben.
 
-Automatischer Integrationstest:
+Dies ist keine sichere Transparenzrekonstruktion: ähnlich gefärbter Hintergrund
+innerhalb eines Suchbereichs kann mit aufgenommen werden. Brustflossen und sehr
+schwache Außenkanten bleiben manuell zu prüfen. Das Verfahren erweitert die
+Eingabemaske, verändert aber nicht die bestehende Texturprojektion.
+
+## Plausibilität und Konfidenz
+
+Regeln werden im gedrehten anatomischen Koordinatensystem geprüft:
+Schnauze vor Auge, Auge vor Rückenflossenansatz, Schwanzstiel vor Schwanzfächer,
+obere/untere Schwanzpunkte in richtiger Reihenfolge, Bauchflossenansatz vor
+Afterflossenansatz, Rückenflossenansatz oberhalb der Körperachse sowie After-/
+Bauchflossenansatz darunter. Verletzungen ersetzen die betroffenen Werte durch
+anatomische Template-Werte und markieren sie LOW. Dies geschieht vor und nach
+der Raster-Sicherheitskorrektur.
+
+- **HIGH:** stabile lokale Schnauzenkontur oder deutliches Pupillen-/Ringsignal.
+- **MEDIUM:** plausibler Querschnitt bzw. begrenzte lokale Konturverfeinerung.
+- **LOW:** reiner Template-Fallback, schwacher/mehrdeutiger Treffer, große
+  notwendige Verschiebung oder unsicherer Flossenansatz. UI: kleiner Ring.
+- **MANUAL:** Benutzerkorrektur; keine automatische Rückverschiebung.
+
+Die Klassen sind heuristische Prüfhilfen, keine kalibrierten Wahrscheinlichkeiten.
+Typischerweise bleiben Punkte 7, 9 und 11 LOW; bei schlechtem Foto auch Auge,
+Schwanzstiel oder Bauchflossenspitze. Fehlt ein verlässliches Auge, wird das
+Template-Auge angezeigt. Scheitert nur ein Teil, bleiben die anderen Vorschläge
+nutzbar. Scheitert die gesamte Segmentierung, bleibt der manuelle Workflow verfügbar.
+
+## Tests und Diagnose
+
+Fixtures erzeugen (Entwicklung, bereits verfügbares Pillow/NumPy; keine neue
+Anwendungsabhängigkeit):
 
 ```powershell
-Godot_v4.7.2-stable_win64_console.exe --path . --script res://scripts/photo_import/validate_auto_photo_analysis.gd
+python scripts/photo_import/create_anatomy_fixtures.py
+Godot_v4.7.2-stable_win64_console.exe --headless --path . --script res://scripts/photo_import/validate_anatomy_variations.gd
 ```
 
-Prüft Referenz-JPG, gespiegeltes Foto, 200×200 und 4000×3000 (vergrößerter
-Ausschnitt derselben Aufnahme), leeres Bild/Fallback, Drag-Korrekturen,
-Ausrichten, Kopfseitenkorrektur, Projekt-Speichern/Öffnen ohne Neuanalyse,
-verspätete Analyseergebnisse, Reset/Neuladen, echte Texturerzeugung,
-Original/Generiert-Umschaltung, 15 Bones, laufende Animation und Kamera/Zoom/Reset.
-Zusätzlich werden die bestehenden manuellen Fotoimport- und Projektverwaltungstests
-weiter ausgeführt. Deren manuelle Eingabetests verwerfen explizit die Automatik.
+Zwölf Fälle: rechts/links, ±12° Neigung, 200×200 und 4000×3000 Pixel, zwei
+Fischgrößen im Bild, teilweise transparente Schwanzflosse, undeutliche Brustflosse,
+schwache Bauchflossenspitze und kontrastarmes Auge. Getestet werden zwölf Punkte,
+Blickrichtung, Lage im Polygon, stabile Ausrichtung, begrenzter Positionsfehler und
+LOW-Fallback für schwaches Auge/Flossenspitze. Erwartete Punkte sind transformierte
+manuelle Referenzannotationen. JSON enthält Abstände und Laufzeiten.
 
-Ergebnisse: `godot/diagnostics/auto_photo_analysis.json`; Editor und generierter
-Fisch in `auto_photo_editor.png` und `auto_photo_generated.png`.
-`auto_photo_analysis.png` zeigt beide Kopfseiten, Kontur, Achse, Auge und alle
-zwölf Punkte. Das Entwicklungsskript `render_analysis_diagnostics.py` stellt
-nur die von Godot gemessenen Ergebnisse dar (vorhandenes Pillow, keine
-Laufzeitabhängigkeit der Anwendung).
+Regressionen: `validate_auto_photo_analysis.gd`, `validate_photo_import.gd`,
+`validate_atlas_replacement.gd`, `scripts/project/validate_project_storage.gd`.
+Sie prüfen Punkt-/Maskenkorrektur, Ausrichten, Konfidenz nach manueller Eingabe,
+Texturerzeugung, Atlas Coverage, beide Farbmodi, Projekt-Speichern/Öffnen ohne
+Neuanalyse, Swim_Test, Kamera/Zoom/Reset und verschiedene Fenstergrößen.
 
-Beim vorhandenen Referenzfoto folgt die Kontur Kopf, Körper und den auffälligen
-Flossen überwiegend gut. Das Auge liegt nahe der fotografierten Pupillenmitte.
-Die transparente Brustflosse wird nicht vollständig erfasst; helle/schwache
-Flossenränder und feine Konturdetails bleiben ungenau. Die Flossenansätze sind
-weiterhin zu prüfen. Texturerzeugung aus den Vorschlägen funktioniert technisch;
-Flossen können bei ungenauer Vorbelegung dunkle Bereiche und Verzerrungen zeigen.
+Diagnosebilder unter `godot/diagnostics/`:
 
-Das ist ein Test mit einer realen Aufnahme und abgeleiteten Größen/Spiegelungen,
-keine Validierung an vielen unterschiedlichen Fischen. Grenzen sind insbesondere
-farbähnlicher/strukturierter Hintergrund, Pflanzen, mehrere Fische, angeschnittene
-Fische, große gleichfarbige Foto-Rahmen, starke Neigung, unsichtbares Auge oder
-ein atypisch schmaler Schwanz. Dann sind falsche Vorschläge oder manueller
-Fallback möglich. Keine Art- oder Geschlechtsbestimmung.
+- `anatomy_template_diagnostics.png`: normalisiertes Template, platziertes Template,
+  finale Kontur, Körperachse, Auge, Kopfseite, zwölf Punkte und Konfidenzen.
+- `anatomy_variations.png`: Übersicht aller zwölf Variationen.
+- `anatomy_variations.json`: Einzelresultate, Fehler und Messwerte.
+- `auto_photo_editor.png`: tatsächliche UI mit Prüfringen.
 
-Mesh, GLB, Blender-Dateien, UV-Daten, Texturen und Texturberechnung werden durch
-diesen Schritt nicht geändert.
+Erzeugung der Anatomiegrafiken: `scripts/photo_import/render_anatomy_diagnostics.py`.
 
-## Abschlussprüfung
+## Grenzen
 
-Sechs Vorschläge (1, 5, 6, 8, 10, 12) entstehen aus lokalen Kontur-Enden bzw.
-Extrema. Fünf anatomische Zuordnungen (3, 4, 7, 9, 11) werden heuristisch aus
-Kontur und Körperproportionen geschätzt. Punkt 2 wird separat über Bildkontrast
-gesucht und bei Unsicherheit ebenfalls geschätzt. Auch Kontur-Extrema sind
-keine garantierte anatomische Erkennung.
-
-Der Abschlusstest verschiebt jeden der zwölf Punkte einzeln, prüft den Erhalt
-der Korrektur nach Ausrichten und speichert/öffnet zusätzlich das Projekt mit
-der tatsächlich generierten Textur. Der Analysezähler muss dabei unverändert
-bleiben, die generierte Färbung aktiv und Swim_Test abspielbar sein.
+Die Tests verwenden **eine reale Aufnahme und synthetische Variationen** derselben
+Aufnahme. Das Template wurde an dieser Referenz erstellt; kleine Fehler dort sind
+kein Nachweis für allgemeine Genauigkeit bei fremden Fischen. Stark abweichende
+Flossenstellungen, komplexer Hintergrund, mehrere Fische, angeschnittene Körper,
+starke Perspektive oder vollständig unsichtbare Flossen können falsche Vorschläge
+liefern. Die grobe Auflösung begrenzt feine Flossenränder. Anatomische Ansätze sind
+weiterhin Prior-Schätzungen, keine zuverlässig segmentierten Strukturen.
+Keine Art-/Geschlechtsbestimmung, keine Cloud und keine neue ML-Laufzeit.
