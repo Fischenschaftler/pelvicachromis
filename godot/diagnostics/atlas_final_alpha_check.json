@@ -1,0 +1,68 @@
+{
+  "left": {
+    "minimum_alpha": 255,
+    "partial_alpha_pixels": 0,
+    "zero_alpha_pixels": 0,
+    "black_rgb_pixels": 0
+  },
+  "right": {
+    "minimum_alpha": 255,
+    "partial_alpha_pixels": 0,
+    "zero_alpha_pixels": 0,
+    "black_rgb_pixels": 0
+  },
+  "tail_cap": {
+    "minimum_alpha": 255,
+    "partial_alpha_pixels": 0,
+    "zero_alpha_pixels": 0,
+    "black_rgb_pixels": 0
+  },
+  "mouth_cap": {
+    "minimum_alpha": 255,
+    "partial_alpha_pixels": 0,
+    "zero_alpha_pixels": 0,
+    "black_rgb_pixels": 0
+  },
+  "Caudal_Fin": {
+    "minimum_alpha": 41,
+    "partial_alpha_pixels": 355656,
+    "zero_alpha_pixels": 0,
+    "black_rgb_pixels": 0
+  },
+  "Dorsal_Fin": {
+    "minimum_alpha": 121,
+    "partial_alpha_pixels": 325584,
+    "zero_alpha_pixels": 0,
+    "black_rgb_pixels": 0
+  },
+  "Anal_Fin": {
+    "minimum_alpha": 104,
+    "partial_alpha_pixels": 313754,
+    "zero_alpha_pixels": 0,
+    "black_rgb_pixels": 0
+  },
+  "Pectoral_Fin_Left": {
+    "minimum_alpha": 96,
+    "partial_alpha_pixels": 39005,
+    "zero_alpha_pixels": 0,
+    "black_rgb_pixels": 0
+  },
+  "Pectoral_Fin_Right": {
+    "minimum_alpha": 96,
+    "partial_alpha_pixels": 39005,
+    "zero_alpha_pixels": 0,
+    "black_rgb_pixels": 0
+  },
+  "Pelvic_Fin_Left": {
+    "minimum_alpha": 47,
+    "partial_alpha_pixels": 86020,
+    "zero_alpha_pixels": 0,
+    "black_rgb_pixels": 0
+  },
+  "Pelvic_Fin_Right": {
+    "minimum_alpha": 47,
+    "partial_alpha_pixels": 86020,
+    "zero_alpha_pixels": 0,
+    "black_rgb_pixels": 0
+  }
+}

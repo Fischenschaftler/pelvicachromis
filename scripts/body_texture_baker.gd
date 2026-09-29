@@ -1,4 +1,5 @@
 extends RefCounted
+const AtlasCoverage=preload("res://scripts/atlas_coverage.gd")
 ## Landmark-constrained thin-plate spline and UV triangle rasterizer. No mesh writes.
 static func vec(pair: Array) -> Vector2:
 	return Vector2(pair[0], pair[1])
@@ -89,7 +90,7 @@ static func bake(base: Image, photo: Image, landmarks: Dictionary, model: Dictio
 		outline.append(warp(vec(pair), anchors, weights))
 	var body_mask := Image.create(photo.get_width(), photo.get_height(), false, Image.FORMAT_L8)
 	polygon_fill(body_mask, outline, 1.0)
-	# Conservative exclusions: photo fin roots and overlaid pectoral fins keep baseline skin.
+	# Exclude fins from body sampling; rejected areas are filled from generated skin below.
 	for name in model.fin_points:
 		var points := PackedVector2Array()
 		for pair in model.fin_points[name]:
@@ -116,6 +117,7 @@ static func bake(base: Image, photo: Image, landmarks: Dictionary, model: Dictio
 	var atlas_size := Vector2(output.get_size())
 	var written := 0
 	var rejected := 0
+	var generated_sum:=Color(0,0,0,0)
 	var cache := {}
 	for tri in model.triangles:
 		var uv: Array = tri.uv
@@ -156,12 +158,16 @@ static func bake(base: Image, photo: Image, landmarks: Dictionary, model: Dictio
 				var fx := q.x - 0.5 - ix
 				var fy := q.y - 0.5 - iy
 				var color := photo.get_pixel(ix, iy).lerp(photo.get_pixel(ix+1, iy), fx).lerp(photo.get_pixel(ix, iy+1).lerp(photo.get_pixel(ix+1, iy+1), fx), fy)
-				color.a = output.get_pixel(x, y).a
+				color.a = 1.0
+				generated_sum+=color
 				output.set_pixel(x, y, color)
 				coverage.set_pixel(x, y, Color.WHITE)
 				written += 1
 	if written < 100:
 		return {"error": "Zu wenig gültige Körperfläche. Bitte Freistellung und Referenzpunkte prüfen."}
+	var filling: Dictionary={}
+	for name in model.uv_slots_blender_v:
+		filling[name]=AtlasCoverage.fill_slot(output,coverage,model.uv_slots_blender_v[name],true,generated_sum/float(written))
 	return {"image": output, "body_mask": body_mask, "coverage": coverage,
-		"stats": {"written_samples": written, "fallback_samples": rejected, "max_anchor_error_px": registration_error,
-		"method": "six-landmark thin-plate spline + actual rest-mesh UV triangles", "sides": "same photographed side used for both body islands", "fins": "baseline only"}}
+		"stats": {"written_samples": written, "fallback_samples": rejected, "atlas_fill":filling, "max_anchor_error_px": registration_error,
+		"method": "landmark thin-plate spline + actual rest-mesh UV triangles", "sides": "same photographed side used for both body islands", "fins": "baseline only"}}

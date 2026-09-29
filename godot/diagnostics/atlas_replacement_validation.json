@@ -1,0 +1,298 @@
+{
+	"all_mesh_surfaces": [
+		{
+			"mesh": "Anal_Fin",
+			"original_material": "Pelvicachromis_Photo_Fins",
+			"receives_generated_atlas": true,
+			"surface": 0
+		},
+		{
+			"mesh": "Caudal_Fin",
+			"original_material": "Pelvicachromis_Photo_Fins",
+			"receives_generated_atlas": true,
+			"surface": 0
+		},
+		{
+			"mesh": "Dorsal_Fin",
+			"original_material": "Pelvicachromis_Photo_Fins",
+			"receives_generated_atlas": true,
+			"surface": 0
+		},
+		{
+			"mesh": "Eye_Left",
+			"original_material": "Pelvicachromis_Photo_Eyes",
+			"receives_generated_atlas": false,
+			"surface": 0
+		},
+		{
+			"mesh": "Eye_Left",
+			"original_material": "Pelvicachromis_Photo_Eyes",
+			"receives_generated_atlas": false,
+			"surface": 1
+		},
+		{
+			"mesh": "Eye_Right",
+			"original_material": "Pelvicachromis_Photo_Eyes",
+			"receives_generated_atlas": false,
+			"surface": 0
+		},
+		{
+			"mesh": "Eye_Right",
+			"original_material": "Pelvicachromis_Photo_Eyes",
+			"receives_generated_atlas": false,
+			"surface": 1
+		},
+		{
+			"mesh": "Fish_Body",
+			"original_material": "Pelvicachromis_Photo_Material",
+			"receives_generated_atlas": true,
+			"surface": 0
+		},
+		{
+			"mesh": "Mouth",
+			"original_material": "Pelvicachromis_Photo_Material",
+			"receives_generated_atlas": false,
+			"surface": 0
+		},
+		{
+			"mesh": "Mouth",
+			"original_material": "Eye_Mat",
+			"receives_generated_atlas": false,
+			"surface": 1
+		},
+		{
+			"mesh": "Pectoral_Fin_Left",
+			"original_material": "Pelvicachromis_Photo_Pectoral",
+			"receives_generated_atlas": true,
+			"surface": 0
+		},
+		{
+			"mesh": "Pectoral_Fin_Right",
+			"original_material": "Pelvicachromis_Photo_Pectoral",
+			"receives_generated_atlas": true,
+			"surface": 0
+		},
+		{
+			"mesh": "Pelvic_Fin_Left",
+			"original_material": "Pelvicachromis_Photo_Fins",
+			"receives_generated_atlas": true,
+			"surface": 0
+		},
+		{
+			"mesh": "Pelvic_Fin_Right",
+			"original_material": "Pelvicachromis_Photo_Fins",
+			"receives_generated_atlas": true,
+			"surface": 0
+		}
+	],
+	"atlas": {
+		"body": {
+			"atlas_fill": {
+				"left": {
+					"extended_pixels": 33749,
+					"fallback": "nearest generated neighbour",
+					"seed_pixels": 21742
+				},
+				"mouth_cap": {
+					"extended_pixels": 1974,
+					"fallback": "generated body mean",
+					"seed_pixels": 0
+				},
+				"right": {
+					"extended_pixels": 33756,
+					"fallback": "nearest generated neighbour",
+					"seed_pixels": 21735
+				},
+				"tail_cap": {
+					"extended_pixels": 1974,
+					"fallback": "generated body mean",
+					"seed_pixels": 0
+				}
+			},
+			"fallback_samples": 18340,
+			"fins": "baseline only",
+			"max_anchor_error_px": 0.0001220703125,
+			"method": "landmark thin-plate spline + actual rest-mesh UV triangles",
+			"sides": "same photographed side used for both body islands",
+			"written_samples": 43477
+		},
+		"body_alpha_holes": 0,
+		"fins": {
+			"Anal_Fin": {
+				"atlas_fill": {
+					"extended_pixels": 16179,
+					"fallback": "nearest generated neighbour",
+					"seed_pixels": 3816
+				},
+				"edge_pixels_rejected": 0,
+				"fallback": 0,
+				"folded_triangles": 0,
+				"guide_rms_px": 0.0,
+				"mapping": "boundary constrained local similarity (ARAP)",
+				"phase": 0.0,
+				"repair_shift_px": 0.0,
+				"written": 3816
+			},
+			"Caudal_Fin": {
+				"atlas_fill": {
+					"extended_pixels": 11913,
+					"fallback": "nearest generated neighbour",
+					"seed_pixels": 10662
+				},
+				"edge_pixels_rejected": 0,
+				"fallback": 0,
+				"folded_triangles": 0,
+				"guide_rms_px": 0.0,
+				"mapping": "boundary constrained local similarity (ARAP)",
+				"phase": 0.0,
+				"repair_shift_px": 0.0,
+				"written": 10662
+			},
+			"Dorsal_Fin": {
+				"atlas_fill": {
+					"extended_pixels": 14560,
+					"fallback": "nearest generated neighbour",
+					"seed_pixels": 5999
+				},
+				"edge_pixels_rejected": 0,
+				"fallback": 0,
+				"folded_triangles": 0,
+				"guide_rms_px": 0.0,
+				"mapping": "boundary constrained local similarity (ARAP)",
+				"phase": 0.0,
+				"repair_shift_px": 0.0,
+				"written": 5999
+			},
+			"Pectoral_Fin_Left": {
+				"atlas_fill": {
+					"extended_pixels": 1074,
+					"fallback": "nearest generated neighbour",
+					"seed_pixels": 1442
+				},
+				"edge_pixels_rejected": 0,
+				"fallback": 0,
+				"folded_triangles": 0,
+				"guide_rms_px": 0.0,
+				"mapping": "boundary constrained local similarity (ARAP)",
+				"phase": 0.0,
+				"repair_shift_px": 0.0,
+				"written": 1442
+			},
+			"Pectoral_Fin_Right": {
+				"atlas_fill": {
+					"extended_pixels": 1075,
+					"fallback": "nearest generated neighbour",
+					"seed_pixels": 1441
+				},
+				"edge_pixels_rejected": 0,
+				"fallback": 0,
+				"folded_triangles": 0,
+				"guide_rms_px": 0.0,
+				"mapping": "boundary constrained local similarity (ARAP)",
+				"phase": 0.0,
+				"repair_shift_px": 0.0,
+				"written": 1441
+			},
+			"Pelvic_Fin_Left": {
+				"atlas_fill": {
+					"extended_pixels": 5068,
+					"fallback": "nearest generated neighbour",
+					"seed_pixels": 500
+				},
+				"edge_pixels_rejected": 0,
+				"fallback": 0,
+				"folded_triangles": 0,
+				"guide_rms_px": 0.0,
+				"mapping": "boundary constrained local similarity (ARAP)",
+				"phase": 0.0,
+				"repair_shift_px": 0.0,
+				"written": 500
+			},
+			"Pelvic_Fin_Right": {
+				"atlas_fill": {
+					"extended_pixels": 5065,
+					"fallback": "nearest generated neighbour",
+					"seed_pixels": 503
+				},
+				"edge_pixels_rejected": 0,
+				"fallback": 0,
+				"folded_triangles": 0,
+				"guide_rms_px": 0.0,
+				"mapping": "boundary constrained local similarity (ARAP)",
+				"phase": 0.0,
+				"repair_shift_px": 0.0,
+				"written": 503
+			}
+		},
+		"old_rgb_pixels": 0,
+		"tested_pixels": 188995
+	},
+	"errors": [],
+	"generated_texture": "user://photo_import/1790689664_23808545/albedo.png",
+	"legacy": {
+		"analysis_count_unchanged": true,
+		"regenerated": true,
+		"saved_copy": "user://auto_analysis_tests/3078267/43a3d0a90c39c3e89608c9b9cda32c51",
+		"source": "user://auto_analysis_tests/3078267/01e76b0485ba574ca7afc5de48640785/project.json",
+		"texture_hash_preserved": true
+	},
+	"surfaces": [
+		{
+			"generated": true,
+			"material": "Generated_Anal_Fin_0",
+			"mesh": "Anal_Fin",
+			"surface": 0,
+			"transparency": 4
+		},
+		{
+			"generated": true,
+			"material": "Generated_Caudal_Fin_0",
+			"mesh": "Caudal_Fin",
+			"surface": 0,
+			"transparency": 4
+		},
+		{
+			"generated": true,
+			"material": "Generated_Dorsal_Fin_0",
+			"mesh": "Dorsal_Fin",
+			"surface": 0,
+			"transparency": 4
+		},
+		{
+			"generated": true,
+			"material": "Generated_Fish_Body_0",
+			"mesh": "Fish_Body",
+			"surface": 0,
+			"transparency": 0
+		},
+		{
+			"generated": true,
+			"material": "Generated_Pectoral_Fin_Left_0",
+			"mesh": "Pectoral_Fin_Left",
+			"surface": 0,
+			"transparency": 4
+		},
+		{
+			"generated": true,
+			"material": "Generated_Pectoral_Fin_Right_0",
+			"mesh": "Pectoral_Fin_Right",
+			"surface": 0,
+			"transparency": 4
+		},
+		{
+			"generated": true,
+			"material": "Generated_Pelvic_Fin_Left_0",
+			"mesh": "Pelvic_Fin_Left",
+			"surface": 0,
+			"transparency": 4
+		},
+		{
+			"generated": true,
+			"material": "Generated_Pelvic_Fin_Right_0",
+			"mesh": "Pelvic_Fin_Right",
+			"surface": 0,
+			"transparency": 4
+		}
+	],
+	"swim_test": true
+}

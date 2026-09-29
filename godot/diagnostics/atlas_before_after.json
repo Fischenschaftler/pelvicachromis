@@ -1,0 +1,46 @@
+{
+  "left": {
+    "old_rgb_before": 32737,
+    "old_rgb_after": 0
+  },
+  "right": {
+    "old_rgb_before": 32744,
+    "old_rgb_after": 0
+  },
+  "tail_cap": {
+    "old_rgb_before": 1800,
+    "old_rgb_after": 0
+  },
+  "mouth_cap": {
+    "old_rgb_before": 1800,
+    "old_rgb_after": 0
+  },
+  "Caudal_Fin": {
+    "old_rgb_before": 6454,
+    "old_rgb_after": 0
+  },
+  "Dorsal_Fin": {
+    "old_rgb_before": 8212,
+    "old_rgb_after": 0
+  },
+  "Anal_Fin": {
+    "old_rgb_before": 10939,
+    "old_rgb_after": 0
+  },
+  "Pectoral_Fin_Left": {
+    "old_rgb_before": 204,
+    "old_rgb_after": 0
+  },
+  "Pectoral_Fin_Right": {
+    "old_rgb_before": 207,
+    "old_rgb_after": 0
+  },
+  "Pelvic_Fin_Left": {
+    "old_rgb_before": 2531,
+    "old_rgb_after": 0
+  },
+  "Pelvic_Fin_Right": {
+    "old_rgb_before": 2528,
+    "old_rgb_after": 0
+  }
+}

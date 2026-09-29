@@ -177,7 +177,11 @@ func show_generated() -> void:
 	if generated==null:return
 	for node in originals:
 		for i in range(originals[node].size()):
-			var material: BaseMaterial3D=originals[node][i].active.duplicate()
+			var material: BaseMaterial3D=originals[node][i].active.duplicate(true)
+			material.resource_name="Generated_"+String(node.name)+"_"+str(i)
+			material.next_pass=null
+			material.albedo_color=Color.WHITE
+			if node.name=="Fish_Body":material.transparency=BaseMaterial3D.TRANSPARENCY_DISABLED
 			material.albedo_texture=generated;node.set_surface_override_material(i,material)
 	showing_generated=true
 func reset() -> void:
@@ -230,6 +234,8 @@ func open_project(id: String) -> bool:
 		if data.ui_state.showing_generated:show_generated()
 	status.text="Projekt „%s“ geladen." % project_name
 	if canvas.mode=="landmarks" and canvas.landmarks.size()<12:status.text+="\nNächster Punkt: "+Editor.LABELS[canvas.landmarks.size()]
+	if result.texture!=null and int(generation_data.get("atlas_fill_version",0))<1:
+		status.text+="\nÄltere generierte Textur: Bitte Textur erzeugen erneut ausführen, um alte Atlas-Farbreste zu entfernen."
 	if not result.warnings.is_empty():status.text+="\n"+"\n".join(result.warnings)
 	last_error="";return true
 

@@ -1,4 +1,5 @@
 extends RefCounted
+const AtlasCoverage=preload("res://scripts/atlas_coverage.gd")
 const BodyBaker=preload("res://scripts/body_texture_baker.gd")
 const NAMES=["Caudal_Fin","Dorsal_Fin","Anal_Fin"]
 static func area(poly: PackedVector2Array) -> float:
@@ -281,27 +282,16 @@ static func bake(base: Image, photo: Image, data: Dictionary, model: Dictionary,
 					var q:Vector2=vertices[ids[0]]*(1-u-v)+vertices[ids[1]]*u+vertices[ids[2]]*v
 					var color:=sample(photo,sampling.mask,q,lookup)
 					if color.a<=.001:missed+=1;continue
-					color.a*=base.get_pixel(x,y).a
+					# Only authored fin transparency is intentional; cutout alpha is sampling validity.
+					color.a=base.get_pixel(x,y).a
 					output.set_pixel(x,y,color)
 					fin_coverage.set_pixel(x,y,Color.WHITE)
 					coverage.set_pixel(x,y,Color.WHITE)
 					written+=1
 		if folded>0:return {"error":"Die Kontur von %s verursacht %d gefaltete Teilflächen. Bitte den Umriss glätten und erneut markieren." % [name,folded]}
 		if written<100 or float(missed)/maxi(1,written+missed)>.1:return {"error":"Zu wenig gültige Fotofläche für %s. Bitte Maske und Freistellung prüfen." % name}
-		# Padding is limited to this fin's reserved atlas slot; no other islands change.
-		var slot: Array=fin.slot_blender_v
-		var rect:=Rect2i(Vector2i(ceili(slot[0]*base.get_width()),ceili((1-slot[3])*base.get_height())),Vector2i.ZERO)
-		rect.end=Vector2i(floori(slot[2]*base.get_width()),floori((1-slot[1])*base.get_height()))
-		for pass_index in range(16):
-			var additions: Array=[]
-			for y in range(rect.position.y+1,rect.end.y-1):
-				for x in range(rect.position.x+1,rect.end.x-1):
-					if fin_coverage.get_pixel(x,y).r>.5:continue
-					for delta in [Vector2i(-1,0),Vector2i(1,0),Vector2i(0,-1),Vector2i(0,1)]:
-						if fin_coverage.get_pixel(x+delta.x,y+delta.y).r>.5:
-							additions.append([Vector2i(x,y),output.get_pixel(x+delta.x,y+delta.y)])
-							break
-			for entry in additions:
-				output.set_pixelv(entry[0],entry[1]);fin_coverage.set_pixelv(entry[0],Color.WHITE);coverage.set_pixelv(entry[0],Color.WHITE)
-		report[name]={"edge_pixels_rejected":sampling.rejected,"written":written,"fallback":missed,"folded_triangles":folded,"phase":mapping.phase,"guide_rms_px":mapping.guide_rms_px,"mapping":mapping.method,"repair_shift_px":mapping.repair_shift_px}
+		# Extend every unfilled pixel, including gaps deeper than the old 16px band.
+		# Slots are disjoint, so neighbouring body/fin/eye islands cannot contaminate it.
+		var fill_report:=AtlasCoverage.fill_slot(output,fin_coverage,fin.slot_blender_v,false,Color(0,0,0,0))
+		report[name]={"atlas_fill":fill_report,"edge_pixels_rejected":sampling.rejected,"written":written,"fallback":missed,"folded_triangles":folded,"phase":mapping.phase,"guide_rms_px":mapping.guide_rms_px,"mapping":mapping.method,"repair_shift_px":mapping.repair_shift_px}
 	return {"image":output,"coverage":coverage,"stats":report}

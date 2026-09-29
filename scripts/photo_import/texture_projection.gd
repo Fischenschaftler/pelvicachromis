@@ -83,7 +83,7 @@ static func generate(source: Image, points: PackedVector2Array, contour: PackedV
 	if DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(root))!=OK:return {"error":"Benutzerordner nicht beschreibbar."}
 	var photo_path:=root+"/normalized.png";var texture_path:=root+"/albedo.png"
 	if norm.image.save_png(photo_path)!=OK or mask.save_png(root+"/mask.png")!=OK or result.image.save_png(texture_path)!=OK:return {"error":"Bilder konnten nicht gespeichert werden."}
-	var metadata: Dictionary={"schema_version":2,"photo_side":side,"photo_path":path,"landmarks_original_px":{},"normalized":data,"resolution":resolution,"texture_path":ProjectSettings.globalize_path(texture_path),"body_uv_slots":model.uv_slots_blender_v,"primary_body_island":side,"fallback_body_island":"right" if side=="left" else "left","opposite_side_fallback":"same photograph reflected in separate side UV island","paired_fin_fallback":"visible fin copied to distinct opposite UV island","stats":result.stats}
+	var metadata: Dictionary={"schema_version":2,"photo_side":side,"photo_path":path,"landmarks_original_px":{},"normalized":data,"resolution":resolution,"texture_path":ProjectSettings.globalize_path(texture_path),"body_uv_slots":model.uv_slots_blender_v,"primary_body_island":side,"fallback_body_island":"right" if side=="left" else "left","opposite_side_fallback":"same photograph reflected in separate side UV island","paired_fin_fallback":"visible fin copied to distinct opposite UV island","stats":result.stats,"body_stats":body.stats,"atlas_fill_version":1}
 	for i in range(12):metadata.landmarks_original_px[KEYS[i]]=[points[i].x,points[i].y]
 	metadata["contour_original_px"]=[]
 	for p in contour:metadata.contour_original_px.append([p.x,p.y])
