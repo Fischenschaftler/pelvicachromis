@@ -61,7 +61,7 @@ Es findet keine automatische Migration beim Start statt.
 ```
 
 Preset: `Windows Portable`, Windows x86_64, eingebettetes PCK. Ziel:
-`dist/PelvicachromisStudio/`. Das Skript erstellt Ordner und README ohne Daten
+`dist/PelvicachromisStudio/`. Das Skript erstellt Ordner und README.txt ohne Daten
 zu löschen. Für den eigentlichen EXE-Export werden zur Godot-Version passende
 Exportvorlagen benötigt. Es wird kein Installer erstellt.
 
@@ -116,7 +116,70 @@ Für den Pakettest (ohne Exportvorlagen):
 & $Godot --headless --main-pack "$PWD/dist/PelvicachromisStudio/validation.pck" --script "$PWD/scripts/storage/validate_export_pack.gd"
 ```
 
-Die passende Windows-Exportvorlage ist auf dem Entwicklungsrechner derzeit nicht
-installiert. Deshalb wurde noch keine eigenständige EXE erstellt oder auf einem
-zweiten Windows-PC getestet. `validation.pck` ist ausschließlich ein Testartefakt
-und gehört nicht zur endgültigen Auslieferung mit eingebettetem PCK.
+Die Windows-Exportvorlagen für Godot 4.7.2.stable sind installiert. Der erste
+eigenständige Release-Build wird mit eingebettetem PCK erzeugt. `validation.pck`
+ist ausschließlich ein früheres Testartefakt und gehört nicht zur Auslieferung.
+Ein Test auf einem zweiten physischen Windows-PC bleibt erforderlich.
+
+## Erster Windows-Release-Build (2026-09-29)
+
+Godot 4.7.2.stable.official.ed1daf0bf, Vorlage windows_release_x86_64.exe aus
+4.7.2.stable, Preset Windows Portable. Ausgabe:
+`dist/PelvicachromisStudio/PelvicachromisStudio.exe`.
+
+Beim ersten echten Release-Test fehlten transitiv per preload geladene Skripte.
+Der frühere Editor-PCK-Test konnte diese noch aus dem Repository finden. Das
+Preset wählt deshalb jetzt die Runtime-GDScripts ausdrücklich als Ressourcen aus.
+Analyse, Projektion und Modelldaten wurden dafür nicht geändert. Künftige neue
+Runtime-Skripte müssen ebenfalls in diese Exportauswahl aufgenommen werden.
+
+Die offizielle Release-Vorlage unterstützt weder externe --script-Testläufe
+noch --main-pack-Pfadüberschreibungen. Die Windows-UI-Automation wurde von der
+Tool-Freigabe abgelehnt. Deshalb prüft ein separater, nicht ausgelieferter
+Release-Diagnosebuild denselben Produktcode mit einer eingebetteten Testszene.
+Diese lädt die reguläre Hauptszene und verwendet dieselben Controller und
+Viewport-Mausereignisse. Das editor-Feature muss fehlen. Die finale unveränderte
+EXE wird zusätzlich ohne Diagnosecode normal gestartet. Dies ersetzt keinen
+vollständigen manuellen UI-Abnahmetest der finalen EXE.
+
+Testablauf: Referenzfoto auswählen, zwölf Vorschläge und Kontur abwarten,
+Textur erzeugen, Original/Generiert umschalten, Projekt speichern und erneut
+laden. Skeleton mit 15 Bones, fortschreitende Swim_Test-Animation, Kamera,
+Zoom und Reset prüfen. Anschließend Anwendung beenden, gesamten Ordner an
+neuen Pfad mit Leerzeichen kopieren und dort die EXE mit einem fremden
+Arbeitsverzeichnis starten. Gespeicherte Bilddateien und Landmarken müssen
+identisch sein, erneute Analyse darf nicht stattfinden. Danach den kopierten
+Programmordner nochmals umbenennen/verschieben und wiederholen.
+
+Die ZIP enthält den obersten Ordner PelvicachromisStudio samt Testprojekt.
+Keine EXE, ZIP, Arbeitsdaten oder Testscreenshots werden in Git aufgenommen.
+Die Distribution enthält keinen Installer und keine separate PCK-Datei.
+
+Einschränkungen: x86_64 Windows 10/11, passende Direct3D-12-Grafiktreiber für
+Forward+. EXE nicht signiert; Windows SmartScreen kann warnen. Kein Test auf
+einem zweiten physischen Rechner und keine Kompatibilitätszusage für sämtliche
+Grafikkarten. Schreibzugriff auf den Programmordner bleibt erforderlich.
+
+### Prüfergebnis des ersten Builds
+
+- Finale EXE mit eingebettetem PCK erfolgreich erzeugt; normaler Start im dist-
+  Ordner und am verschobenen/umbenannten Pfad ohne Engine-Fehler.
+- Release-Diagnosebuild: Fotoimport, automatische zwölf Landmarken, Kontur,
+  Texturerzeugung, Original/Generiert, Speichern/Öffnen, 15 Bones, Swim_Test,
+  Kamera, Zoom und Reset ohne Testfehler.
+- Wiederöffnen nach Kopieren und Umbenennen: identische SHA-256-Prüfsummen für
+  Foto, Maske und Textur sowie identische Landmarken; keine erneute Analyse.
+- Projektmetadaten enthalten keine absoluten Pfadabhängigkeiten. Geschützte
+  Modelldateien sind unverändert. Die finale EXE enthält keinen Testcode.
+- Build einschließlich Beispielprojekt: 152.916.268 Bytes (145,83 MiB).
+- ZIP: 58.410.607 Bytes (55,70 MiB), Integritätsprüfung bestanden.
+- ZIP-Pfad: `dist/PelvicachromisStudio_Windows_Portable.zip`.
+- EXE SHA-256: `99cd9ceb32158f23d0903d9c2d222f3bb0319a5496278cb985faf11d75722b45`.
+
+Die Größen beziehen sich auf diesen Build einschließlich Startprotokoll und
+Beispielprojekt; sie ändern sich nach weiterer Nutzung. Testberichte und
+Screenshots liegen lokal unter `.godot/release_*` und
+`.godot/windows_release_summary.json` und werden nicht ausgeliefert.
+
+Der normale Start der finalen EXE wurde zusätzlich nach Entpacken der ZIP in
+ein neues Verzeichnis geprüft und ohne Fehler beendet.
