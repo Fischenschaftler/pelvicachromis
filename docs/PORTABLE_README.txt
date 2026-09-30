@@ -16,3 +16,6 @@ Animation starten/stoppen und Ansicht zurücksetzen über die Oberfläche.
 
 Enthaltenes Beispiel: Unter Projekt öffnen ist der portable Build-Test mit
 Referenzfoto, Maske, zwölf Landmarken und generierter Textur verfügbar.
+
+Fisch steuern: W vorwärts, S bremsen, A/D drehen, Q/E tiefer/höher,
+Shift + W schneller. Esc oder Steuerung beenden kehrt zum Betrachten zurück.

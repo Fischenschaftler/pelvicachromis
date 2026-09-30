@@ -1,0 +1,37 @@
+extends Resource
+## Metres, seconds, radians; one tuning source for movement and chase camera.
+@export var local_forward := Vector3.RIGHT
+@export var hover_speed := 0.0
+@export var cruise_speed := 0.04
+@export var fast_speed := 0.10
+@export var acceleration := 0.035
+@export var coast_deceleration := 0.014
+@export var brake_deceleration := 0.09
+@export var max_turn_speed := 1.0
+@export var turn_acceleration := 1.2
+@export var turn_deceleration := 1.8
+@export var max_vertical_speed := 0.025
+@export var vertical_acceleration := 0.035
+@export var vertical_deceleration := 0.05
+@export var max_pitch := deg_to_rad(20.0)
+@export var pitch_reference_speed := 0.035
+@export var max_bank := deg_to_rad(6.0)
+@export var attitude_response := 4.0
+@export var idle_animation_speed := 0.18
+@export var normal_animation_speed := 1.0
+@export var fast_animation_speed := 1.9
+@export var animation_response := 3.0
+@export var camera_response := 5.0
+@export var camera_rotation_response := 7.0
+@export var camera_mouse_sensitivity := 0.005
+@export var camera_default_yaw := deg_to_rad(35.0)
+@export var camera_default_pitch := deg_to_rad(18.0)
+@export var camera_min_pitch := deg_to_rad(-15.0)
+@export var camera_max_pitch := deg_to_rad(65.0)
+@export var camera_min_radius_ratio := 1.8
+@export var camera_default_radius_ratio := 4.2
+@export var camera_max_radius_ratio := 12.0
+@export var camera_fit_margin := 0.85
+@export var camera_min_zoom_ratio := 0.3
+@export var camera_max_zoom_ratio := 3.0
+@export var camera_zoom_step := 0.90

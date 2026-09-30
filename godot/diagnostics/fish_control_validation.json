@@ -1,0 +1,8 @@
+{
+	"bones": 15,
+	"cruise_mps": 0.04,
+	"errors": [],
+	"fast_mps": 0.1,
+	"initial_acceleration_sample": 0.007,
+	"local_forward": "+X"
+}

@@ -1,0 +1,15 @@
+{
+  "errors": [],
+  "checks": [
+    "fish_control_validation",
+    "portable_storage_validation",
+    "photo_import_ui_validation",
+    "project_storage_validation",
+    "atlas_replacement_validation"
+  ],
+  "release_validation_passed": true,
+  "final_exe_start_passed": true,
+  "protected_assets_unchanged": true,
+  "exe_sha256": "44a9ed9515b5d4b36bf113d0e01d60fd96f090fe7878d7d03c51f854cc256707",
+  "zip_bytes": 58426631
+}

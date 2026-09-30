@@ -228,11 +228,11 @@
 		"tested_pixels": 188995
 	},
 	"errors": [],
-	"generated_texture": "D:/Code/pelvicachromis/pelvicachromis/dev_portable_data/data/photo_import/1790712816_18410023/albedo.png",
+	"generated_texture": "D:/Code/pelvicachromis/pelvicachromis/dev_portable_data/data/photo_import/1790767569_21034440/albedo.png",
 	"legacy": {
 		"analysis_count_unchanged": true,
 		"regenerated": true,
-		"saved_copy": "user://auto_analysis_tests/3078267/28c1600c655a8a9a55dde238994471b7",
+		"saved_copy": "user://auto_analysis_tests/3078267/0bb5b2b94e82aed9a9385535b096cceb",
 		"source": "user://auto_analysis_tests/3078267/01e76b0485ba574ca7afc5de48640785/project.json",
 		"texture_hash_preserved": true
 	},

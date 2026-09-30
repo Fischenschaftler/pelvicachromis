@@ -45,6 +45,7 @@ func _input(event: InputEvent) -> void:
 		dragging = false
 
 func _unhandled_input(event: InputEvent) -> void:
+	if not camera.current:return
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 			dragging = true

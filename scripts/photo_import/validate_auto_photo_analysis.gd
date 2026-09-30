@@ -83,6 +83,15 @@ func run_analysis() -> void:
 		check(importer.generated!=null and importer.showing_generated,"Saved generated appearance missing")
 		check(importer.analysis_count==before_reopen,"Generated project was reanalysed")
 		check(not generated_path.is_empty(),"Generated texture path missing")
+		# Actual photo-generated texture must survive movement and return to editing.
+		var appearance: ImageTexture=importer.generated
+		var project_before: String=importer.project_id
+		viewer.begin_fish_control();Input.action_press("fish_forward")
+		await create_timer(.3).timeout;Input.action_release("fish_forward")
+		check(viewer.control_mode and viewer.fish_controller.speed>0,"Generated fish movement")
+		check(importer.generated==appearance and importer.showing_generated,"Photo texture lost in steering")
+		viewer.end_fish_control()
+		check(importer.visible and importer.project_id==project_before and importer.generated==appearance,"Editing/project restoration after steering")
 	for skeleton in viewer.fish.find_children("*","Skeleton3D",true,false):check(skeleton.get_bone_count()==15,"Bone count")
 	await create_timer(2.2).timeout;check(viewer.animation_player.is_playing(),"Swim_Test")
 	var center: Vector2=viewer.get_node("ViewerViewport").get_global_rect().get_center()
