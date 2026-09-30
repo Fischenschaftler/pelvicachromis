@@ -19,3 +19,11 @@ Referenzfoto, Maske, zwölf Landmarken und generierter Textur verfügbar.
 
 Fisch steuern: W vorwärts, S bremsen, A/D drehen, Q/E tiefer/höher,
 Shift + W schneller. Esc oder Steuerung beenden kehrt zum Betrachten zurück.
+
+Wissenschaftlicher Stimulusmodus: F9 startet die feste orthografische
+Vollbildansicht mit dem aktuell gewählten Fisch. WASD bewegt auf der
+Bildschirmebene, Q/E richtet links/rechts aus, R/F verändert das Tempo.
+F8 setzt zurück, Esc beendet. Kein Mauszoom oder Kameradrehen im Versuch.
+Einstellungen: config/stimulus.json (nach erstem Start).
+Versuchsprotokolle: data/experiments/. Größen sind noch nicht physikalisch
+kalibriert. Fenstergrößenänderung/Fokusverlust beendet den Versuch.

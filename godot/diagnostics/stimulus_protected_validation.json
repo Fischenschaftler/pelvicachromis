@@ -1,0 +1,12 @@
+{
+  "asset_count": 15,
+  "asset_differences": [],
+  "protected_code_files": [
+    "scripts/photo_import/photo_analyzer.gd",
+    "scripts/photo_import/texture_projection.gd",
+    "scripts/project/project_data.gd",
+    "scripts/project/project_manager.gd",
+    "scripts/storage/portable_paths.gd",
+    "scripts/storage/portable_bootstrap.gd"
+  ]
+}

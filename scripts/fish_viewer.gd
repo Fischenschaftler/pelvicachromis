@@ -10,6 +10,8 @@ var swim_animation: StringName
 @onready var chase: Node3D=$ViewerViewport/Viewport/World/ChaseCamera
 @onready var control_button: Button=$UI/ControlMode
 @onready var hint: Label=$UI/Layout/Header/Hint
+var stimulus: Control
+var stimulus_pending:=false
 var control_mode := false
 var viewing_animation_playing := true
 var viewing_hint := ""
@@ -29,6 +31,7 @@ func _ready() -> void:
 	reset_button.pressed.connect(reset_view)
 	control_button.pressed.connect(toggle_fish_control)
 	get_viewport().size_changed.connect(func(): call_deferred("layout_control"))
+	hint.text="Linke Maustaste: drehen · Rad: Zoom · F9: Stimulus"
 	viewing_hint=hint.text
 	for node in fish.find_children("*", "AnimationPlayer", true, false):
 		animation_player = node as AnimationPlayer
@@ -63,6 +66,9 @@ func _update_button() -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if stimulus_pending or (stimulus!=null and stimulus.active):return
+	if event.is_action_pressed("stimulus_start") and not event.is_echo():
+		start_stimulus_session();get_viewport().set_input_as_handled();return
 	if control_mode and event.is_action_pressed("fish_control_exit"):
 		end_fish_control();get_viewport().set_input_as_handled();return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
@@ -70,6 +76,7 @@ func _input(event: InputEvent) -> void:
 		chase.dragging = false
 
 func _unhandled_input(event: InputEvent) -> void:
+	if stimulus_pending or (stimulus!=null and stimulus.active):return
 	# Root UI gets first refusal; only unused events reach the 3D viewport.
 	if event is InputEventMouse:
 		var area: SubViewportContainer = $ViewerViewport
@@ -84,7 +91,7 @@ func toggle_fish_control() -> void:
 	if control_mode:end_fish_control()
 	else:begin_fish_control()
 func begin_fish_control() -> void:
-	if control_mode or animation_player==null:return
+	if control_mode or animation_player==null or stimulus_pending or (stimulus!=null and stimulus.active):return
 	var photo:=get_node_or_null("UI/ReferencePhoto")
 	if photo!=null:
 		# Do not hide a modal or a still-running photo worker.
@@ -133,3 +140,41 @@ func layout_control() -> void:
 	var top:=hint.get_global_rect().end.y+8.0
 	area.position=Vector2(0,top);area.size=Vector2(size.x,maxf(80.0,size.y-top-64.0))
 	chase.resize()
+
+func start_stimulus_session(config_override: Resource=null) -> String:
+	if stimulus_pending or (stimulus!=null and stimulus.active):return "Stimulus bereits aktiv."
+	if animation_player==null:return "Schwimmanimation fehlt."
+	var photo:=get_node_or_null("UI/ReferencePhoto")
+	if photo!=null:
+		for window in photo.find_children("*","Window",true,false):
+			if window.visible:return "Bitte zuerst den geöffneten Dialog schließen."
+		if photo.get("worker")!=null or photo.get("analysis_worker")!=null:return "Bitte die Fotoverarbeitung abwarten."
+	if control_mode:end_fish_control()
+	stimulus_pending=true
+	if stimulus==null:
+		stimulus=preload("res://scenes/StimulusMode.tscn").instantiate()
+		add_child(stimulus);stimulus.hide();stimulus.stopped.connect(_stimulus_stopped)
+	var metadata: Dictionary={}
+	if photo!=null:
+		metadata={"project_id":photo.get("project_id"),"project_name":photo.get("project_name"),"generated_coloring":photo.get("showing_generated")}
+		var texture_path: String=photo.get("texture_path")
+		if photo.get("showing_generated") and FileAccess.file_exists(texture_path):metadata["generated_texture_sha256"]=FileAccess.get_sha256(texture_path)
+	var focus:=get_viewport().gui_get_focus_owner()
+	if focus!=null:focus.release_focus()
+	orbit.dragging=false;chase.dragging=false
+	$UI.hide();$ViewerViewport.hide();$Background.hide()
+	var error: String=await stimulus.start_stimulus_session(fish,animation_player,swim_animation,metadata,config_override)
+	stimulus_pending=false
+	if not error.is_empty():
+		_stimulus_stopped("start_failed")
+		if photo!=null:photo.call("fail",error)
+	return error
+func stop_stimulus_session() -> void:
+	if stimulus!=null:stimulus.stop_stimulus_session()
+func reset_stimulus() -> void:
+	if stimulus!=null:stimulus.reset_stimulus()
+func _stimulus_stopped(reason: String) -> void:
+	$UI.show();$ViewerViewport.show();$Background.show()
+	if reason=="log_error":
+		var photo:=get_node_or_null("UI/ReferencePhoto")
+		if photo!=null:photo.call("fail","Versuch beendet: Protokoll konnte nicht geschrieben werden.")

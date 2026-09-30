@@ -1,0 +1,10 @@
+{
+  "exe_bytes": 148896496,
+  "exe_sha256": "d79b2552ee595fcd4ef47cb12d6a59633dc2a13a3ceb9d5ddb111b6a386d9943",
+  "build_bytes": 152965208,
+  "zip_bytes": 58441453,
+  "normal_release_start_errors": [],
+  "diagnostic_scene_in_production": false,
+  "relocated_release_checks": 655,
+  "protected_assets_unchanged": true
+}

@@ -1,0 +1,56 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/stimulus/stimulus_controller.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/stimulus/stimulus_fish_controller.gd" id="2"]
+[sub_resource type="Environment" id="Environment"]
+background_mode = 1
+background_color = Color(0.12, 0.12, 0.12, 1)
+ambient_light_source = 3
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.65
+tonemap_mode = 0
+
+[node name="StimulusMode" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Presentation" type="SubViewportContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+stretch = true
+
+[node name="Viewport" type="SubViewport" parent="Presentation"]
+size = Vector2i(1280, 800)
+own_world_3d = true
+render_target_update_mode = 4
+
+[node name="World" type="Node3D" parent="Presentation/Viewport"]
+[node name="Environment" type="WorldEnvironment" parent="Presentation/Viewport/World"]
+environment = SubResource("Environment")
+[node name="KeyLight" type="DirectionalLight3D" parent="Presentation/Viewport/World"]
+rotation_degrees = Vector3(-35, -25, 0)
+light_energy = 0.8
+[node name="FillLight" type="DirectionalLight3D" parent="Presentation/Viewport/World"]
+rotation_degrees = Vector3(15, 155, 0)
+light_energy = 0.4
+[node name="Camera" type="Camera3D" parent="Presentation/Viewport/World"]
+position = Vector3(0, 0, 1)
+projection = 1
+size = 0.24
+near = 0.001
+far = 10.0
+current = true
+[node name="FishMotion" type="Node3D" parent="Presentation/Viewport/World"]
+script = ExtResource("2")
+[node name="DisplayScale" type="Node3D" parent="Presentation/Viewport/World/FishMotion"]
+[node name="FishCenter" type="Node3D" parent="Presentation/Viewport/World/FishMotion/DisplayScale"]
