@@ -25,5 +25,11 @@ Vollbildansicht mit dem aktuell gewählten Fisch. WASD bewegt auf der
 Bildschirmebene, Q/E richtet links/rechts aus, R/F verändert das Tempo.
 F8 setzt zurück, Esc beendet. Kein Mauszoom oder Kameradrehen im Versuch.
 Einstellungen: config/stimulus.json (nach erstem Start).
-Versuchsprotokolle: data/experiments/. Größen sind noch nicht physikalisch
-kalibriert. Fenstergrößenänderung/Fokusverlust beendet den Versuch.
+Versuchsprotokolle: data/experiments/. Fenstergrößenänderung/Fokusverlust beendet den Versuch.
+
+Vor dem ersten Versuch F10 öffnen: sichtbare Bildschirmbreite in cm eingeben,
+Fisch-Gesamtlänge einstellen und die 10-cm-Linie mit einem echten Lineal prüfen.
+Bei Abweichung die gemessene Linienlänge eingeben und Messkorrektur anwenden.
+Speichern unter config/display_calibration.json. Ohne gültige Kalibrierung
+startet F9 keinen Versuch. Nach Monitorwechsel erneut prüfen.
+Geschwindigkeit in config/stimulus.json über speed_cm_s (cm/s) einstellen.

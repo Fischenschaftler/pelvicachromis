@@ -42,4 +42,4 @@ func step(delta: float, command: Dictionary) -> void:
 	animation_rate=move_toward(animation_rate,rate,config.animation_response*delta)
 	animation.speed_scale=animation_rate
 func state() -> Dictionary:
-	return {"position":[position.x,position.y,position.z],"orientation_y_radians":yaw,"target_yaw":target_yaw,"velocity":[velocity.x,velocity.y,0],"speed":velocity.length(),"stimulus_speed":stimulus_speed,"animation_speed":animation_rate}
+	return {"position":[position.x,position.y,position.z],"orientation_y_radians":yaw,"target_yaw":target_yaw,"velocity":[velocity.x,velocity.y,0],"speed":velocity.length(),"stimulus_speed":stimulus_speed,"animation_speed":animation_rate,"speed_cm_s":velocity.length()/config.units_per_cm,"target_speed_cm_s":stimulus_speed/config.units_per_cm,"position_cm":[position.x/config.units_per_cm,position.y/config.units_per_cm]}

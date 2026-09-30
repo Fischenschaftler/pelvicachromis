@@ -140,3 +140,8 @@ stimulus_turn_right={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"physical_keycode":69)]
 }
+
+display_calibration={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":4194341)]
+}

@@ -10,6 +10,8 @@ var swim_animation: StringName
 @onready var chase: Node3D=$ViewerViewport/Viewport/World/ChaseCamera
 @onready var control_button: Button=$UI/ControlMode
 @onready var hint: Label=$UI/Layout/Header/Hint
+var calibration_view: Control
+var calibration_pending:=false
 var stimulus: Control
 var stimulus_pending:=false
 var control_mode := false
@@ -31,7 +33,7 @@ func _ready() -> void:
 	reset_button.pressed.connect(reset_view)
 	control_button.pressed.connect(toggle_fish_control)
 	get_viewport().size_changed.connect(func(): call_deferred("layout_control"))
-	hint.text="Linke Maustaste: drehen · Rad: Zoom · F9: Stimulus"
+	hint.text="Maus: Drehen/Zoom · F9: Stimulus · F10: Kalibrieren"
 	viewing_hint=hint.text
 	for node in fish.find_children("*", "AnimationPlayer", true, false):
 		animation_player = node as AnimationPlayer
@@ -66,7 +68,9 @@ func _update_button() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if stimulus_pending or (stimulus!=null and stimulus.active):return
+	if calibration_pending or (calibration_view!=null and calibration_view.active) or stimulus_pending or (stimulus!=null and stimulus.active):return
+	if event.is_action_pressed("display_calibration") and not event.is_echo():
+		open_display_calibration();get_viewport().set_input_as_handled();return
 	if event.is_action_pressed("stimulus_start") and not event.is_echo():
 		start_stimulus_session();get_viewport().set_input_as_handled();return
 	if control_mode and event.is_action_pressed("fish_control_exit"):
@@ -76,7 +80,7 @@ func _input(event: InputEvent) -> void:
 		chase.dragging = false
 
 func _unhandled_input(event: InputEvent) -> void:
-	if stimulus_pending or (stimulus!=null and stimulus.active):return
+	if calibration_pending or (calibration_view!=null and calibration_view.active) or stimulus_pending or (stimulus!=null and stimulus.active):return
 	# Root UI gets first refusal; only unused events reach the 3D viewport.
 	if event is InputEventMouse:
 		var area: SubViewportContainer = $ViewerViewport
@@ -91,7 +95,7 @@ func toggle_fish_control() -> void:
 	if control_mode:end_fish_control()
 	else:begin_fish_control()
 func begin_fish_control() -> void:
-	if control_mode or animation_player==null or stimulus_pending or (stimulus!=null and stimulus.active):return
+	if control_mode or animation_player==null or calibration_pending or (calibration_view!=null and calibration_view.active) or stimulus_pending or (stimulus!=null and stimulus.active):return
 	var photo:=get_node_or_null("UI/ReferencePhoto")
 	if photo!=null:
 		# Do not hide a modal or a still-running photo worker.
@@ -142,7 +146,7 @@ func layout_control() -> void:
 	chase.resize()
 
 func start_stimulus_session(config_override: Resource=null) -> String:
-	if stimulus_pending or (stimulus!=null and stimulus.active):return "Stimulus bereits aktiv."
+	if calibration_pending or (calibration_view!=null and calibration_view.active) or stimulus_pending or (stimulus!=null and stimulus.active):return "Stimulus bereits aktiv."
 	if animation_player==null:return "Schwimmanimation fehlt."
 	var photo:=get_node_or_null("UI/ReferencePhoto")
 	if photo!=null:
@@ -178,3 +182,24 @@ func _stimulus_stopped(reason: String) -> void:
 	if reason=="log_error":
 		var photo:=get_node_or_null("UI/ReferencePhoto")
 		if photo!=null:photo.call("fail","Versuch beendet: Protokoll konnte nicht geschrieben werden.")
+
+func open_display_calibration(profile_path: String="") -> void:
+	if stimulus_pending or calibration_pending or (stimulus!=null and stimulus.active) or (calibration_view!=null and calibration_view.active):return
+	var photo:=get_node_or_null("UI/ReferencePhoto")
+	if photo!=null:
+		for window in photo.find_children("*","Window",true,false):
+			if window.visible:return
+		if photo.get("worker")!=null or photo.get("analysis_worker")!=null:return
+	if control_mode:end_fish_control()
+	var settings:=preload("res://scripts/stimulus/stimulus_config.gd").new()
+	var error:=settings.load_portable()
+	if not error.is_empty():
+		if photo!=null:photo.call("fail",error)
+		return
+	calibration_pending=true
+	if calibration_view==null:
+		calibration_view=preload("res://scripts/stimulus/calibration_view.gd").new();add_child(calibration_view)
+		calibration_view.closed.connect(func():$UI.show();$ViewerViewport.show();$Background.show())
+	$UI.hide();$ViewerViewport.hide();$Background.hide()
+	await calibration_view.open_calibration(fish,settings,profile_path)
+	calibration_pending=false

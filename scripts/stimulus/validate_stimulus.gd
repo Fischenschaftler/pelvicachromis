@@ -1,8 +1,11 @@
 extends Node
 ## Runs in editor and in a separately exported diagnostic release scene.
+const Calibration=preload("res://scripts/stimulus/display_calibration.gd")
 const Config=preload("res://scripts/stimulus/stimulus_config.gd")
 const Paths=preload("res://scripts/storage/portable_paths.gd")
 const Manager=preload("res://scripts/project/project_manager.gd")
+var report_filename: String="stimulus_validation.json"
+var screenshot_prefix: String="stimulus_"
 var errors: Array[String]=[]
 var checks:=0
 var viewer: Node3D
@@ -24,7 +27,7 @@ func advance(seconds: float,command: Dictionary={}) -> void:
 func snapshot(name: String) -> void:
 	if DisplayServer.get_name()=="headless":return
 	await RenderingServer.frame_post_draw
-	check(root.get_texture().get_image().save_png(out.path_join(name+".png"))==OK,"Screenshot "+name)
+	check(root.get_texture().get_image().save_png(out.path_join(name.replace("stimulus_",screenshot_prefix)+".png"))==OK,"Screenshot "+name)
 func run() -> void:
 	root.show();root.size=Vector2i(1400,900)
 	viewer=load("res://scenes/PhotoImport.tscn").instantiate();root.add_child(viewer);await wait(.6)
@@ -44,12 +47,16 @@ func run() -> void:
 	for mesh in viewer.fish.find_children("*","MeshInstance3D",true,false):
 		for i in range(mesh.get_surface_override_material_count()):material_refs.append([mesh,i,mesh.get_active_material(i)])
 	var config:=Config.new();config.fullscreen=false;config.stop_on_focus_loss=false
+	config.calibration_override=Calibration.new()
+	check(config.calibration_override.configure(60.0,Calibration.display_context(root)).is_empty(),"Synthetic display calibration")
+	config.calibration_override.calibration_timestamp="SYNTHETIC TEST ONLY"
 	var old_parent: Node=viewer.fish.get_parent()
 	var old_transform: Transform3D=viewer.fish.transform
 	viewer.animation_player.pause()
 	var old_phase: float=viewer.animation_player.current_animation_position
 	check((await viewer.start_stimulus_session(config)).is_empty(),"Start stimulus")
 	var stimulus=viewer.stimulus;stimulus.sample_input=false;stimulus.set_physics_process(false)
+	config=stimulus.config;config.calibration_override=stimulus.calibration
 	check(stimulus.active and not viewer.get_node("UI").visible,"Presentation hides all editor UI")
 	if DisplayServer.get_name()!="headless":check(Input.mouse_mode==Input.MOUSE_MODE_HIDDEN,"Hidden cursor")
 	check(viewer.fish.get_parent()==stimulus.center,"Same fish instance reparented")
@@ -127,6 +134,6 @@ func run() -> void:
 	await snapshot("stimulus_return_to_viewer")
 	finish()
 func finish() -> void:
-	var report: Dictionary={"checks":checks,"errors":errors,"exported":not OS.has_feature("editor"),"renderer":DisplayServer.get_name(),"log_path":viewer.stimulus.last_log_path if viewer.stimulus!=null else ""}
-	var file:=FileAccess.open(out.path_join("stimulus_validation.json"),FileAccess.WRITE);file.store_string(JSON.stringify(report,"\t"));file.close()
+	var report: Dictionary={"checks":checks,"errors":errors,"exported":not OS.has_feature("editor"),"renderer":DisplayServer.get_name(),"log_path":viewer.stimulus.last_log_path if viewer!=null and viewer.stimulus!=null else ""}
+	var file:=FileAccess.open(out.path_join(report_filename),FileAccess.WRITE);file.store_string(JSON.stringify(report,"\t"));file.close()
 	print(JSON.stringify(report));get_tree().quit(0 if errors.is_empty() else 1)

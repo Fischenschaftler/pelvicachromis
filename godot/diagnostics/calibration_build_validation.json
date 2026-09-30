@@ -1,0 +1,14 @@
+{
+  "exe_bytes": 148915728,
+  "exe_sha256": "6e21dfd0b2bad88be8c59c1db7545e5284edcf53012b347b5d5f1e628c1aad30",
+  "build_bytes": 152985073,
+  "zip_bytes": 58459355,
+  "normal_release_start_exit": 0,
+  "normal_release_start_errors": [],
+  "diagnostic_scene_in_production": false,
+  "synthetic_calibration_shipped": false,
+  "release_checks": 730,
+  "relocated_release_checks": 730,
+  "protected_assets_unchanged": true,
+  "physical_ruler_measurement": "Requires user measurement on presentation monitor; synthetic dimensions used in automated tests"
+}

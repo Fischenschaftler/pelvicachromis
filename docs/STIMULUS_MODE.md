@@ -2,13 +2,18 @@
 
 Zusätzliche Präsentationsansicht für Verhaltensversuche mit einem realen Fisch vor einem Monitor. Die bestehende Foto-, Projekt- und Texturverarbeitung bleibt im normalen Viewer. Der Stimulus zeigt ausschließlich Fisch und neutralen Hintergrund, ohne UI oder Mauszeiger.
 
+## Bildschirmkalibrierung
+
+Vor dem ersten Versuch **F10** öffnen und den Präsentationsmonitor kalibrieren. Größen verwenden jetzt die Gesamtlänge einschließlich Schwanzflosse; Geschwindigkeit wird in cm/s konfiguriert. Details und Formeln: [DISPLAY_CALIBRATION.md](DISPLAY_CALIBRATION.md).
+
 ## Start und Steuerung
 
 Zuerst das gewünschte Fischprojekt öffnen, die gewünschte Original-/generierte Färbung wählen und **F9** drücken. Während Fotoanalyse, Texturerzeugung oder eines offenen Fotodialogs ist der Einstieg gesperrt. Die bisherige freie Fischsteuerung wird beim Einstieg beendet.
 
 | Taste | Funktion |
 |---|---|
-| F9 | Versuch aus dem Viewer starten |
+| F9 | Kalibrierten Versuch aus dem Viewer starten |
+| F10 | Bildschirmkalibrierung im separaten Vollbild-Setup |
 | W / S | Bildschirm auf / ab |
 | A / D | Bildschirm links / rechts |
 | R / F, halten | Sollgeschwindigkeit erhöhen / reduzieren |
@@ -33,16 +38,15 @@ Beim ersten regulären Start entsteht `config/stimulus.json` neben der portablen
 Die Defaults stehen zentral in `scripts/stimulus/stimulus_config.gd`:
 
 - `background_color`: RGB [0.12, 0.12, 0.12], alternativ [0,0,0] oder [1,1,1].
-- `fish_display_length`: 8 nominale cm; `units_per_cm`: 0.01; `view_height`: 0.24 Godot-Einheiten.
+- `fish_display_length_cm`: wird aus dem aktiven F10-Kalibrierprofil übernommen; `view_height`: 0.24 Godot-Einheiten.
 - `plane_depth`: 0; `camera_distance`: 1.
-- `stimulus_speed`: 0.04; `min_speed`: 0.01; `max_speed`: 0.10 Godot-Einheiten/s.
-- `speed_adjustment`: 0.025 Einheiten/s pro Sekunde Tastendruck.
-- `acceleration`: 0.035; `deceleration`: 0.05 Einheiten/s².
+- `speed_cm_s`: 4; `min_speed_cm_s`: 1; `max_speed_cm_s`: 10.
+- `speed_adjustment_cm_s2`: 2.5; `acceleration_cm_s2`: 3.5; `deceleration_cm_s2`: 5.
 - `turn_speed`: PI rad/s; `turn_acceleration`: 6 rad/s².
 - `idle_animation_speed`: 0.18; `swim_animation_speed`: 1; `fast_animation_speed`: 1.9; `animation_response`: 3 pro Sekunde.
 - `log_hz`: 20; `flush_interval`: 0.5 s; `fullscreen`: true; `stop_on_focus_loss`: true.
 
-**Noch nicht physikalisch kalibriert.** Die Körperlänge meint die X-Ausdehnung von Fish_Body, ohne Schwanzflosse. Der Skalierungsfaktor ist `fish_display_length * units_per_cm / native_body_length`. Orthografische Pixel pro Einheit ergeben sich aus Viewporthöhe / view_height. Die reale Monitorgröße, DPI/OS-Skalierung und Pixel/cm müssen im nächsten Schritt kalibriert werden. Eine Einstellung von 8 bedeutet aktuell ausdrücklich nicht nachgewiesene 8 cm auf dem Bildschirm. Geschwindigkeiten bleiben Godot-Einheiten/s, nicht validierte cm/s.
+Die Skalierung verwendet die manuell gemessene Monitorbreite, die Messkorrektur der Referenzlinie und die reale orthografische Ausgabeauflösung. Die Modelllänge ist jetzt Total Length, einschließlich Schwanzflosse. Ohne passende Kalibrierung wird der Versuch nicht gestartet. Die physische Richtigkeit der Eingaben muss mit einem Lineal am Monitor geprüft werden.
 
 Swim_Test wird unverändert geloopt. Seine Abspielrate wird weich an den Betrag der tatsächlichen X/Y-Geschwindigkeit gekoppelt. Stillstand behält eine kleine Restbewegung, die nominelle Geschwindigkeit verwendet Rate 1, die Höchstgeschwindigkeit Rate 1.9.
 
@@ -50,7 +54,7 @@ Swim_Test wird unverändert geloopt. Seine Abspielrate wird weich an den Betrag 
 
 `data/experiments/<Zeitstempel>_<Zufallskennung>.jsonl`, neben der EXE; Editor: `dev_portable_data/data/experiments/`. Keine Versuchspositionen oder -geschwindigkeiten gelangen in `project.json`.
 
-Jede Zeile enthält Ereignistyp, monotone Zeit seit Beginn, Simulationszeit, Zustand und Steuerbefehl. Zustand: Position XYZ, Orientierung Y in rad, Zielorientierung, Geschwindigkeit XY, Betrag, Sollgeschwindigkeit, Animationsrate. Startdatensatz: Konfigurationskopie, Projektkennung/-name, Färbungsmodus, bei generierter Textur deren SHA256, Viewportauflösung, Kameraposition, Projektion, Physiktaktrate und `calibrated: false`.
+Jede Zeile enthält Ereignistyp, monotone Zeit seit Beginn, Simulationszeit, Zustand und Steuerbefehl. Zustand: Position XYZ, Orientierung Y in rad, Zielorientierung, Geschwindigkeit XY, Betrag, Sollgeschwindigkeit, Animationsrate. Startdatensatz: Konfigurationskopie, Projektkennung/-name, Färbungsmodus, bei generierter Textur deren SHA256, Viewportauflösung, Kameraposition, Projektion, Physiktaktrate und `calibrated: true` einschließlich vollständigem Kalibrierprofil, Fischgröße, Geschwindigkeit in cm/s und Welt/cm.
 
 Ereignisse: Start/Anfangszustand, periodische Stichproben, Befehlsänderung, Reset, Stop mit Grund (Bedienung, Escape, Fenstergröße, Fokusverlust, Schließen oder Schreibfehler). Reset startet die Versuchszeit nicht neu. Ereignisse werden sofort, Stichproben periodisch auf Datenträger geflusht. Schreibfehler verhindern/beenden die Präsentation; nach der Rückkehr erscheint eine Fehlermeldung. Ein Prozessabsturz kann trotzdem einen unvollständigen Lauf hinterlassen. Zeitstempel sind Softwarezeiten, keine Messung der tatsächlichen Monitor-Ausgabezeit.
 
@@ -62,8 +66,8 @@ Ereignisse: Start/Anfangszustand, periodische Stichproben, Befehlsänderung, Res
 
 ## Validierung
 
-`scripts/stimulus/validate_stimulus.gd` ist ein Test-Node, kein Bestandteil des regulären Exports. Er prüft Start/Stop, Kamera, beide Bewegungsachsen, Beschleunigung/Bremsen/Limit, Orientierung, Swim_Test, Materialidentität, 15 Bones, Reset, Log-Inhalte, unveränderte Projekte, Projektwechsel, Vollbild und Rückkehr. Headless überspringt ausschließlich grafikspezifische Prüfungen. Zusätzlich laufen die vorhandenen Fotoanalyse-, Import-, Atlas-, Projekt-, Portabilitäts- und freien Steuerungstests.
+`scripts/stimulus/validate_stimulus.gd` ist ein Test-Node, kein Bestandteil des regulären Exports. Er prüft Start/Stop, Kamera, beide Bewegungsachsen, Beschleunigung/Bremsen/Limit, Orientierung, Swim_Test, Materialidentität, 15 Bones, Reset, Log-Inhalte, unveränderte Projekte, Projektwechsel, Vollbild und Rückkehr. Die vollständige Stimulusprüfung benötigt einen echten DisplayServer und verwendet explizit synthetische Kalibriermaße. Die separaten Kalibrierungs-Rechentests laufen auch headless. Zusätzlich laufen die vorhandenen Fotoanalyse-, Import-, Atlas-, Projekt-, Portabilitäts- und freien Steuerungstests.
 
 Die grafischen Diagnosen liegen unter `godot/diagnostics/stimulus_*.png`. Eine separat exportierte Testszene prüft dieselben Abläufe mit dem Windows-Release-Template; der normale Build enthält diese Testszene nicht.
 
-Aufruf im Repository: `Godot --path . --script res://scripts/stimulus/run_stimulus_validation.gd` (für reine technische Prüfung zusätzlich `--headless`). Der Test benötigt das vorhandene Beispielprojekt unter `dist/PelvicachromisStudio/projects/`; Schreibtests verwenden einen separaten Testordner.
+Aufruf im Repository: `Godot --path . --script res://scripts/stimulus/run_stimulus_validation.gd`. Der Test benötigt das vorhandene Beispielprojekt unter `dist/PelvicachromisStudio/projects/`; Schreibtests verwenden einen separaten Testordner.

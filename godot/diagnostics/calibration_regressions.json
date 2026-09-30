@@ -1,0 +1,22 @@
+[
+    {
+        "exit_code":  0,
+        "test":  "scripts/fish/validate_fish_control.gd"
+    },
+    {
+        "exit_code":  0,
+        "test":  "scripts/storage/validate_portable_storage.gd"
+    },
+    {
+        "exit_code":  0,
+        "test":  "scripts/photo_import/validate_photo_import.gd"
+    },
+    {
+        "exit_code":  0,
+        "test":  "scripts/project/validate_project_storage.gd"
+    },
+    {
+        "exit_code":  0,
+        "test":  "scripts/photo_import/validate_atlas_replacement.gd"
+    }
+]
