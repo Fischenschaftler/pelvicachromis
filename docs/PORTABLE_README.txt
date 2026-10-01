@@ -33,3 +33,8 @@ Bei Abweichung die gemessene Linienlänge eingeben und Messkorrektur anwenden.
 Speichern unter config/display_calibration.json. Ohne gültige Kalibrierung
 startet F9 keinen Versuch. Nach Monitorwechsel erneut prüfen.
 Geschwindigkeit in config/stimulus.json über speed_cm_s (cm/s) einstellen.
+
+F11 öffnet den Sequenzeditor für reproduzierbare Stimulusabläufe.
+Sequenzen: data/sequences/. Leertaste pausiert, Esc beendet den Versuch.
+Vorschauprotokolle: data/experiments/previews/. Echte Versuche benötigen
+ein geöffnetes Fischprojekt, gültige Kalibrierung und eine Versuchs-ID.

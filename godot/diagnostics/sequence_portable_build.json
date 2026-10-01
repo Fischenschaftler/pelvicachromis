@@ -1,0 +1,16 @@
+{
+  "godot_version": "4.7.2.stable.official.ed1daf0bf",
+  "production_started": true,
+  "production_stderr_empty": true,
+  "embedded_pck": true,
+  "editor_checks": 1109,
+  "release_checks": 1109,
+  "moved_release_checks": 1109,
+  "release_errors": [],
+  "sequence_examples": 3,
+  "build_bytes": 153024187,
+  "zip_bytes": 58491766,
+  "zip_crc_valid": true,
+  "exe_sha256": "56fdb254d81d2145c096fe439e5063941c6fa55227519f0429d52ec60a053f99",
+  "protected_files_unchanged": true
+}

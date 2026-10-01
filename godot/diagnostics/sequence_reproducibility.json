@@ -1,0 +1,25 @@
+{
+	"definition_sha256": "e32ab902b432536110515cfa9df359d1c969bc6388bb519a1a7238a3ab185e28",
+	"final_position_cm": [
+		0.0,
+		0.476006835699081
+	],
+	"final_position_delta_cm": 0.0,
+	"integration_quantum_s": 0.00416666666666667,
+	"render_intervals_s": [
+		[
+			0.0333333333333333
+		],
+		[
+			0.00694444444444444,
+			0.019,
+			0.006,
+			0.04
+		],
+		[
+			0.0333333333333333
+		]
+	],
+	"runs": 3,
+	"step_time_delta_s": 0.0
+}

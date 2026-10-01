@@ -10,6 +10,8 @@ var swim_animation: StringName
 @onready var chase: Node3D=$ViewerViewport/Viewport/World/ChaseCamera
 @onready var control_button: Button=$UI/ControlMode
 @onready var hint: Label=$UI/Layout/Header/Hint
+var sequence_editor: Control
+var sequence_launching:=false
 var calibration_view: Control
 var calibration_pending:=false
 var stimulus: Control
@@ -33,7 +35,7 @@ func _ready() -> void:
 	reset_button.pressed.connect(reset_view)
 	control_button.pressed.connect(toggle_fish_control)
 	get_viewport().size_changed.connect(func(): call_deferred("layout_control"))
-	hint.text="Maus: Drehen/Zoom · F9: Stimulus · F10: Kalibrieren"
+	hint.text="F9: Stimulus · F10: Kalibrieren · F11: Sequenzen"
 	viewing_hint=hint.text
 	for node in fish.find_children("*", "AnimationPlayer", true, false):
 		animation_player = node as AnimationPlayer
@@ -68,7 +70,9 @@ func _update_button() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if calibration_pending or (calibration_view!=null and calibration_view.active) or stimulus_pending or (stimulus!=null and stimulus.active):return
+	if (sequence_editor!=null and sequence_editor.visible and not sequence_launching) or calibration_pending or (calibration_view!=null and calibration_view.active) or stimulus_pending or (stimulus!=null and stimulus.active):return
+	if event.is_action_pressed("sequence_editor") and not event.is_echo():
+		open_sequence_editor();get_viewport().set_input_as_handled();return
 	if event.is_action_pressed("display_calibration") and not event.is_echo():
 		open_display_calibration();get_viewport().set_input_as_handled();return
 	if event.is_action_pressed("stimulus_start") and not event.is_echo():
@@ -80,7 +84,7 @@ func _input(event: InputEvent) -> void:
 		chase.dragging = false
 
 func _unhandled_input(event: InputEvent) -> void:
-	if calibration_pending or (calibration_view!=null and calibration_view.active) or stimulus_pending or (stimulus!=null and stimulus.active):return
+	if (sequence_editor!=null and sequence_editor.visible and not sequence_launching) or calibration_pending or (calibration_view!=null and calibration_view.active) or stimulus_pending or (stimulus!=null and stimulus.active):return
 	# Root UI gets first refusal; only unused events reach the 3D viewport.
 	if event is InputEventMouse:
 		var area: SubViewportContainer = $ViewerViewport
@@ -145,8 +149,8 @@ func layout_control() -> void:
 	area.position=Vector2(0,top);area.size=Vector2(size.x,maxf(80.0,size.y-top-64.0))
 	chase.resize()
 
-func start_stimulus_session(config_override: Resource=null) -> String:
-	if calibration_pending or (calibration_view!=null and calibration_view.active) or stimulus_pending or (stimulus!=null and stimulus.active):return "Stimulus bereits aktiv."
+func start_stimulus_session(config_override: Resource=null,sequence_request: Dictionary={}) -> String:
+	if (sequence_editor!=null and sequence_editor.visible and not sequence_launching) or calibration_pending or (calibration_view!=null and calibration_view.active) or stimulus_pending or (stimulus!=null and stimulus.active):return "Stimulus bereits aktiv."
 	if animation_player==null:return "Schwimmanimation fehlt."
 	var photo:=get_node_or_null("UI/ReferencePhoto")
 	if photo!=null:
@@ -167,7 +171,7 @@ func start_stimulus_session(config_override: Resource=null) -> String:
 	if focus!=null:focus.release_focus()
 	orbit.dragging=false;chase.dragging=false
 	$UI.hide();$ViewerViewport.hide();$Background.hide()
-	var error: String=await stimulus.start_stimulus_session(fish,animation_player,swim_animation,metadata,config_override)
+	var error: String=await stimulus.start_stimulus_session(fish,animation_player,swim_animation,metadata,config_override,sequence_request)
 	stimulus_pending=false
 	if not error.is_empty():
 		_stimulus_stopped("start_failed")
@@ -179,6 +183,9 @@ func reset_stimulus() -> void:
 	if stimulus!=null:stimulus.reset_stimulus()
 func _stimulus_stopped(reason: String) -> void:
 	$UI.show();$ViewerViewport.show();$Background.show()
+	if sequence_editor!=null and sequence_editor.return_after_trial:
+		sequence_editor.return_after_trial=false;sequence_editor.show();$UI.hide();$ViewerViewport.hide();$Background.hide()
+		sequence_editor.show_result(reason,stimulus.last_log_path if stimulus!=null else "")
 	if reason=="log_error":
 		var photo:=get_node_or_null("UI/ReferencePhoto")
 		if photo!=null:photo.call("fail","Versuch beendet: Protokoll konnte nicht geschrieben werden.")
@@ -203,3 +210,38 @@ func open_display_calibration(profile_path: String="") -> void:
 	$UI.hide();$ViewerViewport.hide();$Background.hide()
 	await calibration_view.open_calibration(fish,settings,profile_path)
 	calibration_pending=false
+
+func open_sequence_editor() -> void:
+	if stimulus_pending or calibration_pending or (stimulus!=null and stimulus.active) or (calibration_view!=null and calibration_view.active):return
+	var photo:=get_node_or_null("UI/ReferencePhoto")
+	if photo!=null:
+		for window in photo.find_children("*","Window",true,false):
+			if window.visible:return
+		if photo.get("worker")!=null or photo.get("analysis_worker")!=null:return
+	if control_mode:end_fish_control()
+	if sequence_editor==null:
+		sequence_editor=preload("res://scripts/sequences/sequence_editor.gd").new();sequence_editor.viewer=self;add_child(sequence_editor)
+		sequence_editor.closed.connect(func():$UI.show();$ViewerViewport.show();$Background.show())
+	$UI.hide();$ViewerViewport.hide();$Background.hide();sequence_editor.show();sequence_editor.refresh_context()
+func sequence_setup_context() -> Dictionary:
+	var settings:=preload("res://scripts/stimulus/stimulus_config.gd").new()
+	var error:=settings.load_portable()
+	if not error.is_empty():return {"error":error}
+	var calibration:=preload("res://scripts/stimulus/display_calibration.gd").new()
+	error=calibration.load_profile()
+	if not error.is_empty():return {"error":error}
+	error=calibration.mismatch(calibration.display_context(get_window()))
+	if not error.is_empty():return {"error":error}
+	var pixels:=DisplayServer.screen_get_size(get_window().current_screen) if settings.fullscreen else get_window().size
+	settings.apply_calibration(calibration,pixels,pixels)
+	var photo:=get_node_or_null("UI/ReferencePhoto")
+	return {"config":settings,"calibration":calibration,"bounds":preload("res://scripts/sequences/sequence_data.gd").visible_bounds(calibration,pixels,settings.fish_display_length_cm),"project_id":str(photo.get("project_id")) if photo!=null else "","project_name":str(photo.get("project_name")) if photo!=null else ""}
+func launch_sequence(request: Dictionary,config_override: Resource=null) -> String:
+	var photo:=get_node_or_null("UI/ReferencePhoto")
+	if not request.get("preview",false) and (photo==null or str(photo.get("project_id")).is_empty()):return "Bitte zuerst ein Fischprojekt speichern oder öffnen."
+	sequence_launching=true
+	if sequence_editor!=null:sequence_editor.return_after_trial=true;sequence_editor.hide()
+	var error: String=await start_stimulus_session(config_override,request)
+	sequence_launching=false
+	if not error.is_empty() and sequence_editor!=null:_stimulus_stopped("start_failed")
+	return error

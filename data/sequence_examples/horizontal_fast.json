@@ -1,0 +1,48 @@
+{
+  "sequence_format_version": 1,
+  "sequence_id": "example_horizontal_fast",
+  "sequence_name": "Horizontal schnell",
+  "created_at": "2026-10-01T00:00:00Z",
+  "updated_at": "2026-10-01T00:00:00Z",
+  "description": "Demonstration. Bildschirmgrenzen vor dem Start prüfen.",
+  "notes": "Die schnelle Variante benötigt einen ausreichend breiten kalibrierten Monitor.",
+  "initial_state": {
+    "start_mode": "LEFT",
+    "position_cm": [
+      0,
+      0
+    ],
+    "orientation": "RIGHT"
+  },
+  "steps": [
+    {
+      "step_type": "HOLD",
+      "duration_s": 5,
+      "target_speed_cm_s": 0,
+      "direction": "NONE",
+      "comment": ""
+    },
+    {
+      "step_type": "MOVE",
+      "duration_s": 10,
+      "target_speed_cm_s": 6,
+      "direction": "RIGHT",
+      "comment": ""
+    },
+    {
+      "step_type": "HOLD",
+      "duration_s": 5,
+      "target_speed_cm_s": 0,
+      "direction": "NONE",
+      "comment": ""
+    },
+    {
+      "step_type": "MOVE",
+      "duration_s": 10,
+      "target_speed_cm_s": 6,
+      "direction": "LEFT",
+      "comment": ""
+    }
+  ],
+  "total_duration_s": 30
+}

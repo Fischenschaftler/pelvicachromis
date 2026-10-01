@@ -145,3 +145,12 @@ display_calibration={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"physical_keycode":4194341)]
 }
+
+sequence_editor={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":4194342)]
+}
+sequence_pause={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":32)]
+}
