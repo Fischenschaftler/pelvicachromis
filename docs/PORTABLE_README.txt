@@ -38,3 +38,9 @@ F11 öffnet den Sequenzeditor für reproduzierbare Stimulusabläufe.
 Sequenzen: data/sequences/. Leertaste pausiert, Esc beendet den Versuch.
 Vorschauprotokolle: data/experiments/previews/. Echte Versuche benötigen
 ein geöffnetes Fischprojekt, gültige Kalibrierung und eine Versuchs-ID.
+
+F12 öffnet die Experimentatoransicht mit separatem Stimulusfenster.
+Monitorwahl: config/display_setup.json. Für echte Versuche zwei Monitore
+verwenden; ein Monitor ist als deutlich gekennzeichnete Entwicklungsvorschau
+möglich. Zuerst Monitorwahl speichern, kalibrieren, Versuch vorbereiten und
+dann Stimulus starten. Pause/Abbruch bleiben im Experimentatorfenster.

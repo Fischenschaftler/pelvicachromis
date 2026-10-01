@@ -1,0 +1,9 @@
+{
+	"native_focus_transfer_tested": true,
+	"native_fullscreen_tested": true,
+	"native_resize_tested": true,
+	"native_windows_tested": true,
+	"physical_screen_count": 1,
+	"second_physical_monitor_tested": false,
+	"unplug_simulated": true
+}

@@ -16,6 +16,7 @@ var sequence_request: Dictionary={}
 var old_animation_process: int
 var sequence_log_failed:=false
 var preview_label: Label
+var external_host:=false # Native stimulus window owns focus, cursor and neutral state.
 var active:=false
 var starting:=false
 var sample_input:=true
@@ -53,6 +54,7 @@ func start_stimulus_session(model: Node3D,animation: AnimationPlayer,clip: Strin
 		var supplied: RefCounted=override.calibration_override
 		error=calibration.configure(supplied.physical_screen_width_cm,supplied.monitor,supplied.target_fish_length_cm)
 		calibration.correction_factor=supplied.correction_factor;calibration.calibration_timestamp=supplied.calibration_timestamp;calibration.recalculate()
+		calibration.active_profile=supplied.active_profile
 	else:error=calibration.load_profile()
 	if not error.is_empty():return error
 	display_context=Calibration.display_context(get_window())
@@ -65,8 +67,9 @@ func start_stimulus_session(model: Node3D,animation: AnimationPlayer,clip: Strin
 	old_animation_process=player.callback_mode_process
 	old_speed=player.speed_scale;old_phase=player.current_animation_position;old_playing=player.is_playing()
 	old_mouse=Input.mouse_mode;old_window_mode=get_window().mode;old_window_size=get_window().size;old_window_position=get_window().position
-	if config.fullscreen:get_window().mode=Window.MODE_FULLSCREEN
-	show();Input.mouse_mode=Input.MOUSE_MODE_HIDDEN
+	if config.fullscreen and get_window().mode!=Window.MODE_FULLSCREEN:get_window().mode=Window.MODE_FULLSCREEN
+	show()
+	if not external_host:Input.mouse_mode=Input.MOUSE_MODE_HIDDEN
 	for i in range(6):await get_tree().process_frame
 	fixed_size=get_window().size
 	var actual: Dictionary=Calibration.display_context(get_window())
@@ -111,10 +114,11 @@ func start_stimulus_session(model: Node3D,animation: AnimationPlayer,clip: Strin
 		log_writer.fixed_fields={"trial_id":sequence_request.get("trial_id",""),"animal_id":sequence_request.get("animal_id",""),"preview":sequence_request.get("preview",false),"active_fish":{"project_id":metadata.get("project_id",""),"project_name":metadata.get("project_name",""),"generated_coloring":metadata.get("generated_coloring",false),"texture_sha256":metadata.get("generated_texture_sha256","")},"fish_display_length_cm":config.fish_display_length_cm,"calibration_profile":calibration.active_profile,"calibration":calibration.snapshot()}
 		log_writer.telemetry_provider=sequence_runner.telemetry
 		if sequence_request.get("preview",false):log_writer.directory_override=Paths.data_dir().path_join("experiments/previews")
-		if preview_label==null:
+		if preview_label==null and not external_host:
 			preview_label=Label.new();preview_label.position=Vector2(16,16);preview_label.text="VORSCHAU / PREVIEW · Leertaste: Pause · Esc: Beenden";preview_label.mouse_filter=Control.MOUSE_FILTER_IGNORE;add_child(preview_label)
-		preview_label.visible=sequence_request.get("preview",false)
+		if preview_label!=null:preview_label.visible=sequence_request.get("preview",false) and not external_host
 	elif preview_label!=null:preview_label.hide()
+	if external_host:log_writer.fixed_fields.merge(metadata,true)
 	error=log_writer.begin(context);last_log_path=log_writer.path
 	starting=false;active=true
 	if not error.is_empty():stop_stimulus_session("log_error");return error
@@ -156,26 +160,29 @@ func stop_stimulus_session(reason: String="operator_stop") -> void:
 	player.callback_mode_process=old_animation_process
 	player.speed_scale=old_speed;player.seek(old_phase,true)
 	if not old_playing:player.pause()
-	hide();Input.mouse_mode=old_mouse
-	get_window().mode=old_window_mode
-	if old_window_mode==Window.MODE_WINDOWED:get_window().size=old_window_size;get_window().position=old_window_position
+	hide()
+	if not external_host:
+		Input.mouse_mode=old_mouse;get_window().mode=old_window_mode
+		if old_window_mode==Window.MODE_WINDOWED:get_window().size=old_window_size;get_window().position=old_window_position
 	stopped.emit(reason)
 func _input(event: InputEvent) -> void:
-	if not active:return
+	if not active or external_host:return
 	if event.is_action_pressed("stimulus_exit"):stop_stimulus_session("escape")
 	elif event.is_action_pressed("sequence_pause") and not event.is_echo() and sequence_runner!=null:sequence_runner.toggle_pause(Time.get_ticks_usec()/1000000.0)
 	elif event.is_action_pressed("stimulus_reset"):reset_stimulus()
 	get_viewport().set_input_as_handled()
 func _notification(what: int) -> void:
+	if external_host:return
 	if what==NOTIFICATION_APPLICATION_FOCUS_OUT and active and config.stop_on_focus_loss:stop_stimulus_session("focus_lost")
 	if what==NOTIFICATION_WM_CLOSE_REQUEST and active:stop_stimulus_session("window_closed")
 func _exit_tree() -> void:
 	if log_writer!=null:log_writer.close()
 
 func _abort_start() -> void:
-	starting=false;hide();Input.mouse_mode=old_mouse
-	get_window().mode=old_window_mode
-	if old_window_mode==Window.MODE_WINDOWED:get_window().size=old_window_size;get_window().position=old_window_position
+	starting=false;hide()
+	if not external_host:
+		Input.mouse_mode=old_mouse;get_window().mode=old_window_mode
+		if old_window_mode==Window.MODE_WINDOWED:get_window().size=old_window_size;get_window().position=old_window_position
 
 func _sequence_event(event: String,extra: Dictionary={}) -> void:
 	if log_writer==null:return

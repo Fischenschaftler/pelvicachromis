@@ -10,6 +10,7 @@ var swim_animation: StringName
 @onready var chase: Node3D=$ViewerViewport/Viewport/World/ChaseCamera
 @onready var control_button: Button=$UI/ControlMode
 @onready var hint: Label=$UI/Layout/Header/Hint
+var experiment: Node
 var sequence_editor: Control
 var sequence_launching:=false
 var calibration_view: Control
@@ -35,7 +36,7 @@ func _ready() -> void:
 	reset_button.pressed.connect(reset_view)
 	control_button.pressed.connect(toggle_fish_control)
 	get_viewport().size_changed.connect(func(): call_deferred("layout_control"))
-	hint.text="F9: Stimulus · F10: Kalibrieren · F11: Sequenzen"
+	hint.text="F9: Stimulus · F10: Kalibrieren · F11: Sequenzen · F12: Experiment"
 	viewing_hint=hint.text
 	for node in fish.find_children("*", "AnimationPlayer", true, false):
 		animation_player = node as AnimationPlayer
@@ -70,6 +71,9 @@ func _update_button() -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if experiment!=null and experiment.view.visible:return
+	if event is InputEventKey and event.pressed and not event.echo and event.physical_keycode==KEY_F12:
+		open_experimenter();get_viewport().set_input_as_handled();return
 	if (sequence_editor!=null and sequence_editor.visible and not sequence_launching) or calibration_pending or (calibration_view!=null and calibration_view.active) or stimulus_pending or (stimulus!=null and stimulus.active):return
 	if event.is_action_pressed("sequence_editor") and not event.is_echo():
 		open_sequence_editor();get_viewport().set_input_as_handled();return
@@ -84,6 +88,7 @@ func _input(event: InputEvent) -> void:
 		chase.dragging = false
 
 func _unhandled_input(event: InputEvent) -> void:
+	if experiment!=null and experiment.view.visible:return
 	if (sequence_editor!=null and sequence_editor.visible and not sequence_launching) or calibration_pending or (calibration_view!=null and calibration_view.active) or stimulus_pending or (stimulus!=null and stimulus.active):return
 	# Root UI gets first refusal; only unused events reach the 3D viewport.
 	if event is InputEventMouse:
@@ -245,3 +250,16 @@ func launch_sequence(request: Dictionary,config_override: Resource=null) -> Stri
 	sequence_launching=false
 	if not error.is_empty() and sequence_editor!=null:_stimulus_stopped("start_failed")
 	return error
+
+func open_experimenter() -> void:
+	if stimulus_pending or calibration_pending or (stimulus!=null and stimulus.active) or (calibration_view!=null and calibration_view.active) or (sequence_editor!=null and sequence_editor.visible):return
+	var photo:=get_node_or_null("UI/ReferencePhoto")
+	if photo!=null:
+		if photo.worker!=null or photo.analysis_worker!=null:return
+		for window in photo.find_children("*","Window",true,false):
+			if window.visible:return
+	if control_mode:end_fish_control()
+	orbit.dragging=false;chase.dragging=false
+	if experiment==null:
+		experiment=preload("res://scripts/experiment/experiment_controller.gd").new();experiment.viewer=self;add_child(experiment)
+	experiment.open()

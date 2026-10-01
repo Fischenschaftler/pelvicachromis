@@ -1,0 +1,20 @@
+{
+  "godot_version": "4.7.2.stable.official.ed1daf0bf",
+  "production_started": true,
+  "production_stderr_empty": true,
+  "embedded_pck": true,
+  "editor_checks": 1183,
+  "release_checks": 1183,
+  "moved_release_checks": 1183,
+  "errors": [],
+  "physical_screens": 1,
+  "second_physical_monitor_verified": false,
+  "simulated_monitor_loss_verified": true,
+  "native_focus_transfer_verified": true,
+  "native_fullscreen_retains_operator_focus": true,
+  "build_bytes": 153054163,
+  "zip_bytes": 58520714,
+  "zip_crc_valid": true,
+  "exe_sha256": "2fa7a22ecf9e5f5f07fda07f4d9d30b17e58cfa5a6e0511b62e4d0543ff32df7",
+  "protected_files_unchanged": true
+}
