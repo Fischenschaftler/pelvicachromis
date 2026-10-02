@@ -99,6 +99,11 @@ func start_stimulus_session(model: Node3D,animation: AnimationPlayer,clip: Strin
 	var environment: Environment=$Presentation/Viewport/World/Environment.environment
 	environment.background_color=config.background_color
 	player.play(clip);motion.configure(config,player)
+	error=motion.attach_pose(fish)
+	if not error.is_empty():
+		fish.reparent(original_parent,false);fish.transform=original_transform;player.speed_scale=old_speed;player.seek(old_phase,true)
+		if not old_playing:player.pause()
+		_abort_start();return error
 	elapsed=0;sample_elapsed=0;previous_command={};external_command={}
 	var context: Dictionary=metadata.duplicate(true)
 	context.merge({"config":config.runtime_snapshot(),"calibrated":true,"calibration":calibration.snapshot(),"fish_display_length_cm":config.fish_display_length_cm,"speed_cm_s":config.speed_cm_s,"model_total_length_world":measurement.total_length,"display_scale":display_scale.scale.x,"world_units_per_cm":config.units_per_cm,"body_length_definition":measurement.definition,"plane":"X/Y; constant Z","position_units":"Godot units","speed_units":"Godot units/second","viewport_pixels":[fixed_size.x,fixed_size.y],"camera_position":[camera.position.x,camera.position.y,camera.position.z],"projection":"orthographic KEEP_HEIGHT","physics_ticks_per_second":Engine.physics_ticks_per_second})
@@ -139,6 +144,8 @@ func _physics_process(delta: float) -> void:
 	if Calibration.display_context(get_window())!=display_context:stop_stimulus_session("monitor_changed");return
 	var command: Dictionary=command_from_input() if sample_input else external_command
 	motion.step(delta,command);elapsed+=delta;sample_elapsed+=delta
+	for turn_event in motion.take_turn_events():
+		if not log_writer.record(turn_event.event,motion.state(),command,elapsed,turn_event):stop_stimulus_session("log_error");return
 	var event: String="command" if command!=previous_command else "sample"
 	if event=="command" or sample_elapsed>=1.0/config.log_hz:
 		if not log_writer.record(event,motion.state(),command,elapsed):stop_stimulus_session("log_error");return
@@ -151,11 +158,15 @@ func reset_stimulus() -> void:
 func stop_stimulus_session(reason: String="operator_stop") -> void:
 	if not active:return
 	active=false
+	if sequence_runner==null:
+		motion.finish_turn()
+		for turn_event in motion.take_turn_events():log_writer.record(turn_event.event,motion.state(),previous_command,elapsed,turn_event)
 	if sequence_runner!=null:
 		if reason in ["monitor_changed","window_resized"]:_sequence_event("CALIBRATION_WARNING",{"reason":reason})
 		sequence_runner.abort(reason)
 	elif not log_writer.record("session_stop",motion.state(),previous_command,elapsed,{"reason":reason}):reason="log_error"
 	log_writer.close()
+	motion.detach_pose()
 	fish.reparent(original_parent,false);fish.transform=original_transform
 	player.callback_mode_process=old_animation_process
 	player.speed_scale=old_speed;player.seek(old_phase,true)

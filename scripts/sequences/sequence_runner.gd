@@ -91,6 +91,7 @@ func advance_to(target_time: float) -> void:
 		var dt:=maxf(0,next-time_s)
 		if dt>0:_integrate(dt)
 		time_s=next
+		for turn_event in motion.take_turn_events():_event(turn_event.event,turn_event)
 		if not failure.is_empty():abort(failure);return
 		if time_s>=step_end_s-.000000001:
 			var item: Dictionary=definition.steps[step_index]
@@ -98,6 +99,8 @@ func advance_to(target_time: float) -> void:
 				failure="Schritt %d: MOVE_TO erreicht das Ziel nicht rechtzeitig. Dauer erhöhen." % (step_index+1);abort(failure);return
 			_event("STEP_COMPLETED")
 			if step_index+1>=definition.steps.size():
+				motion.finish_turn()
+				for turn_event in motion.take_turn_events():_event(turn_event.event,turn_event)
 				finished=true;completed=true;_event("SESSION_COMPLETED");return
 			step_start_s=step_end_s;step_index+=1;step_end_s=step_start_s+definition.steps[step_index].duration_s;_enter_step()
 		if time_s>=next_sample:
@@ -128,6 +131,8 @@ func manual_reset() -> void:
 	_event("MANUAL_OVERRIDE",{"command":"RESET_POSITION","active":true})
 func abort(reason: String) -> void:
 	if finished:return
+	motion.finish_turn()
+	for turn_event in motion.take_turn_events():_event(turn_event.event,turn_event)
 	finished=true;completed=false;_event("SESSION_ABORTED",{"reason":reason})
 func telemetry() -> Dictionary:
 	var item: Dictionary=definition.steps[step_index]
@@ -136,7 +141,10 @@ func telemetry() -> Dictionary:
 	if item.step_type=="MOVE":
 		var ideal: Vector2=step_origin_cm+Data.DIRECTIONS[item.direction]*item.target_speed_cm_s*(time_s-step_start_s)
 		target=[ideal.x,ideal.y]
-	return {"sequence_id":definition.sequence_id,"sequence_name":definition.sequence_name,"sequence_format_version":definition.sequence_format_version,"sequence_sha256":definition_hash,"sequence_time_s":time_s,"remaining_s":maxf(0,definition.total_duration_s-time_s),"step_index":step_index,"step_type":item.step_type,"target_position_cm":target,"command_speed_cm_s":motion.stimulus_speed/motion.config.units_per_cm,"actual_position_cm":[p.x,p.y],"target_speed_cm_s":requested_speed,"actual_speed_cm_s":0.0 if paused else motion.velocity.length()/motion.config.units_per_cm,"target_orientation":requested_orientation,"actual_orientation":motion.yaw,"animation_rate":0.0 if paused else motion.animation_rate,"control_state":"PAUSED" if paused else ("MANUAL_OVERRIDE" if overriding else ("COMPLETED" if completed else ("ABORTED" if finished else "AUTOMATIC")))}
+	var result: Dictionary={"sequence_id":definition.sequence_id,"sequence_name":definition.sequence_name,"sequence_format_version":definition.sequence_format_version,"sequence_sha256":definition_hash,"sequence_time_s":time_s,"remaining_s":maxf(0,definition.total_duration_s-time_s),"step_index":step_index,"step_type":item.step_type,"target_position_cm":target,"command_speed_cm_s":motion.stimulus_speed/motion.config.units_per_cm,"actual_position_cm":[p.x,p.y],"target_speed_cm_s":requested_speed,"actual_speed_cm_s":0.0 if paused else motion.velocity.length()/motion.config.units_per_cm,"target_orientation":requested_orientation,"actual_orientation":motion.yaw,"animation_rate":0.0 if paused else motion.animation_rate,"control_state":"PAUSED" if paused else ("MANUAL_OVERRIDE" if overriding else ("COMPLETED" if completed else ("ABORTED" if finished else "AUTOMATIC")))}
+	result.merge(motion.turn_state())
+	if paused:result.actual_turn_rate=0.0;result.path_turn_rate=0.0;result.current_turn_radius_cm=null
+	return result
 static func preflight(data: Dictionary,config: Resource,area: Rect2) -> Dictionary:
 	var error:=Data.validate(data,config.max_speed_cm_s)
 	if not error.is_empty():return {"error":error}

@@ -1,0 +1,40 @@
+{
+	"identical": true,
+	"last_state": {
+		"actual_turn_rate": 0.0,
+		"animation_speed": 0.18,
+		"current_turn_radius_cm": null,
+		"minimum_turn_radius_cm": 1.5,
+		"orientation_y_radians": 0.0,
+		"path_turn_rate": 0.0,
+		"position": [
+			0.0500000007450581,
+			0.00999999977648258,
+			0.0
+		],
+		"position_cm": [
+			5.00000007450581,
+			0.999999977648258
+		],
+		"speed": 0.0,
+		"speed_cm_s": 0.0,
+		"stimulus_speed": 0.0,
+		"target_speed_cm_s": 0.0,
+		"target_turn_rate": 0.0,
+		"target_yaw": 0.0,
+		"turn_bend_amount": 0.0,
+		"turn_direction": 0.0,
+		"turn_peak_bend": 0.000141355295514546,
+		"velocity": [
+			0.0,
+			0.0,
+			0
+		]
+	},
+	"max_step_bend_change_rad": 0.023455583573084,
+	"maximum_difference": 0,
+	"peak_bend_rad": 0.948170423171315,
+	"quantum_s": 0.00416666666666667,
+	"records_per_run": 392,
+	"runs": 3
+}
