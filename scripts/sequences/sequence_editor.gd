@@ -26,6 +26,14 @@ var direction: OptionButton
 var orientation: OptionButton
 var pos_x: SpinBox
 var pos_y: SpinBox
+var pitch_enabled: CheckBox
+var pitch_target: SpinBox
+var pitch_rise: SpinBox
+var pitch_hold: SpinBox
+var pitch_fall: SpinBox
+var boost_enabled: CheckBox
+var breath_override: CheckBox
+var breath_frequency: SpinBox
 var comment: LineEdit
 var trial_id: LineEdit
 var animal_id: LineEdit
@@ -61,6 +69,12 @@ func _ready() -> void:
 	label(fields,"Geschwindigkeit cm/s");speed=number(fields,0,100,.01);label(fields,"Richtung");direction=option(fields,Data.DIRECTIONS.keys())
 	label(fields,"Ziel-/Reset-X cm");pos_x=number(fields,-10000,10000,.01);label(fields,"Y cm");pos_y=number(fields,-10000,10000,.01)
 	label(fields,"Orientierung");orientation=option(fields,["KEEP","LEFT","RIGHT"]);comment=text_field(fields,"Kommentar")
+	pitch_enabled=CheckBox.new();pitch_enabled.text="Pitch-Zyklus";fields.add_child(pitch_enabled);pitch_target=number(fields,-45,45,.1)
+	label(fields,"Übergang s");pitch_rise=number(fields,.01,3600,.01);pitch_rise.value=1
+	label(fields,"Halten s");pitch_hold=number(fields,0,3600,.01);pitch_hold.value=1
+	label(fields,"Rückkehr s");pitch_fall=number(fields,.01,3600,.01);pitch_fall.value=1
+	boost_enabled=CheckBox.new();boost_enabled.text="Boost";fields.add_child(boost_enabled)
+	breath_override=CheckBox.new();breath_override.text="Atmung überschreiben (Hz)";fields.add_child(breath_override);breath_frequency=number(fields,.01,5,.01);breath_frequency.value=1
 	kind.item_selected.connect(kind_changed)
 	button(box,"Schritt übernehmen",func():apply_form();rebuild())
 	total_label=label(box,"")
@@ -69,7 +83,7 @@ func _ready() -> void:
 	label(box,"Versuch vorbereiten",22)
 	var ids:=GridContainer.new();ids.columns=2;box.add_child(ids)
 	trial_id=text_field(ids,"Versuchs-ID (echter Versuch)");animal_id=text_field(ids,"Versuchstier-ID (optional)")
-	override_box=CheckBox.new();override_box.text="Manuellen Eingriff erlauben (WASD, Q/E, R/F, F8; wird protokolliert)";box.add_child(override_box)
+	override_box=CheckBox.new();override_box.text="Manuellen Eingriff erlauben (WASD, Q/E, R/F, Bild↑/↓, Shift, F8; wird protokolliert)";box.add_child(override_box)
 	context_label=label(box,"");context_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	var actions:=HBoxContainer.new();box.add_child(actions)
 	button(actions,"Vorschau / Preview",func():launch(true));button(actions,"Versuch starten",func():launch(false))
@@ -111,6 +125,8 @@ func show_form() -> void:
 	if selected_index<0 or selected_index>=definition.steps.size():return
 	var item: Dictionary=definition.steps[selected_index]
 	select_text(kind,item.step_type);duration.value=item.duration_s;speed.value=item.target_speed_cm_s;select_text(direction,item.direction);select_text(orientation,item.get("orientation","KEEP"));comment.text=item.get("comment","")
+	pitch_enabled.button_pressed=item.has("target_pitch_deg");pitch_target.value=item.get("target_pitch_deg",0);pitch_rise.value=item.get("pitch_transition_s",1);pitch_hold.value=item.get("pitch_hold_s",1);pitch_fall.value=item.get("pitch_return_s",1)
+	boost_enabled.button_pressed=item.get("boost",false);breath_override.button_pressed=item.has("operculum_frequency_hz");breath_frequency.value=item.get("operculum_frequency_hz",1)
 	var p: Array=item.get("target_position_cm",item.get("start_position_cm",[0,0]));pos_x.value=p[0];pos_y.value=p[1]
 func select_step() -> void:
 	if rebuilding or table.get_selected()==null:return
@@ -129,6 +145,9 @@ func apply_form() -> void:
 	if item.step_type=="RESET_POSITION":item.start_position_cm=[pos_x.value,pos_y.value]
 	elif selected_index==0 and definition.steps[selected_index].has("start_position_cm"):
 		item.start_position_cm=definition.steps[selected_index].start_position_cm.duplicate()
+	if pitch_enabled.button_pressed:item.merge({"target_pitch_deg":pitch_target.value,"pitch_transition_s":pitch_rise.value,"pitch_hold_s":pitch_hold.value,"pitch_return_s":pitch_fall.value})
+	if boost_enabled.button_pressed:item.boost=true
+	if breath_override.button_pressed:item.operculum_frequency_hz=breath_frequency.value
 	definition.steps[selected_index]=item
 func collect() -> void:
 	apply_form();definition.sequence_name=name_input.text.strip_edges();definition.description=description_input.text;definition.notes=notes_input.text

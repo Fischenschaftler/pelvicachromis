@@ -42,6 +42,14 @@ static func validate(data: Variant,max_speed: float=100.0) -> String:
 		if not numeric(item.get("target_speed_cm_s")) or item.target_speed_cm_s<0 or item.target_speed_cm_s>max_speed:return prefix+"Geschwindigkeit außerhalb der zulässigen Grenzen."
 		if item.get("direction") not in DIRECTIONS:return prefix+"Ungültige Richtung."
 		if item.step_type!="MOVE" and item.direction!="NONE":return prefix+"Richtung nur bei MOVE verwenden; sonst NONE."
+		if item.has("boost") and not item.boost is bool:return prefix+"Boost benötigt true/false."
+		if item.has("operculum_frequency_hz") and (not numeric(item.operculum_frequency_hz) or item.operculum_frequency_hz<=0 or item.operculum_frequency_hz>5):return prefix+"Atemfrequenz muss >0 und <=5 Hz sein."
+		if item.has("target_pitch_deg"):
+			if not numeric(item.target_pitch_deg) or absf(item.target_pitch_deg)>45:return prefix+"Pitch außerhalb ±45°."
+			for field in ["pitch_transition_s","pitch_hold_s","pitch_return_s"]:
+				if not numeric(item.get(field)) or item[field]<0:return prefix+"Pitch benötigt gültige Übergangs-, Halte- und Rückkehrdauer."
+			if item.pitch_transition_s<=0 or item.pitch_return_s<=0 or item.pitch_transition_s+item.pitch_hold_s+item.pitch_return_s>item.duration_s+.000001:return prefix+"Pitch-Zyklus passt nicht in die Schrittdauer. Übergang/Rückkehr müssen positiv sein."
+		elif item.has("pitch_transition_s") or item.has("pitch_hold_s") or item.has("pitch_return_s"):return prefix+"Pitch-Dauern benötigen einen Zielwinkel."
 		if item.has("orientation") and item.orientation not in ["LEFT","RIGHT"]:return prefix+"Ungültige Orientierung."
 		if not item.get("comment","") is String:return prefix+"Kommentar muss Text sein."
 		if item.step_type=="MOVE" and (item.direction=="NONE" or item.target_speed_cm_s<=0):return prefix+"MOVE benötigt Richtung und positive Geschwindigkeit."

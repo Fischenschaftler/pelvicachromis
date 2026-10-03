@@ -37,7 +37,7 @@ static func validate_experiment_readiness(viewer: Node,setup: RefCounted,request
 	if setup.development:pixels=Vector2i(mini(960,pixels.x-80),mini(600,pixels.y-80))
 	config.apply_calibration(calibration,pixels,pixels)
 	var bounds:=Data.visible_bounds(calibration,pixels,config.fish_display_length_cm)
-	error=Data.validate(request.get("sequence"),config.max_speed_cm_s)
+	error=Data.validate(request.get("sequence"),config.max_stimulus_speed_cm_s)
 	if not error.is_empty():return {"error":error}
 	error=Runner.preflight(request.sequence,config,bounds).error
 	if not error.is_empty():return {"error":error}

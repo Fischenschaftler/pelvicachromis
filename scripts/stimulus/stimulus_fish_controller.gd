@@ -1,5 +1,7 @@
 extends Node3D
 ## Calibrated planar motion with a temporary post-animation pose modifier.
+var realism=preload("res://scripts/stimulus/motion_realism.gd").new()
+var gills=preload("res://scripts/stimulus/operculum_deformer.gd").new()
 var config: Resource
 var animation: AnimationPlayer
 var velocity:=Vector2.ZERO
@@ -26,11 +28,15 @@ func attach_pose(model: Node3D) -> String:
 	var modifier:=preload("res://scripts/stimulus/turn_pose_modifier.gd").new()
 	var error: String=modifier.bind(self,rigs[0])
 	if not error.is_empty():modifier.free();return error
+	error=gills.bind(model)
+	if not error.is_empty():modifier.free();return error
 	rigs[0].add_child(modifier);turn_modifier=modifier;return ""
 func detach_pose() -> void:
+	gills.detach()
 	if is_instance_valid(turn_modifier):turn_modifier.active=false;turn_modifier.free()
 	turn_modifier=null
 func reset_stimulus() -> void:
+	realism.reset(config);gills.update(realism.opening,config.operculum_amplitude)
 	position=Vector3(0,0,config.plane_depth);rotation=Vector3.ZERO
 	velocity=Vector2.ZERO;yaw=0;target_yaw=0;angular_speed=0
 	target_turn_rate=0;actual_turn_rate=0;path_turn_rate=0;turn_bend_amount=0;turning=false;turn_peak=0;events.clear()
@@ -41,7 +47,7 @@ func radius_for_speed(speed_cm_s: float) -> float:
 func step(delta: float, command: Dictionary) -> void:
 	if delta<=0:return
 	if command.has("target_speed_cm_s"):
-		stimulus_speed=clampf(float(command.target_speed_cm_s)*config.units_per_cm,0,config.max_speed)
+		stimulus_speed=clampf(float(command.target_speed_cm_s)*config.units_per_cm,0,config.max_stimulus_speed_cm_s*config.units_per_cm)
 	else:stimulus_speed=clampf(stimulus_speed+float(command.get("speed",0))*config.speed_adjustment*delta,config.min_speed,config.max_speed)
 	var direction:=Vector2(float(command.get("x",0)),float(command.get("y",0))).limit_length()
 	var facing: float=float(command.get("facing",0))
@@ -51,7 +57,9 @@ func step(delta: float, command: Dictionary) -> void:
 	var previous_speed:=velocity.length()
 	# Reduce thrust while the head is still facing against the requested direction.
 	var alignment:=1.0 if direction.x==0 else 0.15+0.85*(1.0-absf(difference)/PI)
-	var requested_speed:=direction.length()*stimulus_speed*alignment
+	realism.boost=bool(command.get("boost",false))
+	realism.effective_speed=minf(stimulus_speed/config.units_per_cm*(config.boost_multiplier if realism.boost else 1.0),config.max_stimulus_speed_cm_s)
+	var requested_speed: float=direction.length()*realism.effective_speed*config.units_per_cm*alignment
 	var speed:=move_toward(previous_speed,requested_speed,(config.deceleration if requested_speed<previous_speed else config.acceleration)*delta)
 	path_turn_rate=0.0
 	if speed>0:
@@ -78,7 +86,10 @@ func step(delta: float, command: Dictionary) -> void:
 	else:yaw=clampf(yaw+increment,0,PI)
 	var actual: float=(yaw-old_yaw)/delta
 	actual_turn_rate=actual
-	rotation=Vector3(0,yaw,0)
+	realism.step(delta,command,cm_speed)
+	basis=Basis(Vector3.UP,yaw)*Basis(Vector3.BACK,deg_to_rad(realism.pitch))
+	gills.update(realism.opening,config.operculum_amplitude)
+	events.append_array(realism.events);realism.events.clear()
 	var driving_rate:=actual if absf(actual)>=absf(path_turn_rate) else path_turn_rate
 	var dynamic_gain: float=1.0+config.turn_bend_speed_gain*clampf(cm_speed/config.max_speed_cm_s,0,1)
 	var desired_bend:=clampf(-driving_rate*config.turn_bend_strength*dynamic_gain,-config.max_turn_bend,config.max_turn_bend)
@@ -92,7 +103,7 @@ func step(delta: float, command: Dictionary) -> void:
 		if absf(driving_rate)<.001 and absf(turn_bend_amount)<.001:
 			events.append({"event":"TURN_COMPLETED","start_yaw":turn_start_yaw,"target_yaw":target_yaw,"actual_yaw":yaw,"maximum_bend":turn_peak});turning=false
 	var rate: float=lerpf(config.idle_animation_speed,config.swim_animation_speed,clampf(speed/config.stimulus_speed,0,1))
-	if speed>config.stimulus_speed and config.max_speed>config.stimulus_speed:rate=lerpf(config.swim_animation_speed,config.fast_animation_speed,(speed-config.stimulus_speed)/(config.max_speed-config.stimulus_speed))
+	if speed>config.stimulus_speed and config.max_stimulus_speed_cm_s*config.units_per_cm>config.stimulus_speed:rate=lerpf(config.swim_animation_speed,config.fast_animation_speed,clampf((speed-config.stimulus_speed)/(config.max_stimulus_speed_cm_s*config.units_per_cm-config.stimulus_speed),0,1))
 	animation_rate=move_toward(animation_rate,rate,config.animation_response*delta)
 	if animation!=null:animation.speed_scale=animation_rate
 func bone_offsets() -> Dictionary:
@@ -112,4 +123,4 @@ func take_turn_events() -> Array:
 	var result:=events;events=[];return result
 func state() -> Dictionary:
 	var result: Dictionary={"position":[position.x,position.y,position.z],"orientation_y_radians":yaw,"target_yaw":target_yaw,"velocity":[velocity.x,velocity.y,0],"speed":velocity.length(),"stimulus_speed":stimulus_speed,"animation_speed":animation_rate,"speed_cm_s":velocity.length()/config.units_per_cm,"target_speed_cm_s":stimulus_speed/config.units_per_cm,"position_cm":[position.x/config.units_per_cm,position.y/config.units_per_cm]}
-	result.merge(turn_state());return result
+	result.merge(turn_state());result.merge(realism.state(),true);result.actual_speed_cm_s=velocity.length()/config.units_per_cm;return result

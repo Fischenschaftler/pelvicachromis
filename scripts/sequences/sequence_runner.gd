@@ -30,6 +30,7 @@ var requested_speed:=0.0
 var requested_position: Variant=null
 var requested_orientation:=0.0
 var simulation_only:=false
+var step_pitch_start:=0.0
 func configure(data: Dictionary,body: Node3D,area: Rect2,override_allowed: bool=false,sink: Callable=Callable()) -> void:
 	definition=data.duplicate(true);definition_hash=Data.checksum(definition);Data.freeze(definition)
 	motion=body;bounds=area;allow_override=override_allowed;event_sink=sink
@@ -52,6 +53,7 @@ func _enter_step(emit: bool=true) -> void:
 	var item: Dictionary=definition.steps[step_index]
 	if item.step_type=="RESET_POSITION":_place(Vector2(item.start_position_cm[0],item.start_position_cm[1]),item.get("orientation",""))
 	if item.step_type in ["HOLD","TURN","RESET_POSITION"]:motion.velocity=Vector2.ZERO
+	step_pitch_start=motion.realism.pitch
 	step_origin_cm=position_cm()
 	requested_position=item.get("target_position_cm",[step_origin_cm.x,step_origin_cm.y])
 	requested_speed=item.target_speed_cm_s
@@ -59,19 +61,33 @@ func _enter_step(emit: bool=true) -> void:
 	elif item.step_type=="MOVE" and item.direction in ["LEFT","RIGHT"]:requested_orientation=PI if item.direction=="LEFT" else 0.0
 	else:requested_orientation=motion.target_yaw
 	if emit:_event("STEP_STARTED")
-func _automatic_command() -> Dictionary:
+func _automatic_command(dt: float=0.0) -> Dictionary:
 	var item: Dictionary=definition.steps[step_index]
 	var direction: Vector2=Data.DIRECTIONS[item.direction] if item.step_type=="MOVE" else Vector2.ZERO
 	var speed: float=item.target_speed_cm_s
 	if item.step_type=="MOVE_TO":
 		var offset:=Vector2(item.target_position_cm[0],item.target_position_cm[1])-position_cm()
 		direction=offset.normalized()
-		speed=minf(speed,sqrt(2*motion.config.deceleration_cm_s2*offset.length()))
+		var boost_factor: float=motion.config.boost_multiplier if item.get("boost",false) else 1.0
+		speed=minf(speed,sqrt(2*motion.config.deceleration_cm_s2*offset.length())/boost_factor)
 		if not item.has("orientation") and absf(direction.x)>.000001:requested_orientation=PI if direction.x<0 else 0.0
-	return {"x":direction.x,"y":direction.y,"target_speed_cm_s":speed,"facing":-1.0 if requested_orientation>PI*.5 else 1.0}
+	var result: Dictionary={"x":direction.x,"y":direction.y,"target_speed_cm_s":speed,"facing":-1.0 if requested_orientation>PI*.5 else 1.0,"boost":item.get("boost",false)}
+	if item.has("operculum_frequency_hz"):result.operculum_frequency_hz=item.operculum_frequency_hz
+	if item.has("target_pitch_deg"):
+		var t:=time_s+dt-step_start_s
+		var rise: float=item.pitch_transition_s;var hold: float=item.pitch_hold_s;var fall: float=item.pitch_return_s
+		result.target_pitch_deg=item.target_pitch_deg
+		if t<rise:
+			result.sequence_pitch_deg=lerpf(step_pitch_start,item.target_pitch_deg,motion.realism.smooth(t/rise));result.pitch_transition_state="TRANSITION"
+		elif t<rise+hold:
+			result.sequence_pitch_deg=item.target_pitch_deg;result.pitch_transition_state="HOLD"
+		elif t<rise+hold+fall:
+			result.target_pitch_deg=0.0;result.sequence_pitch_deg=item.target_pitch_deg*(1-motion.realism.smooth((t-rise-hold)/fall));result.pitch_transition_state="RETURNING"
+		else:result.target_pitch_deg=0.0;result.sequence_pitch_deg=0.0;result.pitch_transition_state="NEUTRAL"
+	return result
 func _integrate(dt: float) -> void:
 	var item: Dictionary=definition.steps[step_index]
-	var command:=manual if overriding else _automatic_command()
+	var command:=manual if overriding else _automatic_command(dt)
 	var before:=position_cm()
 	if not overriding and item.step_type in ["HOLD","TURN","RESET_POSITION"]:motion.velocity=Vector2.ZERO
 	motion.step(dt,command)
@@ -111,7 +127,7 @@ func tick(now: float,command: Dictionary={}) -> void:
 	last_clock=now
 	if paused:return
 	var active_input:=false
-	for key in ["x","y","speed","facing"]:
+	for key in ["x","y","speed","facing","pitch","boost"]:
 		if absf(float(command.get(key,0)))>.0001:active_input=true
 	var enabled:=allow_override and active_input
 	if enabled!=overriding or (enabled and command!=manual):
@@ -142,15 +158,16 @@ func telemetry() -> Dictionary:
 		var ideal: Vector2=step_origin_cm+Data.DIRECTIONS[item.direction]*item.target_speed_cm_s*(time_s-step_start_s)
 		target=[ideal.x,ideal.y]
 	var result: Dictionary={"sequence_id":definition.sequence_id,"sequence_name":definition.sequence_name,"sequence_format_version":definition.sequence_format_version,"sequence_sha256":definition_hash,"sequence_time_s":time_s,"remaining_s":maxf(0,definition.total_duration_s-time_s),"step_index":step_index,"step_type":item.step_type,"target_position_cm":target,"command_speed_cm_s":motion.stimulus_speed/motion.config.units_per_cm,"actual_position_cm":[p.x,p.y],"target_speed_cm_s":requested_speed,"actual_speed_cm_s":0.0 if paused else motion.velocity.length()/motion.config.units_per_cm,"target_orientation":requested_orientation,"actual_orientation":motion.yaw,"animation_rate":0.0 if paused else motion.animation_rate,"control_state":"PAUSED" if paused else ("MANUAL_OVERRIDE" if overriding else ("COMPLETED" if completed else ("ABORTED" if finished else "AUTOMATIC")))}
-	result.merge(motion.turn_state())
+	result.merge(motion.turn_state());result.merge(motion.realism.state(),true)
 	if paused:result.actual_turn_rate=0.0;result.path_turn_rate=0.0;result.current_turn_radius_cm=null
 	return result
 static func preflight(data: Dictionary,config: Resource,area: Rect2) -> Dictionary:
-	var error:=Data.validate(data,config.max_speed_cm_s)
+	var error:=Data.validate(data,config.max_stimulus_speed_cm_s)
 	if not error.is_empty():return {"error":error}
 	if area.size.x<=0 or area.size.y<=0:return {"error":"Der Fisch ist größer als der sichtbare Bereich."}
 	if not Data.contains(area,Data.initial_position(data,area)):return {"error":"Startposition liegt außerhalb des sichtbaren Bereichs."}
 	for item in data.steps:
+		if item.has("target_pitch_deg") and (item.target_pitch_deg>config.max_pitch_up_deg or item.target_pitch_deg < -config.max_pitch_down_deg):return {"error":"Pitch überschreitet die konfigurierten Grenzen."}
 		for key in ["start_position_cm","target_position_cm"]:
 			if item.has(key) and not Data.contains(area,Vector2(item[key][0],item[key][1])):return {"error":"Eine Position liegt außerhalb des sichtbaren Bereichs."}
 	var body:=Motion.new();body.configure(config,null)

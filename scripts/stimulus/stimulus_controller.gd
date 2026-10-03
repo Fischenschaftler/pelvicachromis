@@ -42,6 +42,8 @@ var fixed_size: Vector2i
 var elapsed:=0.0
 var sample_elapsed:=0.0
 var previous_command: Dictionary={}
+func _ready() -> void:
+	preload("res://scripts/stimulus/motion_realism.gd").register_inputs()
 func start_stimulus_session(model: Node3D,animation: AnimationPlayer,clip: StringName,metadata: Dictionary={},override: Resource=null,request: Dictionary={}) -> String:
 	if active or starting:return "Es läuft bereits ein Stimulusversuch."
 	sequence_request=request.duplicate(true);sequence_runner=null;sequence_log_failed=false
@@ -131,11 +133,12 @@ func start_stimulus_session(model: Node3D,animation: AnimationPlayer,clip: Strin
 	if not log_writer.record("initial_state",motion.state(),{},elapsed):stop_stimulus_session("log_error");return "Versuchsprotokoll nicht beschreibbar."
 	return ""
 func command_from_input() -> Dictionary:
-	return {"x":Input.get_axis("stimulus_left","stimulus_right"),"y":Input.get_axis("stimulus_down","stimulus_up"),"speed":Input.get_axis("stimulus_slower","stimulus_faster"),"facing":Input.get_axis("stimulus_turn_left","stimulus_turn_right")}
+	return {"x":Input.get_axis("stimulus_left","stimulus_right"),"y":Input.get_axis("stimulus_down","stimulus_up"),"speed":Input.get_axis("stimulus_slower","stimulus_faster"),"facing":Input.get_axis("stimulus_turn_left","stimulus_turn_right"),"pitch":Input.get_axis("stimulus_pitch_down","stimulus_pitch_up"),"boost":Input.is_action_pressed("stimulus_boost")}
 func set_command(command: Dictionary) -> void:
 	# External controller/sequence API; no presentation widgets or project mutation.
 	external_command={}
-	for key in ["x","y","speed","facing"]:
+	external_command.boost=bool(command.get("boost",false))
+	for key in ["x","y","speed","facing","pitch"]:
 		var value: float=float(command.get(key,0))
 		external_command[key]=clampf(value,-1,1) if is_finite(value) else 0.0
 func _physics_process(delta: float) -> void:
