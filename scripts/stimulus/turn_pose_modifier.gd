@@ -14,10 +14,10 @@ func bind(body: Node3D,skeleton: Skeleton3D) -> String:
 		var index:=skeleton.find_bone(name)
 		if index<0 or (previous>=0 and skeleton.get_bone_parent(index)!=previous):return "Körper-Bone oder Hierarchie fehlt: "+name
 		indices[name]=index;local_axes[name]=(skeleton.get_bone_global_rest(index).basis.inverse()*Vector3.UP).normalized();previous=index
-	for name in ["Pectoral_Fin_Left_2","Pectoral_Fin_Right_2"]:
+	for name in ["Pectoral_Fin_Left_2","Pectoral_Fin_Right_2","Pelvic_Fin_Left_2","Pelvic_Fin_Right_2","Dorsal_01","Dorsal_02","Anal_Fin_2"]:
 		var index:=skeleton.find_bone(name)
 		if index<0:return "Brustflossen-Bone fehlt: "+name
-		indices[name]=index;local_axes[name]=Vector3.UP
+		indices[name]=index;local_axes[name]=Vector3.UP if name.begins_with("Pectoral") else (skeleton.get_bone_global_rest(index).basis.inverse()*Vector3.UP).normalized()
 	return ""
 func _process_modification_with_delta(_delta: float) -> void:
 	var skeleton:=get_skeleton()

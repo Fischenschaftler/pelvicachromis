@@ -51,6 +51,19 @@ var operculum_amplitude:=0.00035
 var operculum_phase:=0.0
 var operculum_speed_coupling:=0.15
 var operculum_response:=2.0
+var yaw_speed_deg_s:=45.0
+var yaw_acceleration:=90.0
+var yaw_deceleration:=120.0
+var operculum_open_ratio:=0.42
+var operculum_close_ratio:=0.4
+var pectoral_frequency_hz:=1.2
+var pectoral_hover_amplitude:=0.14
+var pectoral_cruise_amplitude:=0.045
+var pectoral_brake_amplitude:=0.28
+var pectoral_turn_amplitude:=0.14
+var pectoral_pitch_amplitude:=0.025
+var passive_fin_amplitude:=0.035
+var fin_response:=5.0
 var idle_animation_speed:=0.18
 var swim_animation_speed:=1.0
 var fast_animation_speed:=1.9
@@ -59,7 +72,7 @@ var log_hz:=20.0
 var flush_interval:=0.5
 var fullscreen:=true
 var stop_on_focus_loss:=true
-const FIELDS=["max_pitch_up_deg","max_pitch_down_deg","pitch_speed_deg_s","pitch_acceleration","pitch_deceleration","pitch_return_speed","pitch_return_to_neutral","boost_multiplier","max_stimulus_speed_cm_s","operculum_frequency_hz","operculum_amplitude","operculum_phase","operculum_speed_coupling","operculum_response","turn_bend_strength","turn_bend_response","turn_bend_recovery","max_turn_bend","minimum_turn_radius_cm","turn_radius_speed_factor","turn_bend_speed_gain","pectoral_turn_strength","body_bend_weights","fish_display_length_cm","speed_cm_s","min_speed_cm_s","max_speed_cm_s","speed_adjustment_cm_s2","acceleration_cm_s2","deceleration_cm_s2","view_height","plane_depth","camera_distance","turn_speed","turn_acceleration","idle_animation_speed","swim_animation_speed","fast_animation_speed","animation_response","log_hz","flush_interval","fullscreen","stop_on_focus_loss"]
+const FIELDS=["yaw_speed_deg_s","yaw_acceleration","yaw_deceleration","operculum_open_ratio","operculum_close_ratio","pectoral_frequency_hz","pectoral_hover_amplitude","pectoral_cruise_amplitude","pectoral_brake_amplitude","pectoral_turn_amplitude","pectoral_pitch_amplitude","passive_fin_amplitude","fin_response","max_pitch_up_deg","max_pitch_down_deg","pitch_speed_deg_s","pitch_acceleration","pitch_deceleration","pitch_return_speed","pitch_return_to_neutral","boost_multiplier","max_stimulus_speed_cm_s","operculum_frequency_hz","operculum_amplitude","operculum_phase","operculum_speed_coupling","operculum_response","turn_bend_strength","turn_bend_response","turn_bend_recovery","max_turn_bend","minimum_turn_radius_cm","turn_radius_speed_factor","turn_bend_speed_gain","pectoral_turn_strength","body_bend_weights","fish_display_length_cm","speed_cm_s","min_speed_cm_s","max_speed_cm_s","speed_adjustment_cm_s2","acceleration_cm_s2","deceleration_cm_s2","view_height","plane_depth","camera_distance","turn_speed","turn_acceleration","idle_animation_speed","swim_animation_speed","fast_animation_speed","animation_response","log_hz","flush_interval","fullscreen","stop_on_focus_loss"]
 func snapshot() -> Dictionary:
 	var result: Dictionary={"background_color":[background_color.r,background_color.g,background_color.b]}
 	for key in FIELDS:result[key]=get(key).duplicate(true) if get(key) is Dictionary else get(key)
@@ -97,10 +110,12 @@ func apply(values: Dictionary) -> String:
 			if not values[key] is bool:return "Ungültiger Schalter: "+key
 		else:
 			if not (values[key] is float or values[key] is int) or not is_finite(values[key]):return "Ungültige Zahl: "+key
-			if key in ["turn_bend_strength","turn_bend_speed_gain","pectoral_turn_strength","operculum_amplitude","operculum_phase","operculum_speed_coupling"]:
+			if key in ["turn_bend_strength","turn_bend_speed_gain","pectoral_turn_strength","operculum_amplitude","operculum_phase","operculum_speed_coupling","pectoral_hover_amplitude","pectoral_cruise_amplitude","pectoral_brake_amplitude","pectoral_turn_amplitude","pectoral_pitch_amplitude","passive_fin_amplitude"]:
 				if values[key]<0:return "Wert darf nicht negativ sein: "+key
 			elif key!="plane_depth" and values[key]<=0:return "Wert muss positiv sein: "+key
 		set(key,values[key])
+	if operculum_open_ratio+operculum_close_ratio>.95 or yaw_speed_deg_s>180 or yaw_acceleration>720 or yaw_deceleration>720:return "Orientierung oder Atemphasen außerhalb der Grenzen."
+	if pectoral_hover_amplitude+pectoral_brake_amplitude+pectoral_turn_amplitude+pectoral_pitch_amplitude>.8 or pectoral_cruise_amplitude>pectoral_hover_amplitude or passive_fin_amplitude>.1:return "Flossenamplituden außerhalb der Grenzen."
 	if max_pitch_up_deg>45 or max_pitch_down_deg>45 or operculum_amplitude>.0007 or operculum_frequency_hz>5 or operculum_speed_coupling>1 or boost_multiplier<1 or max_stimulus_speed_cm_s<max_speed_cm_s:return "Pitch, Atmung oder Boost außerhalb des sicheren Bereichs."
 	if max_turn_bend>1.2 or pectoral_turn_strength>0.2 or turn_bend_speed_gain>1.0:return "Kurvenpose überschreitet die zulässigen Grenzen."
 	if min_speed_cm_s>speed_cm_s or speed_cm_s>max_speed_cm_s:return "Geschwindigkeiten müssen min <= stimulus <= max erfüllen."

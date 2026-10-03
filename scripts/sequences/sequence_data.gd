@@ -42,14 +42,22 @@ static func validate(data: Variant,max_speed: float=100.0) -> String:
 		if not numeric(item.get("target_speed_cm_s")) or item.target_speed_cm_s<0 or item.target_speed_cm_s>max_speed:return prefix+"Geschwindigkeit außerhalb der zulässigen Grenzen."
 		if item.get("direction") not in DIRECTIONS:return prefix+"Ungültige Richtung."
 		if item.step_type!="MOVE" and item.direction!="NONE":return prefix+"Richtung nur bei MOVE verwenden; sonst NONE."
+		for aliases in [["pitch_transition_duration_s","pitch_transition_s"],["pitch_hold_duration_s","pitch_hold_s"],["pitch_return_duration_s","pitch_return_s"]]:
+			if item.has(aliases[0]) and item.has(aliases[1]) and item[aliases[0]]!=item[aliases[1]]:return prefix+"Widersprüchliche Pitch-Dauern."
+		if item.has("target_yaw_deg"):
+			if not numeric(item.target_yaw_deg) or absf(item.target_yaw_deg)>3600:return prefix+"Yaw benötigt einen endlichen Winkel innerhalb ±3600°."
+			for key in ["yaw_transition_duration_s","yaw_hold_duration_s"]:
+				if not numeric(item.get(key)) or item[key]<0:return prefix+"Yaw benötigt Übergangs- und Haltedauer."
+			if item.yaw_transition_duration_s<=0 or item.yaw_transition_duration_s+item.yaw_hold_duration_s>item.duration_s+.000001:return prefix+"Yaw-Zyklus passt nicht in den Schritt."
+		elif item.has("yaw_transition_duration_s") or item.has("yaw_hold_duration_s"):return prefix+"Yaw-Dauern benötigen einen Zielwinkel."
 		if item.has("boost") and not item.boost is bool:return prefix+"Boost benötigt true/false."
 		if item.has("operculum_frequency_hz") and (not numeric(item.operculum_frequency_hz) or item.operculum_frequency_hz<=0 or item.operculum_frequency_hz>5):return prefix+"Atemfrequenz muss >0 und <=5 Hz sein."
 		if item.has("target_pitch_deg"):
 			if not numeric(item.target_pitch_deg) or absf(item.target_pitch_deg)>45:return prefix+"Pitch außerhalb ±45°."
 			for field in ["pitch_transition_s","pitch_hold_s","pitch_return_s"]:
-				if not numeric(item.get(field)) or item[field]<0:return prefix+"Pitch benötigt gültige Übergangs-, Halte- und Rückkehrdauer."
-			if item.pitch_transition_s<=0 or item.pitch_return_s<=0 or item.pitch_transition_s+item.pitch_hold_s+item.pitch_return_s>item.duration_s+.000001:return prefix+"Pitch-Zyklus passt nicht in die Schrittdauer. Übergang/Rückkehr müssen positiv sein."
-		elif item.has("pitch_transition_s") or item.has("pitch_hold_s") or item.has("pitch_return_s"):return prefix+"Pitch-Dauern benötigen einen Zielwinkel."
+				if not numeric(pitch_duration(item,field)) or pitch_duration(item,field)<0:return prefix+"Pitch benötigt gültige Übergangs-, Halte- und Rückkehrdauer."
+			if pitch_duration(item,"pitch_transition_s")<=0 or pitch_duration(item,"pitch_return_s")<=0 or pitch_duration(item,"pitch_transition_s")+pitch_duration(item,"pitch_hold_s")+pitch_duration(item,"pitch_return_s")>item.duration_s+.000001:return prefix+"Pitch-Zyklus passt nicht in die Schrittdauer. Übergang/Rückkehr müssen positiv sein."
+		elif item.has("pitch_transition_s") or item.has("pitch_hold_s") or item.has("pitch_return_s") or item.has("pitch_transition_duration_s") or item.has("pitch_hold_duration_s") or item.has("pitch_return_duration_s"):return prefix+"Pitch-Dauern benötigen einen Zielwinkel."
 		if item.has("orientation") and item.orientation not in ["LEFT","RIGHT"]:return prefix+"Ungültige Orientierung."
 		if not item.get("comment","") is String:return prefix+"Kommentar muss Text sein."
 		if item.step_type=="MOVE" and (item.direction=="NONE" or item.target_speed_cm_s<=0):return prefix+"MOVE benötigt Richtung und positive Geschwindigkeit."
@@ -85,3 +93,6 @@ static func initial_position(data: Dictionary,bounds: Rect2) -> Vector2:
 	elif initial.start_mode=="CUSTOM":result=Vector2(initial.position_cm[0],initial.position_cm[1])
 	if data.steps[0].has("start_position_cm"):result=Vector2(data.steps[0].start_position_cm[0],data.steps[0].start_position_cm[1])
 	return result
+
+static func pitch_duration(item: Dictionary,key: String) -> Variant:
+	return item.get(key.replace("_s","_duration_s"),item.get(key))

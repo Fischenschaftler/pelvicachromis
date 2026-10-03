@@ -14,13 +14,14 @@ var effective_speed:=0.0
 var events: Array=[]
 func reset(settings: Resource) -> void:
 	config=settings;pitch=0;pitch_velocity=0;target_pitch=0;pitch_input=0;pitch_state="NEUTRAL"
-	frequency=config.operculum_frequency_hz;phase=fposmod(config.operculum_phase,1.0);opening=breath(phase);boost=false;effective_speed=config.speed_cm_s;events.clear()
+	frequency=config.operculum_frequency_hz;phase=fposmod(config.operculum_phase,1.0);opening=breath(phase,config.operculum_open_ratio,config.operculum_close_ratio);boost=false;effective_speed=config.speed_cm_s;events.clear()
 static func smooth(t: float) -> float:
 	t=clampf(t,0,1);return t*t*t*(10+t*(-15+6*t))
-static func breath(t: float) -> float:
-	if t<.42:return smooth(t/.42)
-	if t<.55:return 1.0
-	if t<.95:return 1.0-smooth((t-.55)/.4)
+static func breath(t: float,open_ratio: float=.42,close_ratio: float=.4) -> float:
+	var close_start: float=.95-close_ratio
+	if t<open_ratio:return smooth(t/open_ratio)
+	if t<close_start:return 1.0
+	if t<.95:return 1.0-smooth((t-close_start)/close_ratio)
 	return 0.0
 func step(dt: float,command: Dictionary,speed_cm_s: float) -> void:
 	pitch_input=clampf(float(command.get("pitch",0)),-1,1)
@@ -46,12 +47,12 @@ func step(dt: float,command: Dictionary,speed_cm_s: float) -> void:
 	var requested: float=command.get("operculum_frequency_hz",config.operculum_frequency_hz)
 	requested*=1.0+config.operculum_speed_coupling*clampf(speed_cm_s/config.max_stimulus_speed_cm_s,0,1)
 	frequency=lerpf(frequency,requested,1.0-exp(-config.operculum_response*dt))
-	phase=fposmod(phase+frequency*dt,1.0);opening=breath(phase)
+	phase=fposmod(phase+frequency*dt,1.0);opening=breath(phase,config.operculum_open_ratio,config.operculum_close_ratio)
 func state() -> Dictionary:
-	return {"target_pitch_deg":target_pitch,"actual_pitch_deg":pitch,"pitch_input":pitch_input,"pitch_transition_state":pitch_state,"boost_active":boost,"boost_multiplier":config.boost_multiplier,"target_speed_cm_s":effective_speed,"operculum_frequency_hz":frequency,"operculum_amplitude":config.operculum_amplitude,"operculum_speed_coupling":config.operculum_speed_coupling,"operculum_phase":phase,"operculum_opening":opening}
+	return {"target_pitch_deg":target_pitch,"actual_pitch_deg":pitch,"pitch_input":pitch_input,"pitch_transition_state":pitch_state,"boost_active":boost,"boost_multiplier":config.boost_multiplier,"target_speed_cm_s":effective_speed,"operculum_frequency_hz":frequency,"operculum_amplitude":config.operculum_amplitude,"operculum_speed_coupling":config.operculum_speed_coupling,"operculum_phase":phase,"operculum_opening":opening,"operculum_open_amount":opening,"operculum_open_ratio":config.operculum_open_ratio,"operculum_close_ratio":config.operculum_close_ratio}
 static func register_inputs() -> void:
-	for action in {"stimulus_pitch_up":KEY_PAGEUP,"stimulus_pitch_down":KEY_PAGEDOWN,"stimulus_boost":KEY_SHIFT}:
+	for action in {"stimulus_pitch_up":KEY_PAGEUP,"stimulus_pitch_down":KEY_PAGEDOWN,"stimulus_boost":KEY_SHIFT,"stimulus_yaw_left":KEY_HOME,"stimulus_yaw_right":KEY_END}:
 		if InputMap.has_action(action):continue
 		InputMap.add_action(action)
-		var event:=InputEventKey.new();event.physical_keycode={"stimulus_pitch_up":KEY_PAGEUP,"stimulus_pitch_down":KEY_PAGEDOWN,"stimulus_boost":KEY_SHIFT}[action]
+		var event:=InputEventKey.new();event.physical_keycode={"stimulus_pitch_up":KEY_PAGEUP,"stimulus_pitch_down":KEY_PAGEDOWN,"stimulus_boost":KEY_SHIFT,"stimulus_yaw_left":KEY_HOME,"stimulus_yaw_right":KEY_END}[action]
 		InputMap.action_add_event(action,event)

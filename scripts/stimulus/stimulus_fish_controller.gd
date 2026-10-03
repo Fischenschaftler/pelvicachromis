@@ -2,6 +2,9 @@ extends Node3D
 ## Calibrated planar motion with a temporary post-animation pose modifier.
 var realism=preload("res://scripts/stimulus/motion_realism.gd").new()
 var gills=preload("res://scripts/stimulus/operculum_deformer.gd").new()
+var orientation=preload("res://scripts/stimulus/spatial_orientation.gd").new()
+var fins=preload("res://scripts/stimulus/fin_motion.gd").new()
+var motion_state: Dictionary={}
 var config: Resource
 var animation: AnimationPlayer
 var velocity:=Vector2.ZERO
@@ -30,12 +33,13 @@ func attach_pose(model: Node3D) -> String:
 	if not error.is_empty():modifier.free();return error
 	error=gills.bind(model)
 	if not error.is_empty():modifier.free();return error
-	rigs[0].add_child(modifier);turn_modifier=modifier;return ""
+	rigs[0].add_child(modifier);turn_modifier=modifier;gills.update(realism.opening,config.operculum_amplitude);return ""
 func detach_pose() -> void:
 	gills.detach()
 	if is_instance_valid(turn_modifier):turn_modifier.active=false;turn_modifier.free()
 	turn_modifier=null
 func reset_stimulus() -> void:
+	orientation.reset();fins.reset();motion_state={"speed_cm_s":0.0,"actual_speed_cm_s":0.0,"acceleration_cm_s2":0.0,"braking_amount":0.0,"turn_rate":0.0,"target_turn_rate":0.0,"pitch_deg":0.0,"yaw_deg":0.0}
 	realism.reset(config);gills.update(realism.opening,config.operculum_amplitude)
 	position=Vector3(0,0,config.plane_depth);rotation=Vector3.ZERO
 	velocity=Vector2.ZERO;yaw=0;target_yaw=0;angular_speed=0
@@ -87,10 +91,14 @@ func step(delta: float, command: Dictionary) -> void:
 	var actual: float=(yaw-old_yaw)/delta
 	actual_turn_rate=actual
 	realism.step(delta,command,cm_speed)
-	basis=Basis(Vector3.UP,yaw)*Basis(Vector3.BACK,deg_to_rad(realism.pitch))
+	orientation.step(delta,command,yaw,config)
+	basis=Basis(Vector3.UP,-deg_to_rad(orientation.angle))*Basis(Vector3.BACK,deg_to_rad(realism.pitch))
+	events.append_array(orientation.events);orientation.events.clear()
 	gills.update(realism.opening,config.operculum_amplitude)
 	events.append_array(realism.events);realism.events.clear()
 	var driving_rate:=actual if absf(actual)>=absf(path_turn_rate) else path_turn_rate
+	motion_state={"speed_cm_s":cm_speed,"actual_speed_cm_s":cm_speed,"target_speed_cm_s":realism.effective_speed,"acceleration_cm_s2":(speed-previous_speed)/config.units_per_cm/delta,"turn_rate":driving_rate,"target_turn_rate":target_turn_rate,"pitch_deg":realism.pitch,"target_pitch_deg":realism.target_pitch,"yaw_deg":orientation.angle,"target_yaw_deg":orientation.target,"boost_active":realism.boost,"braking_amount":clampf((previous_speed-speed)/config.units_per_cm/delta/config.deceleration_cm_s2,0,1),"operculum_phase":realism.phase,"operculum_open_amount":realism.opening}
+	fins.step(delta,motion_state,config)
 	var dynamic_gain: float=1.0+config.turn_bend_speed_gain*clampf(cm_speed/config.max_speed_cm_s,0,1)
 	var desired_bend:=clampf(-driving_rate*config.turn_bend_strength*dynamic_gain,-config.max_turn_bend,config.max_turn_bend)
 	var response: float=config.turn_bend_response if absf(desired_bend)>absf(turn_bend_amount) else config.turn_bend_recovery
@@ -110,8 +118,7 @@ func bone_offsets() -> Dictionary:
 	var result: Dictionary={};var sum:=0.0
 	for value in config.body_bend_weights.values():sum+=float(value)
 	for name in config.body_bend_weights:result[name]=turn_bend_amount*config.body_bend_weights[name]/sum
-	result["Pectoral_Fin_Left_2"]=config.pectoral_turn_strength*maxf(0,-turn_bend_amount/config.max_turn_bend)
-	result["Pectoral_Fin_Right_2"]=-config.pectoral_turn_strength*maxf(0,turn_bend_amount/config.max_turn_bend)
+	result.merge(fins.offsets,true)
 	return result
 func turn_state() -> Dictionary:
 	var cm_speed: float=velocity.length()/config.units_per_cm
@@ -123,4 +130,4 @@ func take_turn_events() -> Array:
 	var result:=events;events=[];return result
 func state() -> Dictionary:
 	var result: Dictionary={"position":[position.x,position.y,position.z],"orientation_y_radians":yaw,"target_yaw":target_yaw,"velocity":[velocity.x,velocity.y,0],"speed":velocity.length(),"stimulus_speed":stimulus_speed,"animation_speed":animation_rate,"speed_cm_s":velocity.length()/config.units_per_cm,"target_speed_cm_s":stimulus_speed/config.units_per_cm,"position_cm":[position.x/config.units_per_cm,position.y/config.units_per_cm]}
-	result.merge(turn_state());result.merge(realism.state(),true);result.actual_speed_cm_s=velocity.length()/config.units_per_cm;return result
+	result.merge(motion_state,true);result.merge(turn_state());result.merge(realism.state(),true);result.merge(orientation.state(),true);result.merge(fins.state(),true);result.actual_speed_cm_s=velocity.length()/config.units_per_cm;return result

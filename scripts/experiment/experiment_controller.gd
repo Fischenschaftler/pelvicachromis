@@ -125,7 +125,7 @@ func _process(delta: float) -> void:
 	if focus_checks_enabled and not get_window().has_focus():
 		record("FOCUS_EVENT",{"kind":"EXPERIMENTER_FOCUS_OUT","detected_by":"window_state"});keys.clear();abort("application_focus_lost");return
 	if get_window().current_screen!=setup.experimenter_screen:monitor_event("experimenter_monitor_changed");return
-	output.renderer.set_command({"x":axis("stimulus_left","stimulus_right"),"y":axis("stimulus_down","stimulus_up"),"speed":axis("stimulus_slower","stimulus_faster"),"facing":axis("stimulus_turn_left","stimulus_turn_right"),"pitch":axis("stimulus_pitch_down","stimulus_pitch_up"),"boost":keys.get("stimulus_boost",false)})
+	output.renderer.set_command({"x":axis("stimulus_left","stimulus_right"),"y":axis("stimulus_down","stimulus_up"),"speed":axis("stimulus_slower","stimulus_faster"),"facing":axis("stimulus_turn_left","stimulus_turn_right"),"pitch":axis("stimulus_pitch_down","stimulus_pitch_up"),"yaw":axis("stimulus_yaw_left","stimulus_yaw_right"),"boost":keys.get("stimulus_boost",false)})
 	var error: String=output.health()
 	if not error.is_empty():monitor_event(error);return
 	poll_elapsed+=delta
@@ -141,7 +141,7 @@ func _input(event: InputEvent) -> void:
 	if not active:return
 	if event.is_action_pressed("sequence_pause") and not event.is_echo():pause_or_resume()
 	if event.is_action_pressed("stimulus_reset") and not event.is_echo():output.renderer.reset_stimulus()
-	for action in ["stimulus_left","stimulus_right","stimulus_down","stimulus_up","stimulus_slower","stimulus_faster","stimulus_turn_left","stimulus_turn_right","stimulus_pitch_up","stimulus_pitch_down","stimulus_boost"]:
+	for action in ["stimulus_left","stimulus_right","stimulus_down","stimulus_up","stimulus_slower","stimulus_faster","stimulus_turn_left","stimulus_turn_right","stimulus_pitch_up","stimulus_pitch_down","stimulus_boost","stimulus_yaw_left","stimulus_yaw_right"]:
 		if event.is_action(action):keys[action]=event.is_pressed()
 	if event is InputEventKey or event is InputEventAction:get_viewport().set_input_as_handled()
 func select_fish() -> void:

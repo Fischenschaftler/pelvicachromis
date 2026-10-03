@@ -1,6 +1,7 @@
 extends RefCounted
 ## Two temporary blend shapes on a private mesh. Imported arrays/skin/UVs remain untouched.
 const MAX_OPENING=0.0007
+var interior=preload("res://scripts/stimulus/gill_interior.gd").new()
 var body: MeshInstance3D
 var original: Mesh
 var affected_vertices:=0
@@ -16,7 +17,7 @@ func displacement(p: Vector3,side: float) -> float:
 func bind(model: Node3D) -> String:
 	var bodies:=model.find_children("Fish_Body","MeshInstance3D",true,false)
 	if bodies.size()!=1:return "Kiemenbewegung benötigt genau ein Fish_Body Mesh."
-	body=bodies[0];original=body.mesh
+	body=bodies[0];original=body.mesh;affected_vertices=0
 	if original.get_blend_shape_count()!=0:return "Vorhandene Körper-Blendshapes dürfen nicht überschrieben werden."
 	var mesh:=ArrayMesh.new();mesh.blend_shape_mode=Mesh.BLEND_SHAPE_MODE_NORMALIZED
 	mesh.add_blend_shape("Operculum_Left");mesh.add_blend_shape("Operculum_Right")
@@ -42,10 +43,15 @@ func bind(model: Node3D) -> String:
 		mesh.add_surface_from_arrays(original.surface_get_primitive_type(surface),arrays,shapes)
 		mesh.surface_set_material(surface,original.surface_get_material(surface))
 	if affected_vertices==0:return "Kiemenregion enthält keine verformbaren Vertices."
+	var error: String=interior.bind(body,self)
+	if not error.is_empty():return error
 	body.mesh=mesh;return ""
 func update(opening: float,amplitude: float) -> void:
 	if not is_instance_valid(body):return
-	for i in range(2):body.set_blend_shape_value(i,clampf(opening*amplitude/MAX_OPENING,0,1))
+	var amount:=clampf(opening*amplitude/MAX_OPENING,0,1)
+	for i in range(2):body.set_blend_shape_value(i,amount)
+	interior.update(amount)
 func detach() -> void:
+	interior.detach()
 	if is_instance_valid(body) and original!=null:body.mesh=original
 	body=null;original=null

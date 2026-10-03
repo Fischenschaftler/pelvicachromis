@@ -1,0 +1,97 @@
+{
+	"fps": 24,
+	"frames": 1032,
+	"pose_only_centered": true,
+	"stages": [
+		[
+			"Schweben",
+			5,
+			{}
+		],
+		[
+			"Normaler Swim",
+			3,
+			{
+				"x": 1
+			}
+		],
+		[
+			"Beschleunigung / Boost",
+			3,
+			{
+				"boost": true,
+				"x": 1
+			}
+		],
+		[
+			"Bremsen",
+			3,
+			{}
+		],
+		[
+			"Linkskurve",
+			3,
+			{
+				"x": -1
+			}
+		],
+		[
+			"Rechtskurve",
+			3,
+			{
+				"x": 1
+			}
+		],
+		[
+			"Pitch oben",
+			3,
+			{
+				"pitch": 1
+			}
+		],
+		[
+			"Pitch unten",
+			4,
+			{
+				"pitch": -1
+			}
+		],
+		[
+			"Yaw 45 Grad",
+			3,
+			{
+				"target_yaw_deg": 45
+			}
+		],
+		[
+			"Frontansicht",
+			3,
+			{
+				"target_yaw_deg": 90
+			}
+		],
+		[
+			"Gegenseite",
+			3,
+			{
+				"target_yaw_deg": 180
+			}
+		],
+		[
+			"Boost plus Kurve und Pitch",
+			3,
+			{
+				"boost": true,
+				"pitch": 1,
+				"x": -1
+			}
+		],
+		[
+			"Neutrale Seitenansicht",
+			4,
+			{
+				"target_yaw_deg": 0
+			}
+		]
+	]
+}

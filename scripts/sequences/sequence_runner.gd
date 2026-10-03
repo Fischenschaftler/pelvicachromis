@@ -31,6 +31,7 @@ var requested_position: Variant=null
 var requested_orientation:=0.0
 var simulation_only:=false
 var step_pitch_start:=0.0
+var step_yaw_start:=0.0
 func configure(data: Dictionary,body: Node3D,area: Rect2,override_allowed: bool=false,sink: Callable=Callable()) -> void:
 	definition=data.duplicate(true);definition_hash=Data.checksum(definition);Data.freeze(definition)
 	motion=body;bounds=area;allow_override=override_allowed;event_sink=sink
@@ -43,6 +44,7 @@ func _place(p: Vector2,orientation: String="") -> void:
 	motion.velocity=Vector2.ZERO
 	if not orientation.is_empty():
 		motion.yaw=PI if orientation=="LEFT" else 0.0;motion.target_yaw=motion.yaw;motion.angular_speed=0;motion.rotation=Vector3(0,motion.yaw,0)
+		if not motion.orientation.active:motion.orientation.angle=-rad_to_deg(motion.yaw);motion.orientation.target=motion.orientation.angle
 func position_cm() -> Vector2:return Vector2(motion.position.x,motion.position.y)/motion.config.units_per_cm
 func _event(name: String,extra: Dictionary={}) -> void:
 	if event_sink.is_valid():event_sink.call(name,extra)
@@ -54,6 +56,7 @@ func _enter_step(emit: bool=true) -> void:
 	if item.step_type=="RESET_POSITION":_place(Vector2(item.start_position_cm[0],item.start_position_cm[1]),item.get("orientation",""))
 	if item.step_type in ["HOLD","TURN","RESET_POSITION"]:motion.velocity=Vector2.ZERO
 	step_pitch_start=motion.realism.pitch
+	step_yaw_start=motion.orientation.angle if motion.orientation.active else -rad_to_deg(motion.yaw)
 	step_origin_cm=position_cm()
 	requested_position=item.get("target_position_cm",[step_origin_cm.x,step_origin_cm.y])
 	requested_speed=item.target_speed_cm_s
@@ -75,7 +78,7 @@ func _automatic_command(dt: float=0.0) -> Dictionary:
 	if item.has("operculum_frequency_hz"):result.operculum_frequency_hz=item.operculum_frequency_hz
 	if item.has("target_pitch_deg"):
 		var t:=time_s+dt-step_start_s
-		var rise: float=item.pitch_transition_s;var hold: float=item.pitch_hold_s;var fall: float=item.pitch_return_s
+		var rise: float=Data.pitch_duration(item,"pitch_transition_s");var hold: float=Data.pitch_duration(item,"pitch_hold_s");var fall: float=Data.pitch_duration(item,"pitch_return_s")
 		result.target_pitch_deg=item.target_pitch_deg
 		if t<rise:
 			result.sequence_pitch_deg=lerpf(step_pitch_start,item.target_pitch_deg,motion.realism.smooth(t/rise));result.pitch_transition_state="TRANSITION"
@@ -84,6 +87,11 @@ func _automatic_command(dt: float=0.0) -> Dictionary:
 		elif t<rise+hold+fall:
 			result.target_pitch_deg=0.0;result.sequence_pitch_deg=item.target_pitch_deg*(1-motion.realism.smooth((t-rise-hold)/fall));result.pitch_transition_state="RETURNING"
 		else:result.target_pitch_deg=0.0;result.sequence_pitch_deg=0.0;result.pitch_transition_state="NEUTRAL"
+	if item.has("target_yaw_deg"):
+		var t:=time_s+dt-step_start_s
+		result.target_yaw_deg=item.target_yaw_deg
+		result.sequence_yaw_deg=lerpf(step_yaw_start,item.target_yaw_deg,motion.realism.smooth(t/item.yaw_transition_duration_s))
+		result.yaw_transition_state="TRANSITION" if t<item.yaw_transition_duration_s-.00000001 else "HOLD"
 	return result
 func _integrate(dt: float) -> void:
 	var item: Dictionary=definition.steps[step_index]
@@ -127,7 +135,7 @@ func tick(now: float,command: Dictionary={}) -> void:
 	last_clock=now
 	if paused:return
 	var active_input:=false
-	for key in ["x","y","speed","facing","pitch","boost"]:
+	for key in ["x","y","speed","facing","pitch","yaw","boost"]:
 		if absf(float(command.get(key,0)))>.0001:active_input=true
 	var enabled:=allow_override and active_input
 	if enabled!=overriding or (enabled and command!=manual):
@@ -158,7 +166,8 @@ func telemetry() -> Dictionary:
 		var ideal: Vector2=step_origin_cm+Data.DIRECTIONS[item.direction]*item.target_speed_cm_s*(time_s-step_start_s)
 		target=[ideal.x,ideal.y]
 	var result: Dictionary={"sequence_id":definition.sequence_id,"sequence_name":definition.sequence_name,"sequence_format_version":definition.sequence_format_version,"sequence_sha256":definition_hash,"sequence_time_s":time_s,"remaining_s":maxf(0,definition.total_duration_s-time_s),"step_index":step_index,"step_type":item.step_type,"target_position_cm":target,"command_speed_cm_s":motion.stimulus_speed/motion.config.units_per_cm,"actual_position_cm":[p.x,p.y],"target_speed_cm_s":requested_speed,"actual_speed_cm_s":0.0 if paused else motion.velocity.length()/motion.config.units_per_cm,"target_orientation":requested_orientation,"actual_orientation":motion.yaw,"animation_rate":0.0 if paused else motion.animation_rate,"control_state":"PAUSED" if paused else ("MANUAL_OVERRIDE" if overriding else ("COMPLETED" if completed else ("ABORTED" if finished else "AUTOMATIC")))}
-	result.merge(motion.turn_state());result.merge(motion.realism.state(),true)
+	result.merge(motion.turn_state());result.merge(motion.realism.state(),true);result.merge(motion.orientation.state(),true);result.merge(motion.fins.state(),true)
+	result.braking_amount=motion.motion_state.get("braking_amount",0.0);result.acceleration_cm_s2=motion.motion_state.get("acceleration_cm_s2",0.0)
 	if paused:result.actual_turn_rate=0.0;result.path_turn_rate=0.0;result.current_turn_radius_cm=null
 	return result
 static func preflight(data: Dictionary,config: Resource,area: Rect2) -> Dictionary:

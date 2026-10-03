@@ -68,10 +68,10 @@ func run() -> void:
 		stimulus.motion.turn_bend_amount=cases[name];stimulus.motion.rotation.y=.65
 		viewer.animation_player.seek(.4,true);await wait(.08)
 		var modifier=stimulus.motion.turn_modifier
-		check(modifier.last_base.size()==9,"Modifier evaluated after animation: "+name)
+		check(modifier.last_base.size()==14,"Modifier evaluated after animation: "+name)
 		var offsets: Dictionary=stimulus.motion.bone_offsets()
 		for bone in modifier.indices:
-			var expected: Quaternion=(modifier.last_base[bone]*Quaternion(modifier.local_axes[bone],offsets[bone])).normalized()
+			var expected: Quaternion=(modifier.last_base[bone]*Quaternion(modifier.local_axes[bone],offsets.get(bone,0.0))).normalized()
 			check(absf(expected.dot(modifier.last_final[bone]))>.999999,"Additive quaternion "+name+" "+bone)
 		var captured: Dictionary=modifier.last_final.duplicate(true);await wait(.1)
 		check(captured==modifier.last_final,"No accumulated offsets: "+name)
